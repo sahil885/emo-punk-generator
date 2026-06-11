@@ -368,6 +368,9 @@ export default function Home() {
   const [result, setResult] = useState<SongResult | null>(null);
   const [taskId, setTaskId] = useState<string | null>(null);
   const [error, setError] = useState("");
+  const [rateLimited, setRateLimited] = useState(false);
+  const [resetAt, setResetAt] = useState<number | null>(null);
+  const [remaining, setRemaining] = useState<number | null>(null);
   const [copied, setCopied] = useState(false);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
@@ -410,6 +413,7 @@ export default function Home() {
     if (!words.trim()) return;
     setLoading(true);
     setError("");
+    setRateLimited(false);
     setResult(null);
     setTaskId(null);
 
@@ -420,9 +424,18 @@ export default function Home() {
         body: JSON.stringify({ words, singer }),
       });
       const lyricsData = await lyricsRes.json();
+
+      if (lyricsRes.status === 429) {
+        setRateLimited(true);
+        setResetAt(lyricsData.resetAt ?? null);
+        setLoading(false);
+        return;
+      }
+
       if (!lyricsRes.ok) throw new Error(lyricsData.error || "Lyrics generation failed");
 
       setResult(lyricsData);
+      if (typeof lyricsData.remaining === "number") setRemaining(lyricsData.remaining);
       setLoading(false);
 
       const audioRes = await fetch("/api/audio/start", {
@@ -450,7 +463,12 @@ export default function Home() {
     setTaskId(null);
     setWords("");
     setError("");
+    setRateLimited(false);
   };
+
+  const hoursUntilReset = resetAt
+    ? Math.ceil((resetAt - Date.now()) / 1000 / 60 / 60)
+    : null;
 
   return (
     <main className="min-h-screen relative overflow-hidden">
@@ -572,19 +590,28 @@ export default function Home() {
             </div>
           </div>
 
+          {/* Daily limit counter */}
+          {remaining !== null && !rateLimited && (
+            <div className="flex justify-end mb-2">
+              <span className="text-xs text-white/30 border border-white/10 rounded-full px-3 py-1">
+                {remaining} song{remaining !== 1 ? "s" : ""} left today
+              </span>
+            </div>
+          )}
+
           {/* Generate button */}
           <button
             onClick={generate}
-            disabled={loading || !words.trim()}
+            disabled={loading || !words.trim() || rateLimited}
             className="w-full relative rounded-xl py-4 font-black text-lg tracking-wide uppercase transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed overflow-hidden group"
             style={{
               background:
-                loading || !words.trim()
+                loading || !words.trim() || rateLimited
                   ? "rgba(155, 48, 255, 0.3)"
                   : "linear-gradient(135deg, #ff2d78 0%, #9b30ff 50%, #00cfff 100%)",
             }}
           >
-            {!loading && (
+            {!loading && !rateLimited && (
               <div className="absolute inset-0 bg-white/0 group-hover:bg-white/10 transition-colors" />
             )}
             <span className="relative text-white">
@@ -596,11 +623,26 @@ export default function Home() {
                   </svg>
                   Writing your song...
                 </span>
+              ) : rateLimited ? (
+                "🚫 Daily limit reached"
               ) : (
                 "⚡ Generate Song"
               )}
             </span>
           </button>
+
+          {/* Rate limit banner */}
+          {rateLimited && (
+            <div className="mt-4 rounded-xl border border-[#ff2d78]/30 bg-[#ff2d78]/8 px-4 py-4 text-center">
+              <p className="text-2xl mb-1">🎸</p>
+              <p className="font-bold text-white text-sm">You&apos;ve used all 3 songs for today</p>
+              <p className="text-xs text-white/50 mt-1">
+                {hoursUntilReset !== null
+                  ? `Resets in ~${hoursUntilReset} hour${hoursUntilReset !== 1 ? "s" : ""}`
+                  : "Come back tomorrow"}
+              </p>
+            </div>
+          )}
 
           {error && (
             <div className="mt-4 rounded-lg border border-[#ff2d78]/40 bg-[#ff2d78]/10 px-4 py-3 text-sm text-[#ff2d78]">

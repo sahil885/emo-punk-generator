@@ -1,7 +1,29 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { NextRequest, NextResponse } from "next/server";
+import { checkRateLimit } from "@/lib/rateLimit";
 
 export async function POST(req: NextRequest) {
+  // --- Rate limit: 3 songs per IP per 24 h ---
+  const ip =
+    req.headers.get("x-forwarded-for")?.split(",")[0].trim() ??
+    req.headers.get("x-real-ip") ??
+    "unknown";
+
+  const { allowed, remaining, resetAt } = checkRateLimit(ip);
+
+  if (!allowed) {
+    const resetsIn = Math.ceil((resetAt - Date.now()) / 1000 / 60 / 60);
+    return NextResponse.json(
+      {
+        error: `You've used all 3 free songs today. Come back in ~${resetsIn}h 🎸`,
+        rateLimited: true,
+        resetAt,
+      },
+      { status: 429 }
+    );
+  }
+  // ------------------------------------------
+
   const { words, singer } = await req.json();
   const apiKey = process.env.ANTHROPIC_API_KEY;
 
@@ -67,7 +89,7 @@ etc.`;
     const title = titleMatch ? titleMatch[1] : "Untitled";
     const lyrics = text.replace(/TITLE:\s*"[^"]+"\n?/, "").trim();
 
-    return NextResponse.json({ title, lyrics, singer });
+    return NextResponse.json({ title, lyrics, singer, remaining });
   } catch (err) {
     console.error(err);
     return NextResponse.json({ error: "Failed to generate song" }, { status: 500 });
