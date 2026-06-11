@@ -315,7 +315,7 @@ function AudioPlayer({
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" />
                   </svg>
-                  Download MP3 — $1
+                  Download MP3 — $2.99
                   <span className="ml-1 text-xs bg-white/20 rounded-full px-2 py-0.5">one-time</span>
                 </>
               )}

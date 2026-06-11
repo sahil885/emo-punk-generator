@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
             name: `"${songTitle}" — Emo Punk AI Song`,
             description: "Download your AI-generated emo pop punk song as an MP3",
           },
-          unit_amount: 100, // $1.00
+          unit_amount: 299, // $2.99
         },
         quantity: 1,
       },
