@@ -393,6 +393,174 @@ function CreditPacks({ onBuy }: { onBuy: (pack: "3pack" | "10pack") => void }) {
   );
 }
 
+// ─── My Songs library ────────────────────────────────────────────────────────
+interface SavedSong {
+  id: string;
+  title: string;
+  lyrics: string;
+  singer: Singer;
+  audio_url: string | null;
+  image_url: string | null;
+  duration: number | null;
+  created_at: string;
+}
+
+function SongsModal({ onClose }: { onClose: () => void }) {
+  const [songs, setSongs] = useState<SavedSong[] | null>(null);
+  const [loadError, setLoadError] = useState(false);
+  const [playingId, setPlayingId] = useState<string | null>(null);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const audioRef = useRef<HTMLAudioElement>(null);
+
+  useEffect(() => {
+    fetch("/api/songs")
+      .then((r) => (r.ok ? r.json() : Promise.reject()))
+      .then((data) => setSongs(data.songs ?? []))
+      .catch(() => setLoadError(true));
+  }, []);
+
+  const togglePlay = (song: SavedSong) => {
+    const audio = audioRef.current;
+    if (!audio || !song.audio_url) return;
+    if (playingId === song.id) {
+      audio.pause();
+      setPlayingId(null);
+    } else {
+      audio.src = song.audio_url;
+      audio.play();
+      setPlayingId(song.id);
+    }
+  };
+
+  const deleteSong = async (id: string) => {
+    if (playingId === id) {
+      audioRef.current?.pause();
+      setPlayingId(null);
+    }
+    setSongs((prev) => prev?.filter((s) => s.id !== id) ?? null);
+    await fetch(`/api/songs?id=${encodeURIComponent(id)}`, { method: "DELETE" }).catch(() => {});
+  };
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center px-4"
+      onClick={onClose}
+    >
+      <audio ref={audioRef} onEnded={() => setPlayingId(null)} />
+      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
+      <div
+        className="relative w-full max-w-lg max-h-[80vh] flex flex-col rounded-2xl border border-[#00cfff]/40 bg-[#0f0520] p-6 shadow-2xl shadow-[#00cfff]/20 lyrics-appear"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 text-white/30 hover:text-white transition-colors"
+          aria-label="Close"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
+          </svg>
+        </button>
+        <div className="text-center mb-4">
+          <p className="text-2xl mb-2">🎵</p>
+          <h3 className="text-xl font-black text-white">My Songs</h3>
+          <p className="text-xs text-white/40 mt-1">Every song you&apos;ve made with credits, saved forever</p>
+        </div>
+
+        <div className="overflow-y-auto flex-1 -mx-2 px-2">
+          {loadError ? (
+            <p className="text-sm text-[#ff2d78] text-center py-8">Couldn&apos;t load your songs — try again.</p>
+          ) : songs === null ? (
+            <p className="text-sm text-white/40 text-center py-8">Loading…</p>
+          ) : songs.length === 0 ? (
+            <p className="text-sm text-white/40 text-center py-8">
+              No songs yet — generate one and it&apos;ll be saved here automatically.
+            </p>
+          ) : (
+            <ul className="space-y-3">
+              {songs.map((song) => (
+                <li key={song.id} className="rounded-xl border border-white/10 bg-white/[0.03] p-3">
+                  <div className="flex items-center gap-3">
+                    <div
+                      className="w-11 h-11 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden"
+                      style={{
+                        background: song.image_url
+                          ? undefined
+                          : "linear-gradient(135deg, #ff2d78, #9b30ff, #00cfff)",
+                      }}
+                    >
+                      {song.image_url ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={song.image_url} alt="" className="w-full h-full object-cover" />
+                      ) : (
+                        <span className="text-lg">🎸</span>
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-bold text-white text-sm truncate">{song.title}</p>
+                      <p className="text-xs text-white/35">
+                        {song.singer === "female" ? "Female" : "Male"} vocalist ·{" "}
+                        {new Date(song.created_at).toLocaleDateString()}
+                      </p>
+                    </div>
+                    {song.audio_url ? (
+                      <button
+                        onClick={() => togglePlay(song)}
+                        className="w-9 h-9 rounded-full bg-gradient-to-r from-[#ff2d78] to-[#9b30ff] flex items-center justify-center flex-shrink-0 hover:opacity-90 transition-opacity"
+                        aria-label={playingId === song.id ? "Pause" : "Play"}
+                      >
+                        {playingId === song.id ? (
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="white">
+                            <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
+                          </svg>
+                        ) : (
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="white">
+                            <path d="M8 5v14l11-7z" />
+                          </svg>
+                        )}
+                      </button>
+                    ) : (
+                      <span className="text-[10px] text-white/30 flex-shrink-0">audio pending</span>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-4 mt-2 pl-14">
+                    <button
+                      onClick={() => setExpandedId(expandedId === song.id ? null : song.id)}
+                      className="text-xs text-[#00cfff] hover:text-[#7ee4ff] transition-colors"
+                    >
+                      {expandedId === song.id ? "Hide lyrics" : "Lyrics"}
+                    </button>
+                    {song.audio_url && (
+                      <a
+                        href={`/api/download?url=${encodeURIComponent(song.audio_url)}&title=${encodeURIComponent(song.title)}`}
+                        download={`${song.title}.mp3`}
+                        className="text-xs text-[#9b30ff] hover:text-[#b86aff] transition-colors"
+                      >
+                        Download
+                      </a>
+                    )}
+                    <button
+                      onClick={() => deleteSong(song.id)}
+                      className="text-xs text-white/25 hover:text-[#ff2d78] transition-colors ml-auto"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                  {expandedId === song.id && (
+                    <div className="mt-3 pl-14 pr-2 max-h-48 overflow-y-auto">
+                      <LyricsDisplay lyrics={song.lyrics} />
+                    </div>
+                  )}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─── Main examples ────────────────────────────────────────────────────────────
 const EXAMPLES = [
   "I missed your call at 3am",
@@ -430,6 +598,7 @@ export default function Home() {
   const [showBuyCredits, setShowBuyCredits] = useState(false);
   const [buyingCredits, setBuyingCredits] = useState(false);
   const [buyError, setBuyError] = useState("");
+  const [showSongs, setShowSongs] = useState(false);
 
   // ── Fetch credit balance when user is signed in ─────────────────────────────
   const fetchCredits = useCallback(async () => {
@@ -579,7 +748,12 @@ export default function Home() {
       const audioRes = await fetch("/api/audio/start", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title: lyricsData.title, lyrics: lyricsData.lyrics, singer }),
+        body: JSON.stringify({
+          title: lyricsData.title,
+          lyrics: lyricsData.lyrics,
+          singer,
+          songId: lyricsData.songId ?? null,
+        }),
       });
       const audioData = await audioRes.json();
       if (audioRes.ok && audioData.taskId) setTaskId(audioData.taskId);
@@ -726,6 +900,13 @@ export default function Home() {
                   {credits === null ? "…" : credits} credit{credits !== 1 ? "s" : ""}
                 </span>
               </div>
+              {/* My Songs library */}
+              <button
+                onClick={() => setShowSongs(true)}
+                className="text-xs font-bold text-white border border-[#00cfff]/40 bg-[#00cfff]/10 rounded-full px-4 py-1.5 hover:bg-[#00cfff]/20 transition-colors"
+              >
+                🎵 My Songs
+              </button>
               {/* Buy more credits */}
               <button
                 onClick={() => { setShowBuyCredits(true); setBuyError(""); }}
@@ -785,6 +966,9 @@ export default function Home() {
             </div>
           </div>
         )}
+
+        {/* ── My Songs modal ──────────────────────────────────────── */}
+        {showSongs && isSignedIn && <SongsModal onClose={() => setShowSongs(false)} />}
 
         {/* ── Buy credits modal ───────────────────────────────────── */}
         {showBuyCredits && isSignedIn && (

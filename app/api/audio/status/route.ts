@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { sql } from "@/lib/db";
 
 const SUNO_BASE = "https://api.sunoapi.org";
 const SUNO_KEY = process.env.SUNO_API_KEY!;
@@ -46,6 +47,18 @@ export async function GET(req: NextRequest) {
     audioUrl = track.audioUrl ?? track.streamAudioUrl ?? null;
     imageUrl = track.imageUrl ?? null;
     duration = track.duration ?? null;
+
+    // Attach the finished audio to the saved song linked to this task.
+    // Data comes from Suno (not the client), so no auth needed here.
+    if (audioUrl) {
+      await sql`
+        UPDATE songs
+        SET audio_url = ${audioUrl},
+            image_url = ${imageUrl},
+            duration = ${duration === null ? null : Math.round(duration)}
+        WHERE task_id = ${taskId} AND audio_url IS NULL
+      `;
+    }
   }
 
   return NextResponse.json({ status, done, failed, audioUrl, imageUrl, duration });

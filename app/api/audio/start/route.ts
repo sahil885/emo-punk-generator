@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
+import { auth } from "@/auth";
+import { sql } from "@/lib/db";
 
 const SUNO_BASE = "https://api.sunoapi.org";
 const SUNO_KEY = process.env.SUNO_API_KEY!;
 
 export async function POST(req: NextRequest) {
-  const { title, lyrics, singer } = await req.json();
+  const { title, lyrics, singer, songId } = await req.json();
 
   if (!lyrics) {
     return NextResponse.json({ error: "No lyrics provided" }, { status: 400 });
@@ -41,5 +43,21 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  return NextResponse.json({ taskId: data.data.taskId });
+  const taskId: string = data.data.taskId;
+
+  // Link the Suno task to the user's saved song so the audio URL can be
+  // attached once generation completes
+  if (songId) {
+    const session = await auth();
+    const userEmail = session?.user?.email;
+    if (userEmail) {
+      await sql`
+        UPDATE songs SET task_id = ${taskId}
+        WHERE id = ${songId}
+          AND "userId" = (SELECT id FROM users WHERE email = ${userEmail})
+      `;
+    }
+  }
+
+  return NextResponse.json({ taskId });
 }

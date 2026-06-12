@@ -116,6 +116,7 @@ etc.`;
 
     // ── Deduct 1 credit for authenticated users ───────────────────────
     let creditsRemaining: number | null = null;
+    let songId: string | null = null;
     if (userEmail) {
       await sql`
         UPDATE users SET credits = credits - 1
@@ -123,13 +124,23 @@ etc.`;
       `;
       const updated = await sql`SELECT credits FROM users WHERE email = ${userEmail}`;
       creditsRemaining = (updated[0] as { credits: number } | undefined)?.credits ?? 0;
+
+      // Credit-paid songs are saved to the user's library
+      const saved = await sql`
+        INSERT INTO songs ("userId", title, lyrics, singer)
+        SELECT id, ${title}, ${lyrics}, ${singer === "female" ? "female" : "male"}
+        FROM users WHERE email = ${userEmail}
+        RETURNING id
+      `;
+      songId = (saved[0] as { id: string } | undefined)?.id ?? null;
     }
 
     return NextResponse.json({
       title,
       lyrics,
       singer,
-      remaining: ipRemaining,      // null when signed in
+      songId,                       // null when anonymous (not saved)
+      remaining: ipRemaining,       // null when signed in
       creditsRemaining,             // null when anonymous
     });
   } catch (err) {
