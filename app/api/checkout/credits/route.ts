@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
       },
     ],
     mode: "payment",
-    success_url: `${origin}/?credits=ok&pack=${pack}`,
+    success_url: `${origin}/?credits_session={CHECKOUT_SESSION_ID}`,
     cancel_url: `${origin}/`,
     customer_email: session.user.email,
     metadata: {

@@ -37,21 +37,24 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Invalid metadata" }, { status: 400 });
     }
 
-    // Upsert user credits and record purchase (idempotent via stripe_session_id unique)
+    // Record purchase first; only credit if this session wasn't already fulfilled
+    // (the verify-on-return route may have beaten us to it)
     try {
-      await sql`
-        UPDATE users SET credits = credits + ${creditsToAdd}
-        WHERE email = ${userEmail}
-      `;
-
-      await sql`
+      const inserted = await sql`
         INSERT INTO purchases ("userId", stripe_session_id, pack, credits_added, amount_cents)
         SELECT id, ${session.id}, ${pack}, ${creditsToAdd}, ${session.amount_total ?? 0}
         FROM users WHERE email = ${userEmail}
         ON CONFLICT (stripe_session_id) DO NOTHING
+        RETURNING id
       `;
 
-      console.log(`✅ Added ${creditsToAdd} credits to ${userEmail}`);
+      if (inserted.length > 0) {
+        await sql`
+          UPDATE users SET credits = credits + ${creditsToAdd}
+          WHERE email = ${userEmail}
+        `;
+        console.log(`✅ Added ${creditsToAdd} credits to ${userEmail}`);
+      }
     } catch (err) {
       console.error("Failed to add credits:", err);
       return NextResponse.json({ error: "Database error" }, { status: 500 });

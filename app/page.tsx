@@ -427,7 +427,9 @@ export default function Home() {
   const [signInDone, setSignInDone] = useState(false);
   const [signInError, setSignInError] = useState("");
   const [showSignIn, setShowSignIn] = useState(false);
+  const [showBuyCredits, setShowBuyCredits] = useState(false);
   const [buyingCredits, setBuyingCredits] = useState(false);
+  const [buyError, setBuyError] = useState("");
 
   // ── Fetch credit balance when user is signed in ─────────────────────────────
   const fetchCredits = useCallback(async () => {
@@ -449,7 +451,7 @@ export default function Home() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const sessionId = params.get("session_id");
-    const creditsOk = params.get("credits");
+    const creditsSession = params.get("credits_session");
 
     // Download payment return
     if (sessionId) {
@@ -473,17 +475,21 @@ export default function Home() {
         .catch(() => {});
     }
 
-    // Credit purchase return
-    if (creditsOk === "ok") {
+    // Credit purchase return — verify with Stripe and fulfill credits
+    if (creditsSession) {
       window.history.replaceState({}, "", "/");
-      setCreditsSuccess(true);
-      setNoCredits(false);
-      setRateLimited(false);
-      // Refresh credits balance after a brief delay (webhook may need a moment)
-      setTimeout(() => {
-        fetchCredits();
-        setTimeout(() => setCreditsSuccess(false), 5000);
-      }, 1500);
+      fetch(`/api/checkout/credits/verify?session_id=${encodeURIComponent(creditsSession)}`)
+        .then((r) => r.json())
+        .then((data) => {
+          if (data.ok) {
+            setCreditsSuccess(true);
+            setNoCredits(false);
+            setRateLimited(false);
+            if (typeof data.credits === "number") setCredits(data.credits);
+            setTimeout(() => setCreditsSuccess(false), 6000);
+          }
+        })
+        .catch(() => {});
     }
   }, [fetchCredits]);
 
@@ -510,6 +516,7 @@ export default function Home() {
   // ── Buy credits ──────────────────────────────────────────────────────────────
   const handleBuyCredits = async (pack: "3pack" | "10pack") => {
     setBuyingCredits(true);
+    setBuyError("");
     try {
       const res = await fetch("/api/checkout/credits", {
         method: "POST",
@@ -517,10 +524,14 @@ export default function Home() {
         body: JSON.stringify({ pack }),
       });
       const data = await res.json();
-      if (data.url) {
+      if (res.ok && data.url) {
         window.location.href = data.url;
+        return;
       }
+      setBuyError(data.error || "Couldn't start checkout — try again.");
+      setBuyingCredits(false);
     } catch {
+      setBuyError("Couldn't start checkout — try again.");
       setBuyingCredits(false);
     }
   };
@@ -699,10 +710,10 @@ export default function Home() {
               </div>
               {/* Buy more credits */}
               <button
-                onClick={() => setNoCredits(true)}
-                className="text-xs text-white/40 hover:text-[#9b30ff] border border-white/10 hover:border-[#9b30ff]/30 rounded-full px-3 py-1.5 transition-all"
+                onClick={() => { setShowBuyCredits(true); setBuyError(""); }}
+                className="text-xs font-bold text-white bg-gradient-to-r from-[#ff2d78] to-[#9b30ff] rounded-full px-4 py-1.5 hover:opacity-90 transition-opacity"
               >
-                + Buy more
+                + Buy credits
               </button>
               {/* Sign out */}
               <button
@@ -753,6 +764,55 @@ export default function Home() {
                 </p>
               </div>
               {signInFormBlock}
+            </div>
+          </div>
+        )}
+
+        {/* ── Buy credits modal ───────────────────────────────────── */}
+        {showBuyCredits && isSignedIn && (
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center px-4"
+            onClick={() => !buyingCredits && setShowBuyCredits(false)}
+          >
+            <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
+            <div
+              className="relative w-full max-w-sm rounded-2xl border border-[#ff2d78]/40 bg-[#0f0520] p-6 shadow-2xl shadow-[#ff2d78]/20 lyrics-appear"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                onClick={() => setShowBuyCredits(false)}
+                disabled={buyingCredits}
+                className="absolute top-4 right-4 text-white/30 hover:text-white transition-colors disabled:opacity-30"
+                aria-label="Close"
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
+                </svg>
+              </button>
+              <div className="text-center mb-2">
+                <p className="text-2xl mb-2">🪙</p>
+                <h3 className="text-xl font-black text-white">Buy Credits</h3>
+                <p className="text-xs text-white/40 mt-1">
+                  1 credit = 1 song · Credits never expire
+                </p>
+              </div>
+              {buyingCredits ? (
+                <div className="flex items-center justify-center gap-2 py-8 text-white/50 text-sm">
+                  <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+                  </svg>
+                  Redirecting to checkout…
+                </div>
+              ) : (
+                <CreditPacks onBuy={handleBuyCredits} />
+              )}
+              {buyError && (
+                <p className="text-xs text-[#ff2d78] mt-3 text-center">{buyError}</p>
+              )}
+              <p className="text-center text-xs text-white/25 mt-3">
+                Secure checkout via Stripe
+              </p>
             </div>
           </div>
         )}
@@ -937,6 +997,9 @@ export default function Home() {
                     </div>
                   ) : (
                     <CreditPacks onBuy={handleBuyCredits} />
+                  )}
+                  {buyError && (
+                    <p className="text-xs text-[#ff2d78] mt-3 text-center">{buyError}</p>
                   )}
                   <p className="text-center text-xs text-white/25 mt-3">
                     Secure checkout via Stripe · Credits never expire
