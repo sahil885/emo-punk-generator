@@ -425,6 +425,8 @@ export default function Home() {
   const [signInEmail, setSignInEmail] = useState("");
   const [signingIn, setSigningIn] = useState(false);
   const [signInDone, setSignInDone] = useState(false);
+  const [signInError, setSignInError] = useState("");
+  const [showSignIn, setShowSignIn] = useState(false);
   const [buyingCredits, setBuyingCredits] = useState(false);
 
   // ── Fetch credit balance when user is signed in ─────────────────────────────
@@ -490,11 +492,16 @@ export default function Home() {
     e.preventDefault();
     if (!signInEmail.trim()) return;
     setSigningIn(true);
+    setSignInError("");
     try {
-      await signIn("resend", { email: signInEmail, redirect: false });
-      setSignInDone(true);
+      const res = await signIn("resend", { email: signInEmail, redirect: false });
+      if (res?.error) {
+        setSignInError("Couldn't send the magic link — check the email address and try again.");
+      } else {
+        setSignInDone(true);
+      }
     } catch {
-      /* silent */
+      setSignInError("Something went wrong — try again.");
     } finally {
       setSigningIn(false);
     }
@@ -594,6 +601,48 @@ export default function Home() {
   const isBlocked = rateLimited || noCredits;
   const isSignedIn = authStatus === "authenticated";
 
+  const signInFormBlock = !signInDone ? (
+    <>
+      <form onSubmit={handleSignIn} className="flex gap-2">
+        <input
+          type="email"
+          value={signInEmail}
+          onChange={(e) => setSignInEmail(e.target.value)}
+          placeholder="your@email.com"
+          required
+          autoFocus
+          className="flex-1 min-w-0 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/25 px-3 py-2.5 text-sm focus:outline-none focus:border-[#9b30ff]/60 transition-all"
+        />
+        <button
+          type="submit"
+          disabled={signingIn || !signInEmail.trim()}
+          className="rounded-xl px-4 py-2.5 text-sm font-bold text-white bg-gradient-to-r from-[#ff2d78] to-[#9b30ff] hover:opacity-90 disabled:opacity-50 transition-opacity whitespace-nowrap"
+        >
+          {signingIn ? "Sending…" : "Send Magic Link"}
+        </button>
+      </form>
+      {signInError && (
+        <p className="text-xs text-[#ff2d78] mt-2 text-center">{signInError}</p>
+      )}
+      <p className="text-xs text-white/30 mt-3 text-center">
+        No password needed — we&apos;ll email you a sign-in link.
+      </p>
+    </>
+  ) : (
+    <div className="text-center rounded-xl bg-[#9b30ff]/15 border border-[#9b30ff]/30 py-4 px-4">
+      <p className="text-white font-bold text-sm">📬 Check your inbox!</p>
+      <p className="text-xs text-white/50 mt-1">
+        We sent a magic link to <span className="text-white/70">{signInEmail}</span>. Click it to sign in.
+      </p>
+      <button
+        onClick={() => { setSignInDone(false); setSignInError(""); }}
+        className="text-xs text-[#9b30ff] hover:text-[#b86aff] mt-2 underline underline-offset-2"
+      >
+        Use a different email
+      </button>
+    </div>
+  );
+
   return (
     <main className="min-h-screen relative overflow-hidden">
       {/* Background blobs */}
@@ -664,9 +713,49 @@ export default function Home() {
               </button>
             </div>
           ) : (
-            <p className="text-xs text-white/25 italic">Sign in to use credits</p>
+            <button
+              onClick={() => { setShowSignIn(true); setSignInError(""); }}
+              className="flex items-center gap-2 text-sm font-bold text-white bg-gradient-to-r from-[#ff2d78] to-[#9b30ff] rounded-full px-5 py-2 hover:opacity-90 hover:scale-105 transition-all shadow-lg shadow-[#9b30ff]/30"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+              </svg>
+              Sign In
+            </button>
           )}
         </div>
+
+        {/* ── Sign-in modal ───────────────────────────────────────── */}
+        {showSignIn && !isSignedIn && (
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center px-4"
+            onClick={() => setShowSignIn(false)}
+          >
+            <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
+            <div
+              className="relative w-full max-w-sm rounded-2xl border border-[#9b30ff]/40 bg-[#0f0520] p-6 shadow-2xl shadow-[#9b30ff]/20 lyrics-appear"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                onClick={() => setShowSignIn(false)}
+                className="absolute top-4 right-4 text-white/30 hover:text-white transition-colors"
+                aria-label="Close"
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
+                </svg>
+              </button>
+              <div className="text-center mb-5">
+                <p className="text-2xl mb-2">🎸</p>
+                <h3 className="text-xl font-black text-white">Sign In</h3>
+                <p className="text-xs text-white/40 mt-1">
+                  Buy credit packs &amp; keep making songs
+                </p>
+              </div>
+              {signInFormBlock}
+            </div>
+          </div>
+        )}
 
         {/* ── Header ──────────────────────────────────────────────── */}
         <div className="text-center mb-12">
@@ -832,35 +921,8 @@ export default function Home() {
                 </div>
               )}
 
-              {/* Show sign-in form if not signed in */}
-              {!isSignedIn && !signInDone && (
-                <form onSubmit={handleSignIn} className="flex gap-2">
-                  <input
-                    type="email"
-                    value={signInEmail}
-                    onChange={(e) => setSignInEmail(e.target.value)}
-                    placeholder="your@email.com"
-                    required
-                    className="flex-1 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/25 px-3 py-2.5 text-sm focus:outline-none focus:border-[#9b30ff]/60 transition-all"
-                  />
-                  <button
-                    type="submit"
-                    disabled={signingIn || !signInEmail.trim()}
-                    className="rounded-xl px-4 py-2.5 text-sm font-bold text-white bg-[#9b30ff] hover:bg-[#8020ee] disabled:opacity-50 transition-colors whitespace-nowrap"
-                  >
-                    {signingIn ? "Sending…" : "Sign In →"}
-                  </button>
-                </form>
-              )}
-
-              {!isSignedIn && signInDone && (
-                <div className="text-center rounded-xl bg-[#9b30ff]/15 border border-[#9b30ff]/30 py-3 px-4">
-                  <p className="text-white font-bold text-sm">📬 Check your inbox!</p>
-                  <p className="text-xs text-white/50 mt-1">
-                    We sent a magic link to <span className="text-white/70">{signInEmail}</span>. Click it to sign in.
-                  </p>
-                </div>
-              )}
+              {/* Sign-in form (shared block) */}
+              {!isSignedIn && signInFormBlock}
 
               {/* Show credit packs once signed in */}
               {isSignedIn && (

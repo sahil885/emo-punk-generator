@@ -48,7 +48,9 @@ export async function POST(req: NextRequest) {
 
   // ── Parse body ────────────────────────────────────────────────────
   const { words, singer } = await req.json();
-  const apiKey = process.env.ANTHROPIC_API_KEY;
+  // CLAUDE_API_KEY fallback: the system shell exports an empty ANTHROPIC_API_KEY
+  // that shadows the .env.local value
+  const apiKey = process.env.ANTHROPIC_API_KEY || process.env.CLAUDE_API_KEY;
 
   if (!words || words.trim().length === 0) {
     return NextResponse.json({ error: "No words provided" }, { status: 400 });
