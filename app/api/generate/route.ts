@@ -1,29 +1,52 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { NextRequest, NextResponse } from "next/server";
 import { checkRateLimit } from "@/lib/rateLimit";
+import { auth } from "@/auth";
+import { sql } from "@/lib/db";
 
 export async function POST(req: NextRequest) {
-  // --- Rate limit: 3 songs per IP per 24 h ---
-  const ip =
-    req.headers.get("x-forwarded-for")?.split(",")[0].trim() ??
-    req.headers.get("x-real-ip") ??
-    "unknown";
+  // --- Determine auth state ---
+  const session = await auth();
+  const userEmail = session?.user?.email ?? null;
 
-  const { allowed, remaining, resetAt } = checkRateLimit(ip);
+  // remaining: set during gate checks below, used in the response
+  let ipRemaining: number | null = null;
 
-  if (!allowed) {
-    const resetsIn = Math.ceil((resetAt - Date.now()) / 1000 / 60 / 60);
-    return NextResponse.json(
-      {
-        error: `You've used all 3 free songs today. Come back in ~${resetsIn}h 🎸`,
-        rateLimited: true,
-        resetAt,
-      },
-      { status: 429 }
-    );
+  if (userEmail) {
+    // ── Authenticated: check credits ─────────────────────────────────
+    const rows = await sql`SELECT credits FROM users WHERE email = ${userEmail}`;
+    const credits: number = (rows[0] as { credits: number } | undefined)?.credits ?? 0;
+
+    if (credits <= 0) {
+      return NextResponse.json(
+        { error: "No credits left. Buy a credit pack to keep making songs! 🎸", noCredits: true },
+        { status: 402 }
+      );
+    }
+  } else {
+    // ── Anonymous: IP rate limit (3 / 24 h) ──────────────────────────
+    const ip =
+      req.headers.get("x-forwarded-for")?.split(",")[0].trim() ??
+      req.headers.get("x-real-ip") ??
+      "unknown";
+
+    const { allowed, remaining, resetAt } = checkRateLimit(ip);
+    ipRemaining = remaining;
+
+    if (!allowed) {
+      const resetsIn = Math.ceil((resetAt - Date.now()) / 1000 / 60 / 60);
+      return NextResponse.json(
+        {
+          error: `You've used all 3 free songs today. Come back in ~${resetsIn}h 🎸`,
+          rateLimited: true,
+          resetAt,
+        },
+        { status: 429 }
+      );
+    }
   }
-  // ------------------------------------------
 
+  // ── Parse body ────────────────────────────────────────────────────
   const { words, singer } = await req.json();
   const apiKey = process.env.ANTHROPIC_API_KEY;
 
@@ -89,7 +112,24 @@ etc.`;
     const title = titleMatch ? titleMatch[1] : "Untitled";
     const lyrics = text.replace(/TITLE:\s*"[^"]+"\n?/, "").trim();
 
-    return NextResponse.json({ title, lyrics, singer, remaining });
+    // ── Deduct 1 credit for authenticated users ───────────────────────
+    let creditsRemaining: number | null = null;
+    if (userEmail) {
+      await sql`
+        UPDATE users SET credits = credits - 1
+        WHERE email = ${userEmail} AND credits > 0
+      `;
+      const updated = await sql`SELECT credits FROM users WHERE email = ${userEmail}`;
+      creditsRemaining = (updated[0] as { credits: number } | undefined)?.credits ?? 0;
+    }
+
+    return NextResponse.json({
+      title,
+      lyrics,
+      singer,
+      remaining: ipRemaining,      // null when signed in
+      creditsRemaining,             // null when anonymous
+    });
   } catch (err) {
     console.error(err);
     return NextResponse.json({ error: "Failed to generate song" }, { status: 500 });

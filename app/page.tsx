@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
+import { useSession, signIn, signOut } from "next-auth/react";
 
 type Singer = "male" | "female";
 
@@ -13,6 +14,7 @@ interface SongResult {
 type AudioStatus = "idle" | "loading" | "ready" | "error";
 type CheckoutStatus = "idle" | "redirecting" | "success" | "error";
 
+// ─── EQ Visualizer ──────────────────────────────────────────────────────────
 function EqVisualizer({ playing }: { playing: boolean }) {
   return (
     <div className="flex items-end gap-[3px] h-8">
@@ -29,6 +31,7 @@ function EqVisualizer({ playing }: { playing: boolean }) {
   );
 }
 
+// ─── Audio Player ────────────────────────────────────────────────────────────
 function AudioPlayer({
   title,
   singer,
@@ -209,10 +212,7 @@ function AudioPlayer({
 
       {/* Progress bar */}
       <div className="mb-3">
-        <div
-          className="h-1.5 bg-white/10 rounded-full overflow-hidden cursor-pointer"
-          onClick={seek}
-        >
+        <div className="h-1.5 bg-white/10 rounded-full overflow-hidden cursor-pointer" onClick={seek}>
           <div
             className="h-full bg-gradient-to-r from-[#ff2d78] to-[#9b30ff] progress-bar-fill rounded-full"
             style={{ width: `${progress}%` }}
@@ -287,16 +287,14 @@ function AudioPlayer({
         </p>
       )}
 
-      {/* $1 Download paywall */}
+      {/* Download paywall */}
       {audioStatus === "ready" && (
         <div className="mt-5 pt-4 border-t border-white/8">
           <button
             onClick={handleDownloadPaywall}
             disabled={checkoutStatus === "redirecting"}
             className="w-full relative rounded-xl py-3 font-bold text-sm tracking-wide transition-all duration-200 overflow-hidden group disabled:opacity-60 disabled:cursor-not-allowed"
-            style={{
-              background: "linear-gradient(135deg, #f59e0b 0%, #ef4444 100%)",
-            }}
+            style={{ background: "linear-gradient(135deg, #f59e0b 0%, #ef4444 100%)" }}
           >
             <div className="absolute inset-0 bg-white/0 group-hover:bg-white/10 transition-colors" />
             <span className="relative flex items-center justify-center gap-2 text-white">
@@ -330,6 +328,7 @@ function AudioPlayer({
   );
 }
 
+// ─── Lyrics Display ──────────────────────────────────────────────────────────
 function LyricsDisplay({ lyrics }: { lyrics: string }) {
   const sections = lyrics.split(/(\[.+?\])/).filter(Boolean);
   return (
@@ -354,6 +353,47 @@ function LyricsDisplay({ lyrics }: { lyrics: string }) {
   );
 }
 
+// ─── Credit Packs ────────────────────────────────────────────────────────────
+function CreditPacks({ onBuy }: { onBuy: (pack: "3pack" | "10pack") => void }) {
+  return (
+    <div className="grid grid-cols-2 gap-3 mt-4">
+      {/* 3-pack */}
+      <button
+        onClick={() => onBuy("3pack")}
+        className="relative rounded-xl p-4 border-2 border-[#9b30ff]/50 bg-[#9b30ff]/10 hover:border-[#9b30ff] hover:bg-[#9b30ff]/20 text-left transition-all group overflow-hidden"
+      >
+        <div className="absolute inset-0 bg-gradient-to-br from-[#9b30ff]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+        <div className="relative">
+          <div className="text-3xl font-black text-white">3</div>
+          <div className="text-xs text-white/60 font-semibold uppercase tracking-wider">Songs</div>
+          <div className="mt-3 text-xl font-black text-[#9b30ff]">$7.49</div>
+          <div className="text-xs text-white/40 mt-0.5">~$2.50 / song</div>
+        </div>
+      </button>
+
+      {/* 10-pack */}
+      <button
+        onClick={() => onBuy("10pack")}
+        className="relative rounded-xl p-4 border-2 border-[#ff2d78]/50 bg-[#ff2d78]/10 hover:border-[#ff2d78] hover:bg-[#ff2d78]/20 text-left transition-all group overflow-hidden"
+      >
+        <div className="absolute inset-0 bg-gradient-to-br from-[#ff2d78]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+        <div className="absolute -top-1 -right-1">
+          <span className="bg-[#ff2d78] text-white text-[10px] font-black px-2 py-0.5 rounded-bl-lg rounded-tr-xl uppercase tracking-wide">
+            Best Value
+          </span>
+        </div>
+        <div className="relative">
+          <div className="text-3xl font-black text-white">10</div>
+          <div className="text-xs text-white/60 font-semibold uppercase tracking-wider">Songs</div>
+          <div className="mt-3 text-xl font-black text-[#ff2d78]">$19.99</div>
+          <div className="text-xs text-white/40 mt-0.5">~$2.00 / song</div>
+        </div>
+      </button>
+    </div>
+  );
+}
+
+// ─── Main examples ────────────────────────────────────────────────────────────
 const EXAMPLES = [
   "I missed your call at 3am",
   "skipping school in november rain",
@@ -361,7 +401,10 @@ const EXAMPLES = [
   "the last text you never read",
 ];
 
+// ─── Home Page ────────────────────────────────────────────────────────────────
 export default function Home() {
+  const { data: session, status: authStatus } = useSession();
+
   const [words, setWords] = useState("");
   const [singer, setSinger] = useState<Singer>("male");
   const [loading, setLoading] = useState(false);
@@ -369,51 +412,119 @@ export default function Home() {
   const [taskId, setTaskId] = useState<string | null>(null);
   const [error, setError] = useState("");
   const [rateLimited, setRateLimited] = useState(false);
+  const [noCredits, setNoCredits] = useState(false);
   const [resetAt, setResetAt] = useState<number | null>(null);
   const [remaining, setRemaining] = useState<number | null>(null);
+  const [credits, setCredits] = useState<number | null>(null);
   const [copied, setCopied] = useState(false);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
+  const [creditsSuccess, setCreditsSuccess] = useState(false);
 
-  // Handle return from Stripe checkout
+  // Sign-in form state
+  const [signInEmail, setSignInEmail] = useState("");
+  const [signingIn, setSigningIn] = useState(false);
+  const [signInDone, setSignInDone] = useState(false);
+  const [buyingCredits, setBuyingCredits] = useState(false);
+
+  // ── Fetch credit balance when user is signed in ─────────────────────────────
+  const fetchCredits = useCallback(async () => {
+    if (authStatus !== "authenticated") return;
+    try {
+      const res = await fetch("/api/credits");
+      const data = await res.json();
+      if (typeof data.credits === "number") setCredits(data.credits);
+    } catch {
+      /* silent */
+    }
+  }, [authStatus]);
+
+  useEffect(() => {
+    fetchCredits();
+  }, [fetchCredits]);
+
+  // ── Handle Stripe return URLs ────────────────────────────────────────────────
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const sessionId = params.get("session_id");
-    if (!sessionId) return;
+    const creditsOk = params.get("credits");
 
-    // Clean the URL immediately
-    window.history.replaceState({}, "", "/");
+    // Download payment return
+    if (sessionId) {
+      window.history.replaceState({}, "", "/");
+      fetch(`/api/checkout/verify?session_id=${sessionId}`)
+        .then((r) => r.json())
+        .then((data) => {
+          if (data.audioUrl) {
+            setPaymentSuccess(true);
+            const proxyUrl = `/api/download?url=${encodeURIComponent(data.audioUrl)}&title=${encodeURIComponent(data.songTitle ?? "emo-punk-song")}`;
+            setDownloadUrl(proxyUrl);
+            const a = document.createElement("a");
+            a.href = proxyUrl;
+            a.download = `${data.songTitle ?? "emo-punk-song"}.mp3`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            setTimeout(() => setPaymentSuccess(false), 6000);
+          }
+        })
+        .catch(() => {});
+    }
 
-    fetch(`/api/checkout/verify?session_id=${sessionId}`)
-      .then((r) => r.json())
-      .then((data) => {
-        if (data.audioUrl) {
-          setPaymentSuccess(true);
+    // Credit purchase return
+    if (creditsOk === "ok") {
+      window.history.replaceState({}, "", "/");
+      setCreditsSuccess(true);
+      setNoCredits(false);
+      setRateLimited(false);
+      // Refresh credits balance after a brief delay (webhook may need a moment)
+      setTimeout(() => {
+        fetchCredits();
+        setTimeout(() => setCreditsSuccess(false), 5000);
+      }, 1500);
+    }
+  }, [fetchCredits]);
 
-          // Build a proxied URL so the browser gets the right filename
-          const proxyUrl = `/api/download?url=${encodeURIComponent(data.audioUrl)}&title=${encodeURIComponent(data.songTitle ?? "emo-punk-song")}`;
-          setDownloadUrl(proxyUrl);
+  // ── Sign-in handler ──────────────────────────────────────────────────────────
+  const handleSignIn = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!signInEmail.trim()) return;
+    setSigningIn(true);
+    try {
+      await signIn("resend", { email: signInEmail, redirect: false });
+      setSignInDone(true);
+    } catch {
+      /* silent */
+    } finally {
+      setSigningIn(false);
+    }
+  };
 
-          // Auto-trigger download
-          const a = document.createElement("a");
-          a.href = proxyUrl;
-          a.download = `${data.songTitle ?? "emo-punk-song"}.mp3`;
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
+  // ── Buy credits ──────────────────────────────────────────────────────────────
+  const handleBuyCredits = async (pack: "3pack" | "10pack") => {
+    setBuyingCredits(true);
+    try {
+      const res = await fetch("/api/checkout/credits", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ pack }),
+      });
+      const data = await res.json();
+      if (data.url) {
+        window.location.href = data.url;
+      }
+    } catch {
+      setBuyingCredits(false);
+    }
+  };
 
-          // Hide banner after 6 seconds
-          setTimeout(() => setPaymentSuccess(false), 6000);
-        }
-      })
-      .catch(() => {/* silently fail */});
-  }, []);
-
+  // ── Generate song ────────────────────────────────────────────────────────────
   const generate = async () => {
     if (!words.trim()) return;
     setLoading(true);
     setError("");
     setRateLimited(false);
+    setNoCredits(false);
     setResult(null);
     setTaskId(null);
 
@@ -432,10 +543,19 @@ export default function Home() {
         return;
       }
 
+      if (lyricsRes.status === 402) {
+        setNoCredits(true);
+        setLoading(false);
+        return;
+      }
+
       if (!lyricsRes.ok) throw new Error(lyricsData.error || "Lyrics generation failed");
 
       setResult(lyricsData);
       if (typeof lyricsData.remaining === "number") setRemaining(lyricsData.remaining);
+      if (typeof lyricsData.creditsRemaining === "number") {
+        setCredits(lyricsData.creditsRemaining);
+      }
       setLoading(false);
 
       const audioRes = await fetch("/api/audio/start", {
@@ -464,11 +584,15 @@ export default function Home() {
     setWords("");
     setError("");
     setRateLimited(false);
+    setNoCredits(false);
   };
 
   const hoursUntilReset = resetAt
     ? Math.ceil((resetAt - Date.now()) / 1000 / 60 / 60)
     : null;
+
+  const isBlocked = rateLimited || noCredits;
+  const isSignedIn = authStatus === "authenticated";
 
   return (
     <main className="min-h-screen relative overflow-hidden">
@@ -493,19 +617,58 @@ export default function Home() {
             <p className="text-xs text-white/60">Your download has started automatically.</p>
           </div>
           {downloadUrl && (
-            <a
-              href={downloadUrl}
-              download
-              className="ml-2 text-xs text-green-400 hover:text-green-300 underline underline-offset-2"
-            >
+            <a href={downloadUrl} download className="ml-2 text-xs text-green-400 hover:text-green-300 underline underline-offset-2">
               Download again
             </a>
           )}
         </div>
       )}
 
+      {/* Credits success banner */}
+      {creditsSuccess && (
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 rounded-2xl border border-[#9b30ff]/40 bg-[#9b30ff]/15 backdrop-blur px-5 py-3 shadow-xl lyrics-appear">
+          <span className="text-xl">🎸</span>
+          <div>
+            <p className="font-bold text-white text-sm">Credits added!</p>
+            <p className="text-xs text-white/60">Go make some noise.</p>
+          </div>
+        </div>
+      )}
+
       <div className="relative z-10 max-w-2xl mx-auto px-4 py-12">
-        {/* Header */}
+
+        {/* ── Auth bar ─────────────────────────────────────────────── */}
+        <div className="flex justify-end mb-6 min-h-[32px]">
+          {authStatus === "loading" ? null : isSignedIn ? (
+            <div className="flex items-center gap-3">
+              {/* Credit balance chip */}
+              <div className="flex items-center gap-1.5 text-xs border border-[#9b30ff]/40 rounded-full px-3 py-1.5 bg-[#9b30ff]/10">
+                <span className="text-[#9b30ff]">⚡</span>
+                <span className="text-white font-semibold">
+                  {credits === null ? "…" : credits} credit{credits !== 1 ? "s" : ""}
+                </span>
+              </div>
+              {/* Buy more credits */}
+              <button
+                onClick={() => setNoCredits(true)}
+                className="text-xs text-white/40 hover:text-[#9b30ff] border border-white/10 hover:border-[#9b30ff]/30 rounded-full px-3 py-1.5 transition-all"
+              >
+                + Buy more
+              </button>
+              {/* Sign out */}
+              <button
+                onClick={() => signOut()}
+                className="text-xs text-white/30 hover:text-white/60 transition-colors"
+              >
+                Sign out
+              </button>
+            </div>
+          ) : (
+            <p className="text-xs text-white/25 italic">Sign in to use credits</p>
+          )}
+        </div>
+
+        {/* ── Header ──────────────────────────────────────────────── */}
         <div className="text-center mb-12">
           <div className="inline-flex items-center gap-2 text-xs font-bold tracking-widest text-[#ff2d78] uppercase mb-4 border border-[#ff2d78]/30 rounded-full px-4 py-1.5">
             <span>⚡</span> AI Song Generator
@@ -520,7 +683,7 @@ export default function Home() {
           </p>
         </div>
 
-        {/* Main card */}
+        {/* ── Main card ─────────────────────────────────────────────── */}
         <div className="rounded-2xl border border-white/10 bg-white/3 backdrop-blur-sm p-6 sm:p-8 shadow-2xl">
           {/* Singer selector */}
           <div className="mb-6">
@@ -590,28 +753,36 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Daily limit counter */}
-          {remaining !== null && !rateLimited && (
-            <div className="flex justify-end mb-2">
-              <span className="text-xs text-white/30 border border-white/10 rounded-full px-3 py-1">
-                {remaining} song{remaining !== 1 ? "s" : ""} left today
-              </span>
-            </div>
-          )}
+          {/* Counter — show credits if signed in, IP limit otherwise */}
+          {isSignedIn
+            ? credits !== null && !isBlocked && (
+                <div className="flex justify-end mb-2">
+                  <span className="text-xs text-white/30 border border-white/10 rounded-full px-3 py-1">
+                    {credits} credit{credits !== 1 ? "s" : ""} remaining
+                  </span>
+                </div>
+              )
+            : remaining !== null && !rateLimited && (
+                <div className="flex justify-end mb-2">
+                  <span className="text-xs text-white/30 border border-white/10 rounded-full px-3 py-1">
+                    {remaining} free song{remaining !== 1 ? "s" : ""} left today
+                  </span>
+                </div>
+              )}
 
           {/* Generate button */}
           <button
             onClick={generate}
-            disabled={loading || !words.trim() || rateLimited}
+            disabled={loading || !words.trim() || isBlocked}
             className="w-full relative rounded-xl py-4 font-black text-lg tracking-wide uppercase transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed overflow-hidden group"
             style={{
               background:
-                loading || !words.trim() || rateLimited
+                loading || !words.trim() || isBlocked
                   ? "rgba(155, 48, 255, 0.3)"
                   : "linear-gradient(135deg, #ff2d78 0%, #9b30ff 50%, #00cfff 100%)",
             }}
           >
-            {!loading && !rateLimited && (
+            {!loading && !isBlocked && (
               <div className="absolute inset-0 bg-white/0 group-hover:bg-white/10 transition-colors" />
             )}
             <span className="relative text-white">
@@ -623,24 +794,93 @@ export default function Home() {
                   </svg>
                   Writing your song...
                 </span>
-              ) : rateLimited ? (
-                "🚫 Daily limit reached"
+              ) : isBlocked ? (
+                noCredits ? "🪙 No credits left" : "🚫 Daily limit reached"
               ) : (
                 "⚡ Generate Song"
               )}
             </span>
           </button>
 
-          {/* Rate limit banner */}
-          {rateLimited && (
-            <div className="mt-4 rounded-xl border border-[#ff2d78]/30 bg-[#ff2d78]/8 px-4 py-4 text-center">
-              <p className="text-2xl mb-1">🎸</p>
-              <p className="font-bold text-white text-sm">You&apos;ve used all 3 songs for today</p>
-              <p className="text-xs text-white/50 mt-1">
-                {hoursUntilReset !== null
-                  ? `Resets in ~${hoursUntilReset} hour${hoursUntilReset !== 1 ? "s" : ""}`
-                  : "Come back tomorrow"}
-              </p>
+          {/* ── Rate limit / no-credits banner ──────────────────────────── */}
+          {(rateLimited || noCredits) && (
+            <div className="mt-4 rounded-xl border border-[#9b30ff]/30 bg-[#0f0520]/60 px-5 py-5">
+              {rateLimited && !isSignedIn && (
+                <>
+                  <div className="text-center mb-4">
+                    <p className="text-2xl mb-1">🎸</p>
+                    <p className="font-bold text-white text-sm">You&apos;ve used all 3 free songs today</p>
+                    {hoursUntilReset !== null && (
+                      <p className="text-xs text-white/40 mt-1">
+                        Free limit resets in ~{hoursUntilReset} hour{hoursUntilReset !== 1 ? "s" : ""}
+                      </p>
+                    )}
+                  </div>
+                  <div className="border-t border-white/10 pt-4">
+                    <p className="text-xs text-white/50 text-center mb-3">
+                      Want more songs now? Sign in to buy a credit pack.
+                    </p>
+                  </div>
+                </>
+              )}
+
+              {noCredits && isSignedIn && (
+                <div className="text-center mb-4">
+                  <p className="text-2xl mb-1">🪙</p>
+                  <p className="font-bold text-white text-sm">You&apos;re out of credits</p>
+                  <p className="text-xs text-white/40 mt-1">Top up to keep making songs</p>
+                </div>
+              )}
+
+              {/* Show sign-in form if not signed in */}
+              {!isSignedIn && !signInDone && (
+                <form onSubmit={handleSignIn} className="flex gap-2">
+                  <input
+                    type="email"
+                    value={signInEmail}
+                    onChange={(e) => setSignInEmail(e.target.value)}
+                    placeholder="your@email.com"
+                    required
+                    className="flex-1 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/25 px-3 py-2.5 text-sm focus:outline-none focus:border-[#9b30ff]/60 transition-all"
+                  />
+                  <button
+                    type="submit"
+                    disabled={signingIn || !signInEmail.trim()}
+                    className="rounded-xl px-4 py-2.5 text-sm font-bold text-white bg-[#9b30ff] hover:bg-[#8020ee] disabled:opacity-50 transition-colors whitespace-nowrap"
+                  >
+                    {signingIn ? "Sending…" : "Sign In →"}
+                  </button>
+                </form>
+              )}
+
+              {!isSignedIn && signInDone && (
+                <div className="text-center rounded-xl bg-[#9b30ff]/15 border border-[#9b30ff]/30 py-3 px-4">
+                  <p className="text-white font-bold text-sm">📬 Check your inbox!</p>
+                  <p className="text-xs text-white/50 mt-1">
+                    We sent a magic link to <span className="text-white/70">{signInEmail}</span>. Click it to sign in.
+                  </p>
+                </div>
+              )}
+
+              {/* Show credit packs once signed in */}
+              {isSignedIn && (
+                <>
+                  {buyingCredits ? (
+                    <div className="flex items-center justify-center gap-2 py-4 text-white/50 text-sm">
+                      <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+                      </svg>
+                      Redirecting to checkout…
+                    </div>
+                  ) : (
+                    <CreditPacks onBuy={handleBuyCredits} />
+                  )}
+                  <p className="text-center text-xs text-white/25 mt-3">
+                    Secure checkout via Stripe · Credits never expire
+                  </p>
+                </>
+              )}
             </div>
           )}
 
@@ -651,7 +891,7 @@ export default function Home() {
           )}
         </div>
 
-        {/* Result */}
+        {/* ── Song result ─────────────────────────────────────────────── */}
         {result && (
           <div className="mt-6 rounded-2xl border border-white/10 bg-white/3 backdrop-blur-sm overflow-hidden lyrics-appear">
             <div className="px-6 pt-6 pb-4 border-b border-white/8">
