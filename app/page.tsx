@@ -36,10 +36,12 @@ function AudioPlayer({
   title,
   singer,
   taskId,
+  saved,
 }: {
   title: string;
   singer: Singer;
   taskId: string | null;
+  saved: boolean; // song is in the user's library → downloads are free
 }) {
   const audioRef = useRef<HTMLAudioElement>(null);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -287,8 +289,25 @@ function AudioPlayer({
         </p>
       )}
 
-      {/* Download paywall */}
-      {audioStatus === "ready" && (
+      {/* Download — free for saved (paid) songs, $2.99 paywall otherwise */}
+      {audioStatus === "ready" && saved && audioUrl && (
+        <div className="mt-5 pt-4 border-t border-white/8">
+          <a
+            href={`/api/download?url=${encodeURIComponent(audioUrl)}&title=${encodeURIComponent(title)}`}
+            download={`${title}.mp3`}
+            className="w-full relative rounded-xl py-3 font-bold text-sm tracking-wide transition-all duration-200 overflow-hidden group flex items-center justify-center gap-2 text-white bg-gradient-to-r from-[#ff2d78] to-[#9b30ff] hover:opacity-90"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" />
+            </svg>
+            Download MP3
+          </a>
+          <p className="text-center text-xs text-white/25 mt-2">
+            Saved to your account — download anytime from My Songs
+          </p>
+        </div>
+      )}
+      {audioStatus === "ready" && !saved && (
         <div className="mt-5 pt-4 border-t border-white/8">
           <button
             onClick={handleDownloadPaywall}
@@ -320,7 +339,7 @@ function AudioPlayer({
             </span>
           </button>
           <p className="text-center text-xs text-white/25 mt-2">
-            Secure checkout via Stripe · Instant download after payment
+            Secure checkout via Stripe · Instant download · Saved to your account
           </p>
         </div>
       )}
@@ -572,6 +591,7 @@ interface StoredSong {
   singer: Singer;
   taskId: string | null;
   songId: string | null; // set once saved to an account
+  paidSessionId: string | null; // Stripe session of the $2.99 download purchase
   savedAt: number;
 }
 
@@ -637,6 +657,7 @@ export default function Home() {
   const [buyError, setBuyError] = useState("");
   const [showSongs, setShowSongs] = useState(false);
   const [songClaimed, setSongClaimed] = useState(false);
+  const [songId, setSongId] = useState<string | null>(null);
   const claimAttemptedRef = useRef(false);
 
   // ── Fetch credit balance when user is signed in ─────────────────────────────
@@ -661,14 +682,17 @@ export default function Home() {
     if (!stored) return;
     setResult({ title: stored.title, lyrics: stored.lyrics, singer: stored.singer });
     setSinger(stored.singer);
+    setSongId(stored.songId);
     if (stored.taskId) setTaskId(stored.taskId);
   }, []);
 
-  // ── Claim a song generated before sign-in into the user's account ───────────
-  useEffect(() => {
+  // ── Claim a purchased song into the user's account ───────────────────────────
+  // Only songs with a verified $2.99 purchase can be claimed; credit-generated
+  // songs are saved at generation time and never reach this path.
+  const claimStoredSong = useCallback(() => {
     if (authStatus !== "authenticated" || claimAttemptedRef.current) return;
     const stored = readStoredSong();
-    if (!stored || stored.songId) return;
+    if (!stored || stored.songId || !stored.paidSessionId || !stored.taskId) return;
     claimAttemptedRef.current = true;
 
     fetch("/api/songs/claim", {
@@ -679,12 +703,14 @@ export default function Home() {
         lyrics: stored.lyrics,
         singer: stored.singer,
         taskId: stored.taskId,
+        sessionId: stored.paidSessionId,
       }),
     })
       .then((r) => (r.ok ? r.json() : Promise.reject()))
       .then((data) => {
         if (data.songId) {
           writeStoredSong({ ...stored, songId: data.songId });
+          setSongId(data.songId);
           if (data.claimed) {
             setSongClaimed(true);
             setTimeout(() => setSongClaimed(false), 6000);
@@ -695,6 +721,10 @@ export default function Home() {
         claimAttemptedRef.current = false; // retry on next auth change
       });
   }, [authStatus]);
+
+  useEffect(() => {
+    claimStoredSong();
+  }, [claimStoredSong]);
 
   // ── Handle Stripe return URLs ────────────────────────────────────────────────
   useEffect(() => {
@@ -719,6 +749,15 @@ export default function Home() {
             a.click();
             document.body.removeChild(a);
             setTimeout(() => setPaymentSuccess(false), 6000);
+
+            // Mark the stored song as purchased so it can be claimed
+            // into the user's account (now, or when they later sign in)
+            const stored = readStoredSong();
+            if (stored && stored.taskId && stored.taskId === data.taskId) {
+              writeStoredSong({ ...stored, paidSessionId: sessionId });
+              claimAttemptedRef.current = false;
+              claimStoredSong();
+            }
           }
         })
         .catch(() => {});
@@ -740,7 +779,7 @@ export default function Home() {
         })
         .catch(() => {});
     }
-  }, [fetchCredits]);
+  }, [fetchCredits, claimStoredSong]);
 
   // ── Sign-in handler ──────────────────────────────────────────────────────────
   const handleSignIn = async (e: React.FormEvent) => {
@@ -831,10 +870,12 @@ export default function Home() {
         singer,
         taskId: null,
         songId: lyricsData.songId ?? null,
+        paidSessionId: null,
         savedAt: Date.now(),
       };
       writeStoredSong(storedSong);
-      claimAttemptedRef.current = false; // new song, claimable after sign-in
+      setSongId(lyricsData.songId ?? null);
+      claimAttemptedRef.current = false; // new song, claimable after purchase
 
       const audioRes = await fetch("/api/audio/start", {
         method: "POST",
@@ -867,6 +908,7 @@ export default function Home() {
   const reset = () => {
     setResult(null);
     setTaskId(null);
+    setSongId(null);
     setWords("");
     setError("");
     setRateLimited(false);
@@ -1357,7 +1399,7 @@ export default function Home() {
                 </button>
               </div>
 
-              <AudioPlayer title={result.title} singer={result.singer} taskId={taskId} />
+              <AudioPlayer title={result.title} singer={result.singer} taskId={taskId} saved={!!songId} />
             </div>
 
             <div className="px-6 py-6">

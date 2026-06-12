@@ -1,9 +1,14 @@
+import Stripe from "stripe";
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { sql } from "@/lib/db";
 import { getFinishedSunoTrack } from "@/lib/suno";
 
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+
 // Saves a song generated before the user signed in to their account.
+// Only purchased songs can be claimed: requires the Stripe checkout
+// session of the $2.99 download purchase for this song's Suno task.
 export async function POST(req: NextRequest) {
   const session = await auth();
   const userEmail = session?.user?.email;
@@ -11,9 +16,22 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Not signed in" }, { status: 401 });
   }
 
-  const { title, lyrics, singer, taskId } = await req.json();
-  if (!title || !lyrics) {
+  const { title, lyrics, singer, taskId, sessionId } = await req.json();
+  if (!title || !lyrics || !taskId || !sessionId) {
     return NextResponse.json({ error: "Missing song data" }, { status: 400 });
+  }
+
+  let checkout: Stripe.Checkout.Session;
+  try {
+    checkout = await stripe.checkout.sessions.retrieve(sessionId);
+  } catch {
+    return NextResponse.json({ error: "Invalid payment session" }, { status: 402 });
+  }
+  if (checkout.payment_status !== "paid" || checkout.metadata?.taskId !== taskId) {
+    return NextResponse.json(
+      { error: "This song hasn't been purchased" },
+      { status: 402 }
+    );
   }
 
   const users = await sql`SELECT id FROM users WHERE email = ${userEmail}`;
@@ -23,17 +41,15 @@ export async function POST(req: NextRequest) {
   }
 
   // Idempotent: if this song (by Suno task) was already claimed, return it
-  if (taskId) {
-    const existing = await sql`
-      SELECT id FROM songs WHERE "userId" = ${userId} AND task_id = ${taskId}
-    `;
-    if (existing.length > 0) {
-      return NextResponse.json({ songId: (existing[0] as { id: string }).id, claimed: false });
-    }
+  const existing = await sql`
+    SELECT id FROM songs WHERE "userId" = ${userId} AND task_id = ${taskId}
+  `;
+  if (existing.length > 0) {
+    return NextResponse.json({ songId: (existing[0] as { id: string }).id, claimed: false });
   }
 
   // Attach audio right away if the Suno task already finished
-  const track = taskId ? await getFinishedSunoTrack(taskId) : null;
+  const track = await getFinishedSunoTrack(taskId);
 
   const inserted = await sql`
     INSERT INTO songs ("userId", title, lyrics, singer, task_id, audio_url, image_url, duration)
@@ -42,7 +58,7 @@ export async function POST(req: NextRequest) {
       ${String(title).slice(0, 200)},
       ${String(lyrics).slice(0, 10000)},
       ${singer === "female" ? "female" : "male"},
-      ${taskId ?? null},
+      ${taskId},
       ${track?.audioUrl ?? null},
       ${track?.imageUrl ?? null},
       ${track?.duration ?? null}

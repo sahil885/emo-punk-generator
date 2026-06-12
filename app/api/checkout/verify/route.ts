@@ -46,5 +46,5 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Audio URL not found" }, { status: 404 });
   }
 
-  return NextResponse.json({ audioUrl, songTitle });
+  return NextResponse.json({ audioUrl, songTitle, taskId });
 }
