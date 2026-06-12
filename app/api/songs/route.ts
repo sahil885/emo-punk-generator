@@ -1,12 +1,33 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { sql } from "@/lib/db";
+import { getFinishedSunoTrack } from "@/lib/suno";
 
 export async function GET() {
   const session = await auth();
   const userEmail = session?.user?.email;
   if (!userEmail) {
     return NextResponse.json({ error: "Not signed in" }, { status: 401 });
+  }
+
+  // Backfill audio for songs whose tab was closed before Suno finished
+  // (normally the browser's polling attaches the audio URL)
+  const pending = await sql`
+    SELECT s.id, s.task_id
+    FROM songs s
+    JOIN users u ON u.id = s."userId"
+    WHERE u.email = ${userEmail} AND s.task_id IS NOT NULL AND s.audio_url IS NULL
+    LIMIT 5
+  `;
+  for (const row of pending as { id: string; task_id: string }[]) {
+    const track = await getFinishedSunoTrack(row.task_id);
+    if (track?.audioUrl) {
+      await sql`
+        UPDATE songs
+        SET audio_url = ${track.audioUrl}, image_url = ${track.imageUrl}, duration = ${track.duration}
+        WHERE id = ${row.id} AND audio_url IS NULL
+      `;
+    }
   }
 
   const songs = await sql`

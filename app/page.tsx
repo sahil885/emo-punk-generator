@@ -561,6 +561,43 @@ function SongsModal({ onClose }: { onClose: () => void }) {
   );
 }
 
+// ─── Local persistence of the last generated song ───────────────────────────
+// Survives the full-page navigation of sign-in (magic link / Google OAuth),
+// tab closes, and refreshes — so a song is never lost mid-session.
+const LAST_SONG_KEY = "epg:lastSong";
+
+interface StoredSong {
+  title: string;
+  lyrics: string;
+  singer: Singer;
+  taskId: string | null;
+  songId: string | null; // set once saved to an account
+  savedAt: number;
+}
+
+function readStoredSong(): StoredSong | null {
+  try {
+    const raw = localStorage.getItem(LAST_SONG_KEY);
+    if (!raw) return null;
+    const song = JSON.parse(raw) as StoredSong;
+    if (!song.title || !song.lyrics) return null;
+    // Suno audio links go stale; only restore recent songs
+    if (Date.now() - song.savedAt > 48 * 60 * 60 * 1000) return null;
+    return song;
+  } catch {
+    return null;
+  }
+}
+
+function writeStoredSong(song: StoredSong | null) {
+  try {
+    if (song) localStorage.setItem(LAST_SONG_KEY, JSON.stringify(song));
+    else localStorage.removeItem(LAST_SONG_KEY);
+  } catch {
+    /* private mode etc. */
+  }
+}
+
 // ─── Main examples ────────────────────────────────────────────────────────────
 const EXAMPLES = [
   "I missed your call at 3am",
@@ -599,6 +636,8 @@ export default function Home() {
   const [buyingCredits, setBuyingCredits] = useState(false);
   const [buyError, setBuyError] = useState("");
   const [showSongs, setShowSongs] = useState(false);
+  const [songClaimed, setSongClaimed] = useState(false);
+  const claimAttemptedRef = useRef(false);
 
   // ── Fetch credit balance when user is signed in ─────────────────────────────
   const fetchCredits = useCallback(async () => {
@@ -615,6 +654,47 @@ export default function Home() {
   useEffect(() => {
     fetchCredits();
   }, [fetchCredits]);
+
+  // ── Restore the last generated song after reload or sign-in redirect ────────
+  useEffect(() => {
+    const stored = readStoredSong();
+    if (!stored) return;
+    setResult({ title: stored.title, lyrics: stored.lyrics, singer: stored.singer });
+    setSinger(stored.singer);
+    if (stored.taskId) setTaskId(stored.taskId);
+  }, []);
+
+  // ── Claim a song generated before sign-in into the user's account ───────────
+  useEffect(() => {
+    if (authStatus !== "authenticated" || claimAttemptedRef.current) return;
+    const stored = readStoredSong();
+    if (!stored || stored.songId) return;
+    claimAttemptedRef.current = true;
+
+    fetch("/api/songs/claim", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        title: stored.title,
+        lyrics: stored.lyrics,
+        singer: stored.singer,
+        taskId: stored.taskId,
+      }),
+    })
+      .then((r) => (r.ok ? r.json() : Promise.reject()))
+      .then((data) => {
+        if (data.songId) {
+          writeStoredSong({ ...stored, songId: data.songId });
+          if (data.claimed) {
+            setSongClaimed(true);
+            setTimeout(() => setSongClaimed(false), 6000);
+          }
+        }
+      })
+      .catch(() => {
+        claimAttemptedRef.current = false; // retry on next auth change
+      });
+  }, [authStatus]);
 
   // ── Handle Stripe return URLs ────────────────────────────────────────────────
   useEffect(() => {
@@ -745,6 +825,17 @@ export default function Home() {
       }
       setLoading(false);
 
+      const storedSong: StoredSong = {
+        title: lyricsData.title,
+        lyrics: lyricsData.lyrics,
+        singer,
+        taskId: null,
+        songId: lyricsData.songId ?? null,
+        savedAt: Date.now(),
+      };
+      writeStoredSong(storedSong);
+      claimAttemptedRef.current = false; // new song, claimable after sign-in
+
       const audioRes = await fetch("/api/audio/start", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -756,7 +847,10 @@ export default function Home() {
         }),
       });
       const audioData = await audioRes.json();
-      if (audioRes.ok && audioData.taskId) setTaskId(audioData.taskId);
+      if (audioRes.ok && audioData.taskId) {
+        setTaskId(audioData.taskId);
+        writeStoredSong({ ...storedSong, taskId: audioData.taskId });
+      }
     } catch (e) {
       setError(e instanceof Error ? e.message : "Something went wrong");
       setLoading(false);
@@ -777,6 +871,7 @@ export default function Home() {
     setError("");
     setRateLimited(false);
     setNoCredits(false);
+    writeStoredSong(null);
   };
 
   const hoursUntilReset = resetAt
@@ -883,6 +978,16 @@ export default function Home() {
           <div>
             <p className="font-bold text-white text-sm">Credits added!</p>
             <p className="text-xs text-white/60">Go make some noise.</p>
+          </div>
+        </div>
+      )}
+
+      {songClaimed && (
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 rounded-2xl border border-[#00cfff]/40 bg-[#00cfff]/15 backdrop-blur px-5 py-3 shadow-xl lyrics-appear">
+          <span className="text-xl">🎵</span>
+          <div>
+            <p className="font-bold text-white text-sm">Song saved to your account!</p>
+            <p className="text-xs text-white/60">Find it anytime under My Songs.</p>
           </div>
         </div>
       )}
