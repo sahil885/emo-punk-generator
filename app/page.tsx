@@ -622,7 +622,7 @@ function writeStoredSong(song: StoredSong | null) {
 const EXAMPLES = [
   "I missed your call at 3am",
   "skipping school in november rain",
-  "my hoodie still smells like you",
+  "fast times at summer heights",
   "the last text you never read",
 ];
 
