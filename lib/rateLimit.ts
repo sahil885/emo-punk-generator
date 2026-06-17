@@ -12,7 +12,7 @@ interface Entry {
 
 const store = new Map<string, Entry>();
 
-const LIMIT = 3;
+const LIMIT = 2;
 const WINDOW_MS = 24 * 60 * 60 * 1000; // 24 hours
 
 export function checkRateLimit(ip: string): {

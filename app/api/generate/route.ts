@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
       const resetsIn = Math.ceil((resetAt - Date.now()) / 1000 / 60 / 60);
       return NextResponse.json(
         {
-          error: `You've used all 3 free songs today. Come back in ~${resetsIn}h 🎸`,
+          error: `You've used all 2 free songs today. Come back in ~${resetsIn}h 🎸`,
           rateLimited: true,
           resetAt,
         },

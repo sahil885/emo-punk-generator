@@ -1307,7 +1307,7 @@ export default function Home() {
                 <>
                   <div className="text-center mb-4">
                     <p className="text-2xl mb-1">🎸</p>
-                    <p className="font-bold text-white text-sm">You&apos;ve used all 3 free songs today</p>
+                    <p className="font-bold text-white text-sm">You&apos;ve used all 2 free songs today</p>
                     {hoursUntilReset !== null && (
                       <p className="text-xs text-white/40 mt-1">
                         Free limit resets in ~{hoursUntilReset} hour{hoursUntilReset !== 1 ? "s" : ""}
