@@ -23,8 +23,7 @@ if (process.env.AUTH_GOOGLE_ID && process.env.AUTH_GOOGLE_SECRET) {
 providers.push(
   Resend({
     apiKey: process.env.AUTH_RESEND_KEY,
-    // TODO: replace with your verified Resend domain, e.g. "EMO PUNK AI <noreply@yourdomain.com>"
-    from: "EMO PUNK AI <onboarding@resend.dev>",
+    from: "Text to Emo <noreply@texttoemo.com>",
   })
 );
 
