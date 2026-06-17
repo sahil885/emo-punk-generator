@@ -1172,9 +1172,9 @@ export default function Home() {
             <span>⚡</span> AI Song Generator
           </div>
           <h1 className="text-5xl sm:text-6xl font-black text-white mb-3 glitch-text leading-none tracking-tight">
-            SCREAM
-            <span className="bg-gradient-to-r from-[#ff2d78] via-[#9b30ff] to-[#00cfff] bg-clip-text text-transparent"> IT </span>
-            OUT
+            TEXT
+            <span className="bg-gradient-to-r from-[#ff2d78] via-[#9b30ff] to-[#00cfff] bg-clip-text text-transparent"> TO </span>
+            EMO
           </h1>
           <p className="text-white/50 text-lg">
             Drop your words. We&apos;ll turn them into an emo pop punk song.
