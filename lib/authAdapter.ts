@@ -1,12 +1,18 @@
 import type { Adapter } from "next-auth/adapters";
 import { sql } from "@/lib/db";
 
+// Free songs granted to every brand-new account as a signup bonus.
+const SIGNUP_CREDITS = 2;
+
 export function NeonAdapter(): Adapter {
   return {
     async createUser(data) {
+      // New users get SIGNUP_CREDITS free credits. On conflict (an existing
+      // email signing in via a new provider) credits are left untouched so
+      // the bonus can't be farmed by re-linking.
       const rows = await sql`
-        INSERT INTO users (name, email, "emailVerified", image)
-        VALUES (${data.name ?? null}, ${data.email}, ${data.emailVerified ?? null}, ${data.image ?? null})
+        INSERT INTO users (name, email, "emailVerified", image, credits)
+        VALUES (${data.name ?? null}, ${data.email}, ${data.emailVerified ?? null}, ${data.image ?? null}, ${SIGNUP_CREDITS})
         ON CONFLICT (email) DO UPDATE
           SET name = EXCLUDED.name
         RETURNING *
