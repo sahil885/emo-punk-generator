@@ -2,27 +2,8 @@ import NextAuth from "next-auth";
 import type { Provider } from "next-auth/providers";
 import Resend from "next-auth/providers/resend";
 import Google from "next-auth/providers/google";
-import { after } from "next/server";
 import { NeonAdapter } from "@/lib/authAdapter";
 import { addSubscriberToGroup } from "@/lib/mailerlite";
-import { sql } from "@/lib/db";
-
-// TEMPORARY: capture the auth error + cause chain to diagnose the magic-link
-// send failure in production. Remove once fixed.
-function serializeAuthError(e: unknown, depth = 0): unknown {
-  if (e == null || depth > 6) return null;
-  if (typeof e !== "object") return String(e);
-  const err = e as Record<string, unknown>;
-  const out: Record<string, unknown> = {};
-  if (err.name !== undefined) out.name = err.name;
-  if (err.message !== undefined) out.message = err.message;
-  for (const k of ["error", "error_description", "code", "status", "statusCode", "name"]) {
-    if (err[k] !== undefined) out[k] = err[k];
-  }
-  if (err.cause) out.cause = serializeAuthError(err.cause, depth + 1);
-  if (err.err) out.err = serializeAuthError(err.err, depth + 1);
-  return out;
-}
 
 // Build the provider list defensively: only enable Google once its
 // credentials are configured, so a missing env var can't break the
@@ -81,24 +62,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     // add them to the MailerLite "Text To Emo" group.
     async createUser({ user }) {
       if (user.email) await addSubscriberToGroup(user.email, user.name);
-    },
-  },
-  // TEMPORARY: write auth errors to auth_debug to diagnose the magic-link send.
-  logger: {
-    error(error) {
-      try {
-        const blob = JSON.stringify(serializeAuthError(error));
-        after(async () => {
-          try {
-            await sql`INSERT INTO auth_debug (detail) VALUES (${blob})`;
-          } catch {
-            /* ignore */
-          }
-        });
-      } catch {
-        /* never let logging break auth */
-      }
-      console.error("[auth][error]", error);
     },
   },
 });
