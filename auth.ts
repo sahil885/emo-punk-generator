@@ -1,22 +1,35 @@
 import NextAuth from "next-auth";
+import type { Provider } from "next-auth/providers";
 import Resend from "next-auth/providers/resend";
 import Google from "next-auth/providers/google";
 import { NeonAdapter } from "@/lib/authAdapter";
 
-export const { handlers, auth, signIn, signOut } = NextAuth({
-  adapter: NeonAdapter(),
-  providers: [
+// Build the provider list defensively: only enable Google once its
+// credentials are configured, so a missing env var can't break the
+// entire auth route (and therefore the whole deployment).
+const providers: Provider[] = [];
+
+if (process.env.AUTH_GOOGLE_ID && process.env.AUTH_GOOGLE_SECRET) {
+  providers.push(
     Google({
       // Safe here: Google verifies email ownership, and magic-link users
       // verified the same address — lets one account use both methods
       allowDangerousEmailAccountLinking: true,
-    }),
-    Resend({
-      apiKey: process.env.AUTH_RESEND_KEY,
-      // TODO: replace with your verified Resend domain, e.g. "EMO PUNK AI <noreply@yourdomain.com>"
-      from: "EMO PUNK AI <onboarding@resend.dev>",
-    }),
-  ],
+    })
+  );
+}
+
+providers.push(
+  Resend({
+    apiKey: process.env.AUTH_RESEND_KEY,
+    // TODO: replace with your verified Resend domain, e.g. "EMO PUNK AI <noreply@yourdomain.com>"
+    from: "EMO PUNK AI <onboarding@resend.dev>",
+  })
+);
+
+export const { handlers, auth, signIn, signOut } = NextAuth({
+  adapter: NeonAdapter(),
+  providers,
   session: { strategy: "jwt" },
   callbacks: {
     async jwt({ token, user }) {
