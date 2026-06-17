@@ -80,6 +80,11 @@ Until this is done, magic-link sign-in emails only deliver to the Resend account
 3. Copy the Client ID + Secret into **Vercel env vars**:
    `AUTH_GOOGLE_ID`, `AUTH_GOOGLE_SECRET` → **redeploy**.
    (Also add them to local `.env.local` to test Google sign-in on localhost.)
+4. **Publish the consent screen.** A new project starts in **Testing** mode, where only
+   email addresses you add as "Test users" can sign in (everyone else gets blocked).
+   Go to **OAuth consent screen → Publish app → Production**. Because we only request
+   basic scopes (email, profile, openid), this needs **no Google verification review** —
+   it flips live immediately and any Google user can sign in.
 
 ---
 
