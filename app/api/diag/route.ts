@@ -6,5 +6,5 @@ export async function GET() {
   const rows = await sql`
     SELECT detail, created_at FROM auth_debug ORDER BY id DESC LIMIT 5
   `;
-  return NextResponse.json({ marker: "authdebug-v1", rows });
+  return NextResponse.json({ marker: "diag-v2", rows });
 }
