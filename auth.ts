@@ -39,9 +39,17 @@ if (process.env.AUTH_GOOGLE_ID && process.env.AUTH_GOOGLE_SECRET) {
   );
 }
 
+// Tolerate a pasted "AUTH_RESEND_KEY=" prefix / surrounding quotes / whitespace,
+// the same paste mistake that broke DATABASE_URL.
+const resendApiKey = (process.env.AUTH_RESEND_KEY ?? "")
+  .trim()
+  .replace(/^\s*AUTH_RESEND_KEY\s*=\s*/i, "")
+  .replace(/^["']|["']$/g, "")
+  .trim();
+
 providers.push(
   Resend({
-    apiKey: process.env.AUTH_RESEND_KEY,
+    apiKey: resendApiKey,
     from: "Text to Emo <noreply@texttoemo.com>",
   })
 );
