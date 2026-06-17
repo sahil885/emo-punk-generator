@@ -2,6 +2,7 @@ import NextAuth from "next-auth";
 import type { Provider } from "next-auth/providers";
 import Resend from "next-auth/providers/resend";
 import Google from "next-auth/providers/google";
+import { after } from "next/server";
 import { NeonAdapter } from "@/lib/authAdapter";
 import { sql } from "@/lib/db";
 
@@ -73,7 +74,15 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     error(error) {
       try {
         const blob = JSON.stringify(serializeAuthError(error));
-        void sql`INSERT INTO auth_debug (detail) VALUES (${blob})`.catch(() => {});
+        // after() defers the write past the response so it survives
+        // serverless function suspension (fire-and-forget gets killed)
+        after(async () => {
+          try {
+            await sql`INSERT INTO auth_debug (detail) VALUES (${blob})`;
+          } catch {
+            /* ignore */
+          }
+        });
       } catch {
         /* never let logging break auth */
       }
