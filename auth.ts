@@ -3,6 +3,25 @@ import type { Provider } from "next-auth/providers";
 import Resend from "next-auth/providers/resend";
 import Google from "next-auth/providers/google";
 import { NeonAdapter } from "@/lib/authAdapter";
+import { sql } from "@/lib/db";
+
+// TEMPORARY: capture the full auth error + cause chain to a DB table so we can
+// read the real production OAuth failure. Remove once Google sign-in is fixed.
+function serializeAuthError(e: unknown, depth = 0): unknown {
+  if (e == null || depth > 6) return null;
+  if (typeof e !== "object") return String(e);
+  const err = e as Record<string, unknown>;
+  const out: Record<string, unknown> = {};
+  if (err.name !== undefined) out.name = err.name;
+  if (err.message !== undefined) out.message = err.message;
+  for (const k of ["error", "error_description", "code", "status", "statusCode", "provider"]) {
+    if (err[k] !== undefined) out[k] = err[k];
+  }
+  // @auth/core wraps underlying errors in .cause and/or .err
+  if (err.cause) out.cause = serializeAuthError(err.cause, depth + 1);
+  if (err.err) out.err = serializeAuthError(err.err, depth + 1);
+  return out;
+}
 
 // Build the provider list defensively: only enable Google once its
 // credentials are configured, so a missing env var can't break the
@@ -48,5 +67,17 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   pages: {
     verifyRequest: "/",
     error: "/",
+  },
+  // TEMPORARY: write auth errors to the auth_debug table for diagnosis.
+  logger: {
+    error(error) {
+      try {
+        const blob = JSON.stringify(serializeAuthError(error));
+        void sql`INSERT INTO auth_debug (detail) VALUES (${blob})`.catch(() => {});
+      } catch {
+        /* never let logging break auth */
+      }
+      console.error("[auth][error]", error);
+    },
   },
 });
