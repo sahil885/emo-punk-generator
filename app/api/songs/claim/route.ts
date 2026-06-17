@@ -1,10 +1,9 @@
-import Stripe from "stripe";
+import type Stripe from "stripe";
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { sql } from "@/lib/db";
 import { getFinishedSunoTrack } from "@/lib/suno";
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+import { getStripe } from "@/lib/stripe";
 
 // Saves a song generated before the user signed in to their account.
 // Only purchased songs can be claimed: requires the Stripe checkout
@@ -23,7 +22,7 @@ export async function POST(req: NextRequest) {
 
   let checkout: Stripe.Checkout.Session;
   try {
-    checkout = await stripe.checkout.sessions.retrieve(sessionId);
+    checkout = await getStripe().checkout.sessions.retrieve(sessionId);
   } catch {
     return NextResponse.json({ error: "Invalid payment session" }, { status: 402 });
   }

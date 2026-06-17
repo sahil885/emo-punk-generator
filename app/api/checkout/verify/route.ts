@@ -1,7 +1,5 @@
-import Stripe from "stripe";
 import { NextRequest, NextResponse } from "next/server";
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+import { getStripe } from "@/lib/stripe";
 const SUNO_BASE = "https://api.sunoapi.org";
 
 export async function GET(req: NextRequest) {
@@ -12,7 +10,7 @@ export async function GET(req: NextRequest) {
   }
 
   // Verify the Stripe payment
-  const session = await stripe.checkout.sessions.retrieve(sessionId);
+  const session = await getStripe().checkout.sessions.retrieve(sessionId);
 
   if (session.payment_status !== "paid") {
     return NextResponse.json({ error: "Payment not completed" }, { status: 402 });

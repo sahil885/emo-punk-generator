@@ -1,9 +1,7 @@
 import type { Adapter } from "next-auth/adapters";
-import { neon } from "@neondatabase/serverless";
+import { sql } from "@/lib/db";
 
 export function NeonAdapter(): Adapter {
-  const sql = neon(process.env.DATABASE_URL!);
-
   return {
     async createUser(data) {
       const rows = await sql`

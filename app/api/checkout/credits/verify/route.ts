@@ -1,9 +1,7 @@
-import Stripe from "stripe";
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { sql } from "@/lib/db";
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+import { getStripe } from "@/lib/stripe";
 
 export async function GET(req: NextRequest) {
   const session = await auth();
@@ -18,7 +16,7 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const checkout = await stripe.checkout.sessions.retrieve(sessionId);
+    const checkout = await getStripe().checkout.sessions.retrieve(sessionId);
 
     if (
       checkout.payment_status !== "paid" ||

@@ -1,7 +1,5 @@
-import Stripe from "stripe";
 import { NextRequest, NextResponse } from "next/server";
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+import { getStripe } from "@/lib/stripe";
 
 export async function POST(req: NextRequest) {
   const { taskId, songTitle } = await req.json();
@@ -12,7 +10,7 @@ export async function POST(req: NextRequest) {
 
   const origin = req.headers.get("origin") || "http://localhost:3000";
 
-  const session = await stripe.checkout.sessions.create({
+  const session = await getStripe().checkout.sessions.create({
     payment_method_types: ["card"],
     line_items: [
       {

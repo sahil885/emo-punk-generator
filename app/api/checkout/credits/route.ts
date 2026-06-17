@@ -1,8 +1,6 @@
-import Stripe from "stripe";
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+import { getStripe } from "@/lib/stripe";
 
 const PACKS = {
   "3pack": { credits: 3, amount: 749, label: "3 Songs Pack" },
@@ -23,7 +21,7 @@ export async function POST(req: NextRequest) {
 
   const origin = req.headers.get("origin") || "http://localhost:3000";
 
-  const checkout = await stripe.checkout.sessions.create({
+  const checkout = await getStripe().checkout.sessions.create({
     payment_method_types: ["card"],
     line_items: [
       {
