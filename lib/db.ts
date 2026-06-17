@@ -10,8 +10,15 @@ function getSql(): NeonQueryFunction<false, false> {
     // Accept the Neon/Vercel integration's POSTGRES_URL as a fallback so the
     // app works whether the connection string was added manually as
     // DATABASE_URL or provisioned by the Vercel Postgres/Neon integration.
-    const url = process.env.DATABASE_URL || process.env.POSTGRES_URL;
-    if (!url) throw new Error("DATABASE_URL is not set");
+    const raw = process.env.DATABASE_URL || process.env.POSTGRES_URL;
+    if (!raw) throw new Error("DATABASE_URL is not set");
+    // Tolerate a common paste mistake: the whole "KEY=value" line, or the
+    // value wrapped in quotes / with stray whitespace.
+    const url = raw
+      .trim()
+      .replace(/^\s*(?:DATABASE_URL|POSTGRES_URL)\s*=\s*/i, "")
+      .replace(/^["']|["']$/g, "")
+      .trim();
     client = neon(url);
   }
   return client;
