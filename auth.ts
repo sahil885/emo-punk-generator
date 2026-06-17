@@ -3,6 +3,7 @@ import type { Provider } from "next-auth/providers";
 import Resend from "next-auth/providers/resend";
 import Google from "next-auth/providers/google";
 import { NeonAdapter } from "@/lib/authAdapter";
+import { addSubscriberToGroup } from "@/lib/mailerlite";
 
 // Build the provider list defensively: only enable Google once its
 // credentials are configured, so a missing env var can't break the
@@ -48,5 +49,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   pages: {
     verifyRequest: "/",
     error: "/",
+  },
+  events: {
+    // Fires once when a new user is created (Google or magic link) —
+    // add them to the MailerLite "Text To Emo" group.
+    async createUser({ user }) {
+      if (user.email) await addSubscriberToGroup(user.email, user.name);
+    },
   },
 });
