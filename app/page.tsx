@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
+import Link from "next/link";
 import { useSession, signIn, signOut } from "next-auth/react";
 
 type Singer = "male" | "female";
@@ -1419,6 +1420,11 @@ export default function Home() {
 
         <p className="text-center text-xs text-white/20 mt-10">
           Powered by Claude AI + Suno · Full song in minutes
+        </p>
+        <p className="text-center text-xs text-white/30 mt-3">
+          <Link href="/blog" className="hover:text-white/60 transition-colors underline underline-offset-2">
+            Read the blog: how to make an emo song with AI
+          </Link>
         </p>
       </div>
     </main>
