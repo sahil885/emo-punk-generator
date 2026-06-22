@@ -1,38 +1,107 @@
 import Link from "next/link";
 import { posts, type Post } from "@/lib/blog";
 
-// Shared chrome for an article page: background, nav, H1, body, CTA, and
-// auto-generated links to the other posts (internal linking).
+const SITE = "https://texttoemo.com";
+
+export interface FaqItem {
+  question: string;
+  answer: string;
+}
+
+// Shared chrome for an article page: structured data (BlogPosting +
+// BreadcrumbList + FAQPage), breadcrumbs, H1, body, FAQ, CTA, and internal
+// links to the other posts.
 export default function BlogShell({
   post,
+  faq,
   children,
 }: {
   post: Post;
+  faq: FaqItem[];
   children: React.ReactNode;
 }) {
   const others = posts.filter((p) => p.slug !== post.slug);
+  const url = `${SITE}/blog/${post.slug}`;
   const prettyDate = new Date(post.date).toLocaleDateString("en-US", {
     year: "numeric",
     month: "long",
     day: "numeric",
   });
 
+  const publisher = {
+    "@type": "Organization",
+    name: "Text to Emo",
+    url: SITE,
+  };
+
+  const blogPostingLd = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: post.title,
+    description: post.description,
+    datePublished: post.date,
+    dateModified: post.date,
+    author: publisher,
+    publisher,
+    mainEntityOfPage: { "@type": "WebPage", "@id": url },
+    url,
+  };
+
+  const breadcrumbLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: SITE },
+      { "@type": "ListItem", position: 2, name: "Blog", item: `${SITE}/blog` },
+      { "@type": "ListItem", position: 3, name: post.title, item: url },
+    ],
+  };
+
+  const faqLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faq.map((f) => ({
+      "@type": "Question",
+      name: f.question,
+      acceptedAnswer: { "@type": "Answer", text: f.answer },
+    })),
+  };
+
   return (
     <main className="min-h-screen relative overflow-hidden">
+      {/* Structured data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(blogPostingLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
+      />
+      {faq.length > 0 && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqLd) }}
+        />
+      )}
+
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] rounded-full bg-[#9b30ff]/8 blur-[120px]" />
         <div className="absolute bottom-[-20%] right-[-10%] w-[600px] h-[600px] rounded-full bg-[#ff2d78]/6 blur-[150px]" />
       </div>
 
       <article className="relative z-10 max-w-2xl mx-auto px-4 py-12">
-        <nav className="flex items-center gap-4 text-sm mb-8">
+        {/* Visible breadcrumb (matches BreadcrumbList schema) */}
+        <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-sm mb-8 flex-wrap">
           <Link href="/" className="text-white/40 hover:text-white transition-colors">
-            ← Text to Emo
+            Home
           </Link>
-          <span className="text-white/20">/</span>
+          <span className="text-white/20">›</span>
           <Link href="/blog" className="text-white/40 hover:text-white transition-colors">
             Blog
           </Link>
+          <span className="text-white/20">›</span>
+          <span className="text-white/60">{post.title}</span>
         </nav>
 
         <p className="text-xs font-bold tracking-widest text-[#ff2d78] uppercase mb-3">
@@ -44,6 +113,19 @@ export default function BlogShell({
         <p className="text-xs text-white/35 mb-8">{prettyDate}</p>
 
         <div className="article-content">{children}</div>
+
+        {/* FAQ (visible content backing the FAQPage schema) */}
+        {faq.length > 0 && (
+          <section className="article-content mt-4">
+            <h2>Frequently asked questions</h2>
+            {faq.map((f) => (
+              <div key={f.question}>
+                <h3>{f.question}</h3>
+                <p>{f.answer}</p>
+              </div>
+            ))}
+          </section>
+        )}
 
         {/* Conversion CTA */}
         <div className="mt-10 rounded-2xl border border-[#9b30ff]/40 bg-[#0f0520]/80 p-6 text-center">
