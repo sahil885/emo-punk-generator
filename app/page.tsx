@@ -416,50 +416,64 @@ const CREDIT_PACKS = [
   },
 ];
 
-function CreditPacks({ onBuy }: { onBuy: (pack: "3pack" | "10pack") => void }) {
+function CreditPacks({
+  selected,
+  onSelect,
+}: {
+  selected: "3pack" | "10pack";
+  onSelect: (pack: "3pack" | "10pack") => void;
+}) {
   return (
     <div className="flex flex-col gap-3 mt-4">
-      {CREDIT_PACKS.map((p) => (
-        <button
-          key={p.id}
-          onClick={() => onBuy(p.id)}
-          className={`relative w-full rounded-2xl border-2 px-5 py-4 flex items-center justify-between gap-4 text-left transition-all ${
-            p.highlight
-              ? "border-[#ff2d78] bg-[#ff2d78]/10 hover:bg-[#ff2d78]/20"
-              : "border-white/15 bg-white/[0.04] hover:border-[#9b30ff] hover:bg-[#9b30ff]/10"
-          }`}
-        >
-          {p.badge && (
-            <span className="absolute -top-2.5 left-4 bg-[#ff2d78] text-white text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wide shadow-lg">
-              {p.badge}
-            </span>
-          )}
-          <div>
-            <div className="flex items-baseline gap-1.5">
-              <span className="text-2xl font-black text-white">{p.credits}</span>
-              <span className="text-sm font-bold text-white/70">credits</span>
+      {CREDIT_PACKS.map((p) => {
+        const isSel = selected === p.id;
+        const accent = p.highlight ? "#ff2d78" : "#9b30ff";
+        return (
+          <button
+            key={p.id}
+            onClick={() => onSelect(p.id)}
+            aria-pressed={isSel}
+            className="relative w-full rounded-2xl border-2 px-4 py-4 flex items-center justify-between gap-3 text-left transition-all"
+            style={{
+              borderColor: isSel ? accent : "rgba(255,255,255,0.12)",
+              background: isSel ? `${accent}1f` : "rgba(255,255,255,0.03)",
+            }}
+          >
+            {p.badge && (
+              <span className="absolute -top-2.5 left-4 bg-[#ff2d78] text-white text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wide shadow-lg">
+                {p.badge}
+              </span>
+            )}
+            <div className="flex items-center gap-3 min-w-0">
+              {/* radio indicator */}
+              <span
+                className="w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0"
+                style={{ borderColor: isSel ? accent : "rgba(255,255,255,0.3)" }}
+              >
+                {isSel && (
+                  <span className="w-2.5 h-2.5 rounded-full" style={{ background: accent }} />
+                )}
+              </span>
+              <div className="min-w-0">
+                <div className="flex items-baseline gap-1.5">
+                  <span className="text-2xl font-black text-white">{p.credits}</span>
+                  <span className="text-sm font-bold text-white/70">credits</span>
+                </div>
+                <div className="text-xs text-white/45 mt-0.5">Unlock {p.credits} full songs</div>
+              </div>
             </div>
-            <div className="text-xs text-white/45 mt-0.5">Unlock {p.credits} full songs</div>
-          </div>
-          <div className="flex items-center gap-3 flex-shrink-0">
-            <div className="text-right">
-              <div className={`text-xl font-black leading-none ${p.highlight ? "text-[#ff2d78]" : "text-white"}`}>
+            <div className="text-right flex-shrink-0">
+              <div
+                className="text-xl font-black leading-none"
+                style={{ color: p.highlight ? "#ff2d78" : "#fff" }}
+              >
                 {p.price}
               </div>
               <div className="text-[11px] text-white/40 mt-1">{p.per} / song</div>
             </div>
-            <span
-              className={`w-8 h-8 rounded-full flex items-center justify-center text-white ${
-                p.highlight ? "bg-[#ff2d78]" : "bg-[#9b30ff]"
-              }`}
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M10 17l5-5-5-5v10z" />
-              </svg>
-            </span>
-          </div>
-        </button>
-      ))}
+          </button>
+        );
+      })}
     </div>
   );
 }
@@ -725,6 +739,7 @@ export default function Home() {
   const [showBuyCredits, setShowBuyCredits] = useState(false);
   const [buyingCredits, setBuyingCredits] = useState(false);
   const [buyError, setBuyError] = useState("");
+  const [selectedPack, setSelectedPack] = useState<"3pack" | "10pack">("10pack");
   const [showSongs, setShowSongs] = useState(false);
   const [songId, setSongId] = useState<string | null>(null);
 
@@ -1099,22 +1114,33 @@ export default function Home() {
                   Credits never expire.
                 </p>
               </div>
-              {buyingCredits ? (
-                <div className="flex items-center justify-center gap-2 py-8 text-white/50 text-sm">
-                  <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
-                  </svg>
-                  Redirecting to checkout…
-                </div>
-              ) : (
-                <CreditPacks onBuy={handleBuyCredits} />
-              )}
+              <CreditPacks selected={selectedPack} onSelect={setSelectedPack} />
+
               {buyError && (
                 <p className="text-xs text-[#ff2d78] mt-3 text-center">{buyError}</p>
               )}
+
+              {/* Single clear checkout CTA */}
+              <button
+                onClick={() => handleBuyCredits(selectedPack)}
+                disabled={buyingCredits}
+                className="w-full mt-4 rounded-xl py-3.5 font-bold text-white bg-gradient-to-r from-[#ff2d78] to-[#9b30ff] hover:opacity-90 disabled:opacity-60 disabled:cursor-not-allowed transition-opacity flex items-center justify-center gap-2"
+              >
+                {buyingCredits ? (
+                  <>
+                    <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+                    </svg>
+                    Redirecting to checkout…
+                  </>
+                ) : (
+                  `Continue · ${CREDIT_PACKS.find((p) => p.id === selectedPack)?.price ?? ""}`
+                )}
+              </button>
+
               <p className="text-center text-xs text-white/25 mt-3">
-                Secure checkout via Stripe
+                🔒 Secure checkout via Stripe
               </p>
             </div>
           </div>
