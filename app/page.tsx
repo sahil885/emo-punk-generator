@@ -343,7 +343,7 @@ function AudioPlayer({
             <p className="text-xs text-[#ff2d78] mt-2 text-center">{unlockError}</p>
           )}
           <p className="text-center text-xs text-white/30 mt-2">
-            You&apos;re hearing a 40-second preview.
+            You&apos;re hearing a 60-second preview.
             {typeof credits === "number"
               ? ` ${credits} credit${credits !== 1 ? "s" : ""} left.`
               : ""}
@@ -1218,7 +1218,7 @@ export default function Home() {
           {/* How it works hint */}
           <p className="text-center text-xs text-white/25 mt-3">
             {isSignedIn
-              ? "Free to generate · hear a 40s preview · unlock the full song with 1 credit"
+              ? "Free to generate · hear a 60s preview · unlock the full song with 1 credit"
               : "Sign in to start — new accounts get 2 free songs"}
           </p>
 

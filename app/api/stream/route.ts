@@ -3,8 +3,8 @@ import { auth } from "@/auth";
 import { sql } from "@/lib/db";
 import { getFinishedSunoTrack } from "@/lib/suno";
 
-const PREVIEW_SECONDS = 40;
-const PREVIEW_FALLBACK_BYTES = 1_100_000; // ~40s at ~190kbps when duration unknown
+const PREVIEW_SECONDS = 60;
+const PREVIEW_FALLBACK_BYTES = 1_650_000; // ~60s at ~190kbps when duration unknown
 
 async function resolveByTask(taskId: string): Promise<string | null> {
   const rows = await sql`
@@ -16,7 +16,7 @@ async function resolveByTask(taskId: string): Promise<string | null> {
   return track?.audioUrl ?? null;
 }
 
-// Streams a ~40s clip: fetches the total size, then returns only the leading
+// Streams a ~60s clip: fetches the total size, then returns only the leading
 // portion sized to roughly PREVIEW_SECONDS of audio.
 async function previewResponse(
   audioUrl: string,
@@ -76,7 +76,7 @@ async function fullResponse(audioUrl: string, range: string | null): Promise<Nex
   return new NextResponse(upstream.body, { status: upstream.status, headers });
 }
 
-// Playback proxy. Locked songs stream a ~40s preview; unlocked songs (the owner
+// Playback proxy. Locked songs stream a ~60s preview; unlocked songs (the owner
 // spent a credit) stream in full. The raw Suno URL is never exposed.
 export async function GET(req: NextRequest) {
   const songId = req.nextUrl.searchParams.get("songId");
