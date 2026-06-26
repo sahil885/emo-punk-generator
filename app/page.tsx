@@ -397,41 +397,69 @@ function LyricsDisplay({ lyrics }: { lyrics: string }) {
 }
 
 // ─── Credit Packs ────────────────────────────────────────────────────────────
+const CREDIT_PACKS = [
+  {
+    id: "3pack" as const,
+    credits: 3,
+    price: "$7.49",
+    per: "$2.50",
+    badge: null as string | null,
+    highlight: false,
+  },
+  {
+    id: "10pack" as const,
+    credits: 10,
+    price: "$19.99",
+    per: "$2.00",
+    badge: "Best value · save 20%",
+    highlight: true,
+  },
+];
+
 function CreditPacks({ onBuy }: { onBuy: (pack: "3pack" | "10pack") => void }) {
   return (
-    <div className="grid grid-cols-2 gap-3 mt-4">
-      {/* 3-pack */}
-      <button
-        onClick={() => onBuy("3pack")}
-        className="relative rounded-xl p-4 border-2 border-[#9b30ff]/50 bg-[#9b30ff]/10 hover:border-[#9b30ff] hover:bg-[#9b30ff]/20 text-left transition-all group overflow-hidden"
-      >
-        <div className="absolute inset-0 bg-gradient-to-br from-[#9b30ff]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-        <div className="relative">
-          <div className="text-3xl font-black text-white">3</div>
-          <div className="text-xs text-white/60 font-semibold uppercase tracking-wider">Songs</div>
-          <div className="mt-3 text-xl font-black text-[#9b30ff]">$7.49</div>
-          <div className="text-xs text-white/40 mt-0.5">~$2.50 / song</div>
-        </div>
-      </button>
-
-      {/* 10-pack */}
-      <button
-        onClick={() => onBuy("10pack")}
-        className="relative rounded-xl p-4 border-2 border-[#ff2d78]/50 bg-[#ff2d78]/10 hover:border-[#ff2d78] hover:bg-[#ff2d78]/20 text-left transition-all group overflow-hidden"
-      >
-        <div className="absolute inset-0 bg-gradient-to-br from-[#ff2d78]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-        <div className="absolute -top-1 -right-1">
-          <span className="bg-[#ff2d78] text-white text-[10px] font-black px-2 py-0.5 rounded-bl-lg rounded-tr-xl uppercase tracking-wide">
-            Best Value
-          </span>
-        </div>
-        <div className="relative">
-          <div className="text-3xl font-black text-white">10</div>
-          <div className="text-xs text-white/60 font-semibold uppercase tracking-wider">Songs</div>
-          <div className="mt-3 text-xl font-black text-[#ff2d78]">$19.99</div>
-          <div className="text-xs text-white/40 mt-0.5">~$2.00 / song</div>
-        </div>
-      </button>
+    <div className="flex flex-col gap-3 mt-4">
+      {CREDIT_PACKS.map((p) => (
+        <button
+          key={p.id}
+          onClick={() => onBuy(p.id)}
+          className={`relative w-full rounded-2xl border-2 px-5 py-4 flex items-center justify-between gap-4 text-left transition-all ${
+            p.highlight
+              ? "border-[#ff2d78] bg-[#ff2d78]/10 hover:bg-[#ff2d78]/20"
+              : "border-white/15 bg-white/[0.04] hover:border-[#9b30ff] hover:bg-[#9b30ff]/10"
+          }`}
+        >
+          {p.badge && (
+            <span className="absolute -top-2.5 left-4 bg-[#ff2d78] text-white text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wide shadow-lg">
+              {p.badge}
+            </span>
+          )}
+          <div>
+            <div className="flex items-baseline gap-1.5">
+              <span className="text-2xl font-black text-white">{p.credits}</span>
+              <span className="text-sm font-bold text-white/70">credits</span>
+            </div>
+            <div className="text-xs text-white/45 mt-0.5">Unlock {p.credits} full songs</div>
+          </div>
+          <div className="flex items-center gap-3 flex-shrink-0">
+            <div className="text-right">
+              <div className={`text-xl font-black leading-none ${p.highlight ? "text-[#ff2d78]" : "text-white"}`}>
+                {p.price}
+              </div>
+              <div className="text-[11px] text-white/40 mt-1">{p.per} / song</div>
+            </div>
+            <span
+              className={`w-8 h-8 rounded-full flex items-center justify-center text-white ${
+                p.highlight ? "bg-[#ff2d78]" : "bg-[#9b30ff]"
+              }`}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M10 17l5-5-5-5v10z" />
+              </svg>
+            </span>
+          </div>
+        </button>
+      ))}
     </div>
   );
 }
@@ -1064,8 +1092,11 @@ export default function Home() {
               <div className="text-center mb-2">
                 <p className="text-2xl mb-2">🪙</p>
                 <h3 className="text-xl font-black text-white">Buy Credits</h3>
-                <p className="text-xs text-white/40 mt-1">
-                  1 credit = 1 song · Credits never expire
+                <p className="text-sm text-white/55 mt-1">
+                  1 credit unlocks the full song + download.
+                </p>
+                <p className="text-xs text-white/35 mt-0.5">
+                  Credits never expire.
                 </p>
               </div>
               {buyingCredits ? (
