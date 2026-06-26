@@ -38,11 +38,13 @@ function AudioPlayer({
   singer,
   taskId,
   saved,
+  songId,
 }: {
   title: string;
   singer: Singer;
   taskId: string | null;
   saved: boolean; // song is in the user's library → downloads are free
+  songId: string | null; // set when the song is saved to an account
 }) {
   const audioRef = useRef<HTMLAudioElement>(null);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -76,10 +78,11 @@ function AudioPlayer({
         setPollSeconds((s) => s + 5);
         if (data.done) {
           stopPoll();
-          if (data.failed || !data.audioUrl) {
+          if (data.failed || !data.hasAudio) {
             setAudioStatus("error");
           } else {
-            setAudioUrl(data.audioUrl);
+            // Play through the proxy so the raw Suno URL is never exposed.
+            setAudioUrl(`/api/stream?taskId=${encodeURIComponent(taskId)}`);
             setImageUrl(data.imageUrl ?? null);
             setDuration(data.duration ?? 0);
             setAudioStatus("ready");
@@ -291,10 +294,10 @@ function AudioPlayer({
       )}
 
       {/* Download — free for saved (paid) songs, $2.99 paywall otherwise */}
-      {audioStatus === "ready" && saved && audioUrl && (
+      {audioStatus === "ready" && saved && songId && (
         <div className="mt-5 pt-4 border-t border-white/8">
           <a
-            href={`/api/download?url=${encodeURIComponent(audioUrl)}&title=${encodeURIComponent(title)}`}
+            href={`/api/download?songId=${encodeURIComponent(songId)}`}
             download={`${title}.mp3`}
             className="w-full relative rounded-xl py-3 font-bold text-sm tracking-wide transition-all duration-200 overflow-hidden group flex items-center justify-center gap-2 text-white bg-gradient-to-r from-[#ff2d78] to-[#9b30ff] hover:opacity-90"
           >
@@ -419,7 +422,7 @@ interface SavedSong {
   title: string;
   lyrics: string;
   singer: Singer;
-  audio_url: string | null;
+  hasAudio: boolean;
   image_url: string | null;
   duration: number | null;
   created_at: string;
@@ -441,12 +444,12 @@ function SongsModal({ onClose }: { onClose: () => void }) {
 
   const togglePlay = (song: SavedSong) => {
     const audio = audioRef.current;
-    if (!audio || !song.audio_url) return;
+    if (!audio || !song.hasAudio) return;
     if (playingId === song.id) {
       audio.pause();
       setPlayingId(null);
     } else {
-      audio.src = song.audio_url;
+      audio.src = `/api/stream?songId=${encodeURIComponent(song.id)}`;
       audio.play();
       setPlayingId(song.id);
     }
@@ -523,7 +526,7 @@ function SongsModal({ onClose }: { onClose: () => void }) {
                         {new Date(song.created_at).toLocaleDateString()}
                       </p>
                     </div>
-                    {song.audio_url ? (
+                    {song.hasAudio ? (
                       <button
                         onClick={() => togglePlay(song)}
                         className="w-9 h-9 rounded-full bg-gradient-to-r from-[#ff2d78] to-[#9b30ff] flex items-center justify-center flex-shrink-0 hover:opacity-90 transition-opacity"
@@ -550,9 +553,9 @@ function SongsModal({ onClose }: { onClose: () => void }) {
                     >
                       {expandedId === song.id ? "Hide lyrics" : "Lyrics"}
                     </button>
-                    {song.audio_url && (
+                    {song.hasAudio && (
                       <a
-                        href={`/api/download?url=${encodeURIComponent(song.audio_url)}&title=${encodeURIComponent(song.title)}`}
+                        href={`/api/download?songId=${encodeURIComponent(song.id)}`}
                         download={`${song.title}.mp3`}
                         className="text-xs text-[#9b30ff] hover:text-[#b86aff] transition-colors"
                       >
@@ -739,9 +742,11 @@ export default function Home() {
       fetch(`/api/checkout/verify?session_id=${sessionId}`)
         .then((r) => r.json())
         .then((data) => {
-          if (data.audioUrl) {
+          if (data.ok) {
             setPaymentSuccess(true);
-            const proxyUrl = `/api/download?url=${encodeURIComponent(data.audioUrl)}&title=${encodeURIComponent(data.songTitle ?? "emo-punk-song")}`;
+            // Download through the gated route using the paid session id —
+            // the raw audio URL is never sent to the browser.
+            const proxyUrl = `/api/download?session_id=${encodeURIComponent(sessionId)}`;
             setDownloadUrl(proxyUrl);
             const a = document.createElement("a");
             a.href = proxyUrl;
@@ -1400,7 +1405,7 @@ export default function Home() {
                 </button>
               </div>
 
-              <AudioPlayer title={result.title} singer={result.singer} taskId={taskId} saved={!!songId} />
+              <AudioPlayer title={result.title} singer={result.singer} taskId={taskId} saved={!!songId} songId={songId} />
             </div>
 
             <div className="px-6 py-6">

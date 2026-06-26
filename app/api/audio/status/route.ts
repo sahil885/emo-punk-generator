@@ -61,5 +61,15 @@ export async function GET(req: NextRequest) {
     }
   }
 
-  return NextResponse.json({ status, done, failed, audioUrl, imageUrl, duration });
+  // NOTE: we deliberately do NOT return the raw Suno audioUrl to the client —
+  // exposing it lets anyone download the track for free. The client plays via
+  // the /api/stream proxy and downloads via the payment-gated /api/download.
+  return NextResponse.json({
+    status,
+    done,
+    failed,
+    hasAudio: !!audioUrl,
+    imageUrl,
+    duration,
+  });
 }
