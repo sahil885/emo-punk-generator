@@ -1,49 +1,44 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { NextRequest, NextResponse } from "next/server";
-import { checkRateLimit } from "@/lib/rateLimit";
 import { auth } from "@/auth";
 import { sql } from "@/lib/db";
 
+// Free generations per user per day. Generation is free (you get a preview);
+// credits are only spent to unlock the full song. This cap protects against
+// runaway Suno usage.
+const DAILY_GENERATION_LIMIT = 10;
+
 export async function POST(req: NextRequest) {
-  // --- Determine auth state ---
+  // ── Login required to generate ──────────────────────────────────────
   const session = await auth();
   const userEmail = session?.user?.email ?? null;
+  if (!userEmail) {
+    return NextResponse.json(
+      { error: "Sign in to generate a song.", needsAuth: true },
+      { status: 401 }
+    );
+  }
 
-  // remaining: set during gate checks below, used in the response
-  let ipRemaining: number | null = null;
+  const users = await sql`SELECT id, credits FROM users WHERE email = ${userEmail}`;
+  const user = users[0] as { id: string; credits: number } | undefined;
+  if (!user) {
+    return NextResponse.json({ error: "User not found" }, { status: 404 });
+  }
 
-  if (userEmail) {
-    // ── Authenticated: check credits ─────────────────────────────────
-    const rows = await sql`SELECT credits FROM users WHERE email = ${userEmail}`;
-    const credits: number = (rows[0] as { credits: number } | undefined)?.credits ?? 0;
-
-    if (credits <= 0) {
-      return NextResponse.json(
-        { error: "No credits left. Buy a credit pack to keep making songs! 🎸", noCredits: true },
-        { status: 402 }
-      );
-    }
-  } else {
-    // ── Anonymous: IP rate limit (3 / 24 h) ──────────────────────────
-    const ip =
-      req.headers.get("x-forwarded-for")?.split(",")[0].trim() ??
-      req.headers.get("x-real-ip") ??
-      "unknown";
-
-    const { allowed, remaining, resetAt } = checkRateLimit(ip);
-    ipRemaining = remaining;
-
-    if (!allowed) {
-      const resetsIn = Math.ceil((resetAt - Date.now()) / 1000 / 60 / 60);
-      return NextResponse.json(
-        {
-          error: `You've used all 2 free songs today. Come back in ~${resetsIn}h 🎸`,
-          rateLimited: true,
-          resetAt,
-        },
-        { status: 429 }
-      );
-    }
+  // ── Per-user daily generation cap ──────────────────────────────────
+  const recent = await sql`
+    SELECT count(*)::int AS n FROM songs
+    WHERE "userId" = ${user.id} AND created_at > now() - interval '24 hours'
+  `;
+  const usedToday = (recent[0] as { n: number }).n;
+  if (usedToday >= DAILY_GENERATION_LIMIT) {
+    return NextResponse.json(
+      {
+        error: `You've hit today's limit of ${DAILY_GENERATION_LIMIT} songs. Come back tomorrow 🎸`,
+        rateLimited: true,
+      },
+      { status: 429 }
+    );
   }
 
   // ── Parse body ────────────────────────────────────────────────────
@@ -114,34 +109,21 @@ etc.`;
     const title = titleMatch ? titleMatch[1] : "Untitled";
     const lyrics = text.replace(/TITLE:\s*"[^"]+"\n?/, "").trim();
 
-    // ── Deduct 1 credit for authenticated users ───────────────────────
-    let creditsRemaining: number | null = null;
-    let songId: string | null = null;
-    if (userEmail) {
-      await sql`
-        UPDATE users SET credits = credits - 1
-        WHERE email = ${userEmail} AND credits > 0
-      `;
-      const updated = await sql`SELECT credits FROM users WHERE email = ${userEmail}`;
-      creditsRemaining = (updated[0] as { credits: number } | undefined)?.credits ?? 0;
-
-      // Credit-paid songs are saved to the user's library
-      const saved = await sql`
-        INSERT INTO songs ("userId", title, lyrics, singer)
-        SELECT id, ${title}, ${lyrics}, ${singer === "female" ? "female" : "male"}
-        FROM users WHERE email = ${userEmail}
-        RETURNING id
-      `;
-      songId = (saved[0] as { id: string } | undefined)?.id ?? null;
-    }
+    // Save the generation to the user's library as a locked preview. No credit
+    // is charged here — the credit is spent later to unlock the full song.
+    const saved = await sql`
+      INSERT INTO songs ("userId", title, lyrics, singer, unlocked)
+      VALUES (${user.id}, ${title}, ${lyrics}, ${singer === "female" ? "female" : "male"}, false)
+      RETURNING id
+    `;
+    const songId = (saved[0] as { id: string }).id;
 
     return NextResponse.json({
       title,
       lyrics,
       singer,
-      songId,                       // null when anonymous (not saved)
-      remaining: ipRemaining,       // null when signed in
-      creditsRemaining,             // null when anonymous
+      songId,
+      creditsRemaining: user.credits,
     });
   } catch (err) {
     console.error(err);

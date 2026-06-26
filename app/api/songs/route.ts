@@ -33,6 +33,7 @@ export async function GET() {
   const songs = await sql`
     SELECT s.id, s.title, s.lyrics, s.singer,
            (s.audio_url IS NOT NULL) AS "hasAudio",
+           s.unlocked,
            s.image_url, s.duration, s.created_at
     FROM songs s
     JOIN users u ON u.id = s."userId"

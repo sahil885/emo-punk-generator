@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { sql } from "@/lib/db";
-import { getStripe } from "@/lib/stripe";
 import { getFinishedSunoTrack } from "@/lib/suno";
 
 async function resolveByTask(taskId: string): Promise<string | null> {
@@ -14,51 +13,44 @@ async function resolveByTask(taskId: string): Promise<string | null> {
   return track?.audioUrl ?? null;
 }
 
-// Gated MP3 download. Access requires EITHER a paid Stripe session for the song
-// (anonymous $2.99 purchase) OR ownership of a saved library song (already paid
-// for with a credit / purchase). The raw audio URL is never accepted from the
-// client, so the old open-proxy bypass is closed.
+// Gated MP3 download. Requires the requester to own the song AND for the song
+// to be unlocked (a credit was spent). The raw audio URL is never accepted from
+// the client.
 export async function GET(req: NextRequest) {
-  const sessionId = req.nextUrl.searchParams.get("session_id");
   const songId = req.nextUrl.searchParams.get("songId");
+  if (!songId) {
+    return NextResponse.json({ error: "Missing songId" }, { status: 400 });
+  }
+
+  const session = await auth();
+  const email = session?.user?.email;
+  if (!email) {
+    return NextResponse.json({ error: "Not signed in" }, { status: 401 });
+  }
 
   let audioUrl: string | null = null;
   let title = "emo-punk-song";
 
   try {
-    if (songId) {
-      const session = await auth();
-      const email = session?.user?.email;
-      if (!email) {
-        return NextResponse.json({ error: "Not signed in" }, { status: 401 });
-      }
-      const rows = await sql`
-        SELECT s.title, s.audio_url, s.task_id FROM songs s
-        JOIN users u ON u.id = s."userId"
-        WHERE s.id = ${songId} AND u.email = ${email}
-      `;
-      const row = rows[0] as
-        | { title: string; audio_url: string | null; task_id: string | null }
-        | undefined;
-      if (!row) {
-        return NextResponse.json({ error: "Not found" }, { status: 404 });
-      }
-      title = row.title ?? title;
-      audioUrl = row.audio_url ?? (row.task_id ? await resolveByTask(row.task_id) : null);
-    } else if (sessionId) {
-      const checkout = await getStripe().checkout.sessions.retrieve(sessionId);
-      if (checkout.payment_status !== "paid") {
-        return NextResponse.json({ error: "Payment not completed" }, { status: 402 });
-      }
-      const taskId = checkout.metadata?.taskId;
-      title = checkout.metadata?.songTitle ?? title;
-      if (!taskId) {
-        return NextResponse.json({ error: "Invalid session" }, { status: 400 });
-      }
-      audioUrl = await resolveByTask(taskId);
-    } else {
-      return NextResponse.json({ error: "Payment or sign-in required" }, { status: 402 });
+    const rows = await sql`
+      SELECT s.title, s.audio_url, s.task_id, s.unlocked FROM songs s
+      JOIN users u ON u.id = s."userId"
+      WHERE s.id = ${songId} AND u.email = ${email}
+    `;
+    const row = rows[0] as
+      | { title: string; audio_url: string | null; task_id: string | null; unlocked: boolean }
+      | undefined;
+    if (!row) {
+      return NextResponse.json({ error: "Not found" }, { status: 404 });
     }
+    if (!row.unlocked) {
+      return NextResponse.json(
+        { error: "Unlock this song with a credit to download it.", locked: true },
+        { status: 402 }
+      );
+    }
+    title = row.title ?? title;
+    audioUrl = row.audio_url ?? (row.task_id ? await resolveByTask(row.task_id) : null);
   } catch (err) {
     console.error("Download authorization error:", err);
     return NextResponse.json({ error: "Could not authorize download" }, { status: 500 });

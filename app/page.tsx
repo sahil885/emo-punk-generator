@@ -37,14 +37,18 @@ function AudioPlayer({
   title,
   singer,
   taskId,
-  saved,
   songId,
+  credits,
+  onUnlocked,
+  onNeedCredits,
 }: {
   title: string;
   singer: Singer;
   taskId: string | null;
-  saved: boolean; // song is in the user's library → downloads are free
-  songId: string | null; // set when the song is saved to an account
+  songId: string | null;
+  credits: number | null;
+  onUnlocked: (creditsRemaining: number) => void;
+  onNeedCredits: () => void;
 }) {
   const audioRef = useRef<HTMLAudioElement>(null);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -56,7 +60,9 @@ function AudioPlayer({
   const [elapsed, setElapsed] = useState(0);
   const [playing, setPlaying] = useState(false);
   const [pollSeconds, setPollSeconds] = useState(0);
-  const [checkoutStatus, setCheckoutStatus] = useState<CheckoutStatus>("idle");
+  const [unlocked, setUnlocked] = useState(false);
+  const [unlocking, setUnlocking] = useState(false);
+  const [unlockError, setUnlockError] = useState("");
   const elapsedTickRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const stopPoll = useCallback(() => {
@@ -81,10 +87,13 @@ function AudioPlayer({
           if (data.failed || !data.hasAudio) {
             setAudioStatus("error");
           } else {
-            // Play through the proxy so the raw Suno URL is never exposed.
-            setAudioUrl(`/api/stream?taskId=${encodeURIComponent(taskId)}`);
+            // Play the locked preview through the proxy (raw URL never exposed).
+            setAudioUrl(
+              songId
+                ? `/api/stream?songId=${encodeURIComponent(songId)}&v=preview`
+                : `/api/stream?taskId=${encodeURIComponent(taskId)}`
+            );
             setImageUrl(data.imageUrl ?? null);
-            setDuration(data.duration ?? 0);
             setAudioStatus("ready");
           }
         }
@@ -153,21 +162,31 @@ function AudioPlayer({
     setElapsed(Math.floor(audio.currentTime));
   };
 
-  const handleDownloadPaywall = async () => {
-    if (!taskId) return;
-    setCheckoutStatus("redirecting");
+  const handleUnlock = async () => {
+    if (!songId) return;
+    setUnlocking(true);
+    setUnlockError("");
     try {
-      const res = await fetch("/api/checkout", {
+      const res = await fetch("/api/unlock", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ taskId, songTitle: title }),
+        body: JSON.stringify({ songId }),
       });
       const data = await res.json();
-      if (!res.ok || !data.url) throw new Error("Failed to create checkout");
-      window.location.href = data.url;
+      if (res.ok && data.ok) {
+        setUnlocked(true);
+        // Swap the player to the full track.
+        setAudioUrl(`/api/stream?songId=${encodeURIComponent(songId)}&v=full`);
+        if (typeof data.creditsRemaining === "number") onUnlocked(data.creditsRemaining);
+      } else if (data.noCredits) {
+        onNeedCredits();
+      } else {
+        setUnlockError(data.error || "Couldn't unlock — try again.");
+      }
     } catch {
-      setCheckoutStatus("error");
-      setTimeout(() => setCheckoutStatus("idle"), 3000);
+      setUnlockError("Couldn't unlock — try again.");
+    } finally {
+      setUnlocking(false);
     }
   };
 
@@ -182,7 +201,7 @@ function AudioPlayer({
 
   return (
     <div className="mt-6 rounded-xl border border-[#9b30ff]/40 bg-[#0f0520]/80 p-5 glow-border">
-      {audioUrl && <audio ref={audioRef} src={audioUrl} preload="metadata" />}
+      {audioUrl && <audio key={audioUrl} ref={audioRef} src={audioUrl} preload="metadata" />}
 
       <div className="flex items-center gap-4 mb-4">
         <div
@@ -202,7 +221,9 @@ function AudioPlayer({
         </div>
         <div className="flex-1 min-w-0">
           <p className="font-bold text-white truncate">{title}</p>
-          <p className="text-sm text-[#9b30ff]">{singerLabel} · AI-generated</p>
+          <p className="text-sm text-[#9b30ff]">
+            {singerLabel} · {audioStatus === "ready" && !unlocked ? "Preview" : "AI-generated"}
+          </p>
         </div>
         {audioStatus === "ready" && <EqVisualizer playing={playing} />}
         {audioStatus === "loading" && (
@@ -293,13 +314,48 @@ function AudioPlayer({
         </p>
       )}
 
-      {/* Download — free for saved (paid) songs, $2.99 paywall otherwise */}
-      {audioStatus === "ready" && saved && songId && (
+      {/* Unlock (locked preview) or Download (unlocked) */}
+      {audioStatus === "ready" && !unlocked && songId && (
+        <div className="mt-5 pt-4 border-t border-white/8">
+          <button
+            onClick={handleUnlock}
+            disabled={unlocking}
+            className="w-full rounded-xl py-3 font-bold text-sm tracking-wide transition-opacity flex items-center justify-center gap-2 text-white bg-gradient-to-r from-[#ff2d78] to-[#9b30ff] hover:opacity-90 disabled:opacity-60 disabled:cursor-not-allowed"
+          >
+            {unlocking ? (
+              <>
+                <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+                </svg>
+                Unlocking…
+              </>
+            ) : (
+              <>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 1a5 5 0 00-5 5v3H6a2 2 0 00-2 2v9a2 2 0 002 2h12a2 2 0 002-2v-9a2 2 0 00-2-2h-1V6a5 5 0 00-5-5zm3 8H9V6a3 3 0 016 0v3z" />
+                </svg>
+                Unlock full song · 1 credit
+              </>
+            )}
+          </button>
+          {unlockError && (
+            <p className="text-xs text-[#ff2d78] mt-2 text-center">{unlockError}</p>
+          )}
+          <p className="text-center text-xs text-white/30 mt-2">
+            You&apos;re hearing a 40-second preview.
+            {typeof credits === "number"
+              ? ` ${credits} credit${credits !== 1 ? "s" : ""} left.`
+              : ""}
+          </p>
+        </div>
+      )}
+      {audioStatus === "ready" && unlocked && songId && (
         <div className="mt-5 pt-4 border-t border-white/8">
           <a
             href={`/api/download?songId=${encodeURIComponent(songId)}`}
             download={`${title}.mp3`}
-            className="w-full relative rounded-xl py-3 font-bold text-sm tracking-wide transition-all duration-200 overflow-hidden group flex items-center justify-center gap-2 text-white bg-gradient-to-r from-[#ff2d78] to-[#9b30ff] hover:opacity-90"
+            className="w-full rounded-xl py-3 font-bold text-sm tracking-wide transition-opacity flex items-center justify-center gap-2 text-white bg-gradient-to-r from-[#ff2d78] to-[#9b30ff] hover:opacity-90"
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
               <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" />
@@ -307,43 +363,7 @@ function AudioPlayer({
             Download MP3
           </a>
           <p className="text-center text-xs text-white/25 mt-2">
-            Saved to your account — download anytime from My Songs
-          </p>
-        </div>
-      )}
-      {audioStatus === "ready" && !saved && (
-        <div className="mt-5 pt-4 border-t border-white/8">
-          <button
-            onClick={handleDownloadPaywall}
-            disabled={checkoutStatus === "redirecting"}
-            className="w-full relative rounded-xl py-3 font-bold text-sm tracking-wide transition-all duration-200 overflow-hidden group disabled:opacity-60 disabled:cursor-not-allowed"
-            style={{ background: "linear-gradient(135deg, #f59e0b 0%, #ef4444 100%)" }}
-          >
-            <div className="absolute inset-0 bg-white/0 group-hover:bg-white/10 transition-colors" />
-            <span className="relative flex items-center justify-center gap-2 text-white">
-              {checkoutStatus === "redirecting" ? (
-                <>
-                  <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
-                  </svg>
-                  Redirecting to checkout...
-                </>
-              ) : checkoutStatus === "error" ? (
-                "Something went wrong — try again"
-              ) : (
-                <>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" />
-                  </svg>
-                  Download MP3 — $2.99
-                  <span className="ml-1 text-xs bg-white/20 rounded-full px-2 py-0.5">one-time</span>
-                </>
-              )}
-            </span>
-          </button>
-          <p className="text-center text-xs text-white/25 mt-2">
-            Secure checkout via Stripe · Instant download · Saved to your account
+            Full song unlocked · saved to My Songs
           </p>
         </div>
       )}
@@ -423,17 +443,58 @@ interface SavedSong {
   lyrics: string;
   singer: Singer;
   hasAudio: boolean;
+  unlocked: boolean;
   image_url: string | null;
   duration: number | null;
   created_at: string;
 }
 
-function SongsModal({ onClose }: { onClose: () => void }) {
+function SongsModal({
+  credits,
+  onCreditsChange,
+  onNeedCredits,
+  onClose,
+}: {
+  credits: number | null;
+  onCreditsChange: (credits: number) => void;
+  onNeedCredits: () => void;
+  onClose: () => void;
+}) {
   const [songs, setSongs] = useState<SavedSong[] | null>(null);
   const [loadError, setLoadError] = useState(false);
   const [playingId, setPlayingId] = useState<string | null>(null);
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [unlockingId, setUnlockingId] = useState<string | null>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
+
+  const unlockSong = async (song: SavedSong) => {
+    setUnlockingId(song.id);
+    try {
+      const res = await fetch("/api/unlock", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ songId: song.id }),
+      });
+      const data = await res.json();
+      if (res.ok && data.ok) {
+        setSongs((prev) =>
+          prev ? prev.map((s) => (s.id === song.id ? { ...s, unlocked: true } : s)) : prev
+        );
+        if (typeof data.creditsRemaining === "number") onCreditsChange(data.creditsRemaining);
+        // reload audio if this song is playing so it switches to the full track
+        if (playingId === song.id && audioRef.current) {
+          audioRef.current.src = `/api/stream?songId=${encodeURIComponent(song.id)}&v=full`;
+          audioRef.current.play().catch(() => {});
+        }
+      } else if (data.noCredits) {
+        onNeedCredits();
+      }
+    } catch {
+      /* ignore */
+    } finally {
+      setUnlockingId(null);
+    }
+  };
 
   useEffect(() => {
     fetch("/api/songs")
@@ -487,7 +548,10 @@ function SongsModal({ onClose }: { onClose: () => void }) {
         <div className="text-center mb-4">
           <p className="text-2xl mb-2">🎵</p>
           <h3 className="text-xl font-black text-white">My Songs</h3>
-          <p className="text-xs text-white/40 mt-1">Every song you&apos;ve made with credits, saved forever</p>
+          <p className="text-xs text-white/40 mt-1">
+            Previews are saved here — unlock the full song with a credit.
+            {typeof credits === "number" ? ` You have ${credits} credit${credits !== 1 ? "s" : ""}.` : ""}
+          </p>
         </div>
 
         <div className="overflow-y-auto flex-1 -mx-2 px-2">
@@ -520,7 +584,14 @@ function SongsModal({ onClose }: { onClose: () => void }) {
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="font-bold text-white text-sm truncate">{song.title}</p>
+                      <p className="font-bold text-white text-sm truncate">
+                        {song.title}
+                        {song.hasAudio && !song.unlocked && (
+                          <span className="ml-2 text-[10px] font-bold text-[#ff64a6] align-middle">
+                            🔒 PREVIEW
+                          </span>
+                        )}
+                      </p>
                       <p className="text-xs text-white/35">
                         {song.singer === "female" ? "Female" : "Male"} vocalist ·{" "}
                         {new Date(song.created_at).toLocaleDateString()}
@@ -553,15 +624,24 @@ function SongsModal({ onClose }: { onClose: () => void }) {
                     >
                       {expandedId === song.id ? "Hide lyrics" : "Lyrics"}
                     </button>
-                    {song.hasAudio && (
-                      <a
-                        href={`/api/download?songId=${encodeURIComponent(song.id)}`}
-                        download={`${song.title}.mp3`}
-                        className="text-xs text-[#9b30ff] hover:text-[#b86aff] transition-colors"
-                      >
-                        Download
-                      </a>
-                    )}
+                    {song.hasAudio &&
+                      (song.unlocked ? (
+                        <a
+                          href={`/api/download?songId=${encodeURIComponent(song.id)}`}
+                          download={`${song.title}.mp3`}
+                          className="text-xs text-[#9b30ff] hover:text-[#b86aff] transition-colors"
+                        >
+                          Download
+                        </a>
+                      ) : (
+                        <button
+                          onClick={() => unlockSong(song)}
+                          disabled={unlockingId === song.id}
+                          className="text-xs text-[#ff64a6] hover:text-[#ff2d78] transition-colors disabled:opacity-50"
+                        >
+                          {unlockingId === song.id ? "Unlocking…" : "🔓 Unlock · 1 credit"}
+                        </button>
+                      ))}
                     <button
                       onClick={() => deleteSong(song.id)}
                       className="text-xs text-white/25 hover:text-[#ff2d78] transition-colors ml-auto"
@@ -584,44 +664,6 @@ function SongsModal({ onClose }: { onClose: () => void }) {
   );
 }
 
-// ─── Local persistence of the last generated song ───────────────────────────
-// Survives the full-page navigation of sign-in (magic link / Google OAuth),
-// tab closes, and refreshes — so a song is never lost mid-session.
-const LAST_SONG_KEY = "epg:lastSong";
-
-interface StoredSong {
-  title: string;
-  lyrics: string;
-  singer: Singer;
-  taskId: string | null;
-  songId: string | null; // set once saved to an account
-  paidSessionId: string | null; // Stripe session of the $2.99 download purchase
-  savedAt: number;
-}
-
-function readStoredSong(): StoredSong | null {
-  try {
-    const raw = localStorage.getItem(LAST_SONG_KEY);
-    if (!raw) return null;
-    const song = JSON.parse(raw) as StoredSong;
-    if (!song.title || !song.lyrics) return null;
-    // Suno audio links go stale; only restore recent songs
-    if (Date.now() - song.savedAt > 48 * 60 * 60 * 1000) return null;
-    return song;
-  } catch {
-    return null;
-  }
-}
-
-function writeStoredSong(song: StoredSong | null) {
-  try {
-    if (song) localStorage.setItem(LAST_SONG_KEY, JSON.stringify(song));
-    else localStorage.removeItem(LAST_SONG_KEY);
-  } catch {
-    /* private mode etc. */
-  }
-}
-
 // ─── Main examples ────────────────────────────────────────────────────────────
 const EXAMPLES = [
   "I missed your call at 3am",
@@ -642,12 +684,8 @@ export default function Home() {
   const [error, setError] = useState("");
   const [rateLimited, setRateLimited] = useState(false);
   const [noCredits, setNoCredits] = useState(false);
-  const [resetAt, setResetAt] = useState<number | null>(null);
-  const [remaining, setRemaining] = useState<number | null>(null);
   const [credits, setCredits] = useState<number | null>(null);
   const [copied, setCopied] = useState(false);
-  const [paymentSuccess, setPaymentSuccess] = useState(false);
-  const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
   const [creditsSuccess, setCreditsSuccess] = useState(false);
 
   // Sign-in form state
@@ -660,9 +698,7 @@ export default function Home() {
   const [buyingCredits, setBuyingCredits] = useState(false);
   const [buyError, setBuyError] = useState("");
   const [showSongs, setShowSongs] = useState(false);
-  const [songClaimed, setSongClaimed] = useState(false);
   const [songId, setSongId] = useState<string | null>(null);
-  const claimAttemptedRef = useRef(false);
 
   // ── Fetch credit balance when user is signed in ─────────────────────────────
   const fetchCredits = useCallback(async () => {
@@ -680,112 +716,26 @@ export default function Home() {
     fetchCredits();
   }, [fetchCredits]);
 
-  // ── Restore the last generated song after reload or sign-in redirect ────────
-  useEffect(() => {
-    const stored = readStoredSong();
-    if (!stored) return;
-    setResult({ title: stored.title, lyrics: stored.lyrics, singer: stored.singer });
-    setSinger(stored.singer);
-    setSongId(stored.songId);
-    if (stored.taskId) setTaskId(stored.taskId);
-  }, []);
-
-  // ── Claim a purchased song into the user's account ───────────────────────────
-  // Only songs with a verified $2.99 purchase can be claimed; credit-generated
-  // songs are saved at generation time and never reach this path.
-  const claimStoredSong = useCallback(() => {
-    if (authStatus !== "authenticated" || claimAttemptedRef.current) return;
-    const stored = readStoredSong();
-    if (!stored || stored.songId || !stored.paidSessionId || !stored.taskId) return;
-    claimAttemptedRef.current = true;
-
-    fetch("/api/songs/claim", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        title: stored.title,
-        lyrics: stored.lyrics,
-        singer: stored.singer,
-        taskId: stored.taskId,
-        sessionId: stored.paidSessionId,
-      }),
-    })
-      .then((r) => (r.ok ? r.json() : Promise.reject()))
-      .then((data) => {
-        if (data.songId) {
-          writeStoredSong({ ...stored, songId: data.songId });
-          setSongId(data.songId);
-          if (data.claimed) {
-            setSongClaimed(true);
-            setTimeout(() => setSongClaimed(false), 6000);
-          }
-        }
-      })
-      .catch(() => {
-        claimAttemptedRef.current = false; // retry on next auth change
-      });
-  }, [authStatus]);
-
-  useEffect(() => {
-    claimStoredSong();
-  }, [claimStoredSong]);
-
-  // ── Handle Stripe return URLs ────────────────────────────────────────────────
+  // ── Handle the credit-purchase return from Stripe ───────────────────────────
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const sessionId = params.get("session_id");
     const creditsSession = params.get("credits_session");
+    if (!creditsSession) return;
 
-    // Download payment return
-    if (sessionId) {
-      window.history.replaceState({}, "", "/");
-      fetch(`/api/checkout/verify?session_id=${sessionId}`)
-        .then((r) => r.json())
-        .then((data) => {
-          if (data.ok) {
-            setPaymentSuccess(true);
-            // Download through the gated route using the paid session id —
-            // the raw audio URL is never sent to the browser.
-            const proxyUrl = `/api/download?session_id=${encodeURIComponent(sessionId)}`;
-            setDownloadUrl(proxyUrl);
-            const a = document.createElement("a");
-            a.href = proxyUrl;
-            a.download = `${data.songTitle ?? "emo-punk-song"}.mp3`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            setTimeout(() => setPaymentSuccess(false), 6000);
-
-            // Mark the stored song as purchased so it can be claimed
-            // into the user's account (now, or when they later sign in)
-            const stored = readStoredSong();
-            if (stored && stored.taskId && stored.taskId === data.taskId) {
-              writeStoredSong({ ...stored, paidSessionId: sessionId });
-              claimAttemptedRef.current = false;
-              claimStoredSong();
-            }
-          }
-        })
-        .catch(() => {});
-    }
-
-    // Credit purchase return — verify with Stripe and fulfill credits
-    if (creditsSession) {
-      window.history.replaceState({}, "", "/");
-      fetch(`/api/checkout/credits/verify?session_id=${encodeURIComponent(creditsSession)}`)
-        .then((r) => r.json())
-        .then((data) => {
-          if (data.ok) {
-            setCreditsSuccess(true);
-            setNoCredits(false);
-            setRateLimited(false);
-            if (typeof data.credits === "number") setCredits(data.credits);
-            setTimeout(() => setCreditsSuccess(false), 6000);
-          }
-        })
-        .catch(() => {});
-    }
-  }, [fetchCredits, claimStoredSong]);
+    window.history.replaceState({}, "", "/");
+    fetch(`/api/checkout/credits/verify?session_id=${encodeURIComponent(creditsSession)}`)
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.ok) {
+          setCreditsSuccess(true);
+          setNoCredits(false);
+          setRateLimited(false);
+          if (typeof data.credits === "number") setCredits(data.credits);
+          setTimeout(() => setCreditsSuccess(false), 6000);
+        }
+      })
+      .catch(() => {});
+  }, [fetchCredits]);
 
   // ── Sign-in handler ──────────────────────────────────────────────────────────
   const handleSignIn = async (e: React.FormEvent) => {
@@ -833,12 +783,19 @@ export default function Home() {
   // ── Generate song ────────────────────────────────────────────────────────────
   const generate = async () => {
     if (!words.trim()) return;
+    // Login is required to generate.
+    if (!isSignedIn) {
+      setShowSignIn(true);
+      setSignInError("");
+      return;
+    }
     setLoading(true);
     setError("");
     setRateLimited(false);
     setNoCredits(false);
     setResult(null);
     setTaskId(null);
+    setSongId(null);
 
     try {
       const lyricsRes = await fetch("/api/generate", {
@@ -848,15 +805,16 @@ export default function Home() {
       });
       const lyricsData = await lyricsRes.json();
 
-      if (lyricsRes.status === 429) {
-        setRateLimited(true);
-        setResetAt(lyricsData.resetAt ?? null);
+      if (lyricsRes.status === 401) {
+        // Session expired — prompt sign-in again.
+        setShowSignIn(true);
         setLoading(false);
         return;
       }
 
-      if (lyricsRes.status === 402) {
-        setNoCredits(true);
+      if (lyricsRes.status === 429) {
+        setRateLimited(true);
+        setError(lyricsData.error || "Daily limit reached.");
         setLoading(false);
         return;
       }
@@ -864,24 +822,8 @@ export default function Home() {
       if (!lyricsRes.ok) throw new Error(lyricsData.error || "Lyrics generation failed");
 
       setResult(lyricsData);
-      if (typeof lyricsData.remaining === "number") setRemaining(lyricsData.remaining);
-      if (typeof lyricsData.creditsRemaining === "number") {
-        setCredits(lyricsData.creditsRemaining);
-      }
-      setLoading(false);
-
-      const storedSong: StoredSong = {
-        title: lyricsData.title,
-        lyrics: lyricsData.lyrics,
-        singer,
-        taskId: null,
-        songId: lyricsData.songId ?? null,
-        paidSessionId: null,
-        savedAt: Date.now(),
-      };
-      writeStoredSong(storedSong);
       setSongId(lyricsData.songId ?? null);
-      claimAttemptedRef.current = false; // new song, claimable after purchase
+      setLoading(false);
 
       const audioRes = await fetch("/api/audio/start", {
         method: "POST",
@@ -896,7 +838,6 @@ export default function Home() {
       const audioData = await audioRes.json();
       if (audioRes.ok && audioData.taskId) {
         setTaskId(audioData.taskId);
-        writeStoredSong({ ...storedSong, taskId: audioData.taskId });
       }
     } catch (e) {
       setError(e instanceof Error ? e.message : "Something went wrong");
@@ -919,14 +860,9 @@ export default function Home() {
     setError("");
     setRateLimited(false);
     setNoCredits(false);
-    writeStoredSong(null);
   };
 
-  const hoursUntilReset = resetAt
-    ? Math.ceil((resetAt - Date.now()) / 1000 / 60 / 60)
-    : null;
-
-  const isBlocked = rateLimited || noCredits;
+  const isBlocked = noCredits;
   const isSignedIn = authStatus === "authenticated";
 
   const signInFormBlock = !signInDone ? (
@@ -999,26 +935,6 @@ export default function Home() {
         <div className="absolute inset-0 noise-bg opacity-30" />
       </div>
 
-      {/* Payment success banner */}
-      {paymentSuccess && (
-        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 rounded-2xl border border-green-500/40 bg-green-500/15 backdrop-blur px-5 py-3 shadow-xl lyrics-appear">
-          <div className="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
-              <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
-            </svg>
-          </div>
-          <div>
-            <p className="font-bold text-white text-sm">Payment successful!</p>
-            <p className="text-xs text-white/60">Your download has started automatically.</p>
-          </div>
-          {downloadUrl && (
-            <a href={downloadUrl} download className="ml-2 text-xs text-green-400 hover:text-green-300 underline underline-offset-2">
-              Download again
-            </a>
-          )}
-        </div>
-      )}
-
       {/* Credits success banner */}
       {creditsSuccess && (
         <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 rounded-2xl border border-[#9b30ff]/40 bg-[#9b30ff]/15 backdrop-blur px-5 py-3 shadow-xl lyrics-appear">
@@ -1026,16 +942,6 @@ export default function Home() {
           <div>
             <p className="font-bold text-white text-sm">Credits added!</p>
             <p className="text-xs text-white/60">Go make some noise.</p>
-          </div>
-        </div>
-      )}
-
-      {songClaimed && (
-        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 rounded-2xl border border-[#00cfff]/40 bg-[#00cfff]/15 backdrop-blur px-5 py-3 shadow-xl lyrics-appear">
-          <span className="text-xl">🎵</span>
-          <div>
-            <p className="font-bold text-white text-sm">Song saved to your account!</p>
-            <p className="text-xs text-white/60">Find it anytime under My Songs.</p>
           </div>
         </div>
       )}
@@ -1121,7 +1027,18 @@ export default function Home() {
         )}
 
         {/* ── My Songs modal ──────────────────────────────────────── */}
-        {showSongs && isSignedIn && <SongsModal onClose={() => setShowSongs(false)} />}
+        {showSongs && isSignedIn && (
+          <SongsModal
+            credits={credits}
+            onCreditsChange={(c) => setCredits(c)}
+            onNeedCredits={() => {
+              setShowSongs(false);
+              setShowBuyCredits(true);
+              setBuyError("");
+            }}
+            onClose={() => setShowSongs(false)}
+          />
+        )}
 
         {/* ── Buy credits modal ───────────────────────────────────── */}
         {showBuyCredits && isSignedIn && (
@@ -1257,36 +1174,28 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Counter — show credits if signed in, IP limit otherwise */}
-          {isSignedIn
-            ? credits !== null && !isBlocked && (
-                <div className="flex justify-end mb-2">
-                  <span className="text-xs text-white/30 border border-white/10 rounded-full px-3 py-1">
-                    {credits} credit{credits !== 1 ? "s" : ""} remaining
-                  </span>
-                </div>
-              )
-            : remaining !== null && !rateLimited && (
-                <div className="flex justify-end mb-2">
-                  <span className="text-xs text-white/30 border border-white/10 rounded-full px-3 py-1">
-                    {remaining} free song{remaining !== 1 ? "s" : ""} left today
-                  </span>
-                </div>
-              )}
+          {/* Credits remaining (signed in) */}
+          {isSignedIn && credits !== null && (
+            <div className="flex justify-end mb-2">
+              <span className="text-xs text-white/30 border border-white/10 rounded-full px-3 py-1">
+                {credits} credit{credits !== 1 ? "s" : ""} · unlock full songs
+              </span>
+            </div>
+          )}
 
           {/* Generate button */}
           <button
             onClick={generate}
-            disabled={loading || !words.trim() || isBlocked}
+            disabled={loading || !words.trim()}
             className="w-full relative rounded-xl py-4 font-black text-lg tracking-wide uppercase transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed overflow-hidden group"
             style={{
               background:
-                loading || !words.trim() || isBlocked
+                loading || !words.trim()
                   ? "rgba(155, 48, 255, 0.3)"
                   : "linear-gradient(135deg, #ff2d78 0%, #9b30ff 50%, #00cfff 100%)",
             }}
           >
-            {!loading && !isBlocked && (
+            {!loading && (
               <div className="absolute inset-0 bg-white/0 group-hover:bg-white/10 transition-colors" />
             )}
             <span className="relative text-white">
@@ -1298,71 +1207,20 @@ export default function Home() {
                   </svg>
                   Writing your song...
                 </span>
-              ) : isBlocked ? (
-                noCredits ? "🪙 No credits left" : "🚫 Daily limit reached"
-              ) : (
+              ) : isSignedIn ? (
                 "⚡ Generate Song"
+              ) : (
+                "🔒 Sign in to generate"
               )}
             </span>
           </button>
 
-          {/* ── Rate limit / no-credits banner ──────────────────────────── */}
-          {(rateLimited || noCredits) && (
-            <div className="mt-4 rounded-xl border border-[#9b30ff]/30 bg-[#0f0520]/60 px-5 py-5">
-              {rateLimited && !isSignedIn && (
-                <>
-                  <div className="text-center mb-4">
-                    <p className="text-2xl mb-1">🎸</p>
-                    <p className="font-bold text-white text-sm">You&apos;ve used all 2 free songs today</p>
-                    {hoursUntilReset !== null && (
-                      <p className="text-xs text-white/40 mt-1">
-                        Free limit resets in ~{hoursUntilReset} hour{hoursUntilReset !== 1 ? "s" : ""}
-                      </p>
-                    )}
-                  </div>
-                  <div className="border-t border-white/10 pt-4">
-                    <p className="text-xs text-white/50 text-center mb-3">
-                      Want more songs now? Sign in to buy a credit pack.
-                    </p>
-                  </div>
-                </>
-              )}
-
-              {noCredits && isSignedIn && (
-                <div className="text-center mb-4">
-                  <p className="text-2xl mb-1">🪙</p>
-                  <p className="font-bold text-white text-sm">You&apos;re out of credits</p>
-                  <p className="text-xs text-white/40 mt-1">Top up to keep making songs</p>
-                </div>
-              )}
-
-              {/* Sign-in form (shared block) */}
-              {!isSignedIn && signInFormBlock}
-
-              {/* Show credit packs once signed in */}
-              {isSignedIn && (
-                <>
-                  {buyingCredits ? (
-                    <div className="flex items-center justify-center gap-2 py-4 text-white/50 text-sm">
-                      <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
-                      </svg>
-                      Redirecting to checkout…
-                    </div>
-                  ) : (
-                    <CreditPacks onBuy={handleBuyCredits} />
-                  )}
-                  {buyError && (
-                    <p className="text-xs text-[#ff2d78] mt-3 text-center">{buyError}</p>
-                  )}
-                  <p className="text-center text-xs text-white/25 mt-3">
-                    Secure checkout via Stripe · Credits never expire
-                  </p>
-                </>
-              )}
-            </div>
-          )}
+          {/* How it works hint */}
+          <p className="text-center text-xs text-white/25 mt-3">
+            {isSignedIn
+              ? "Free to generate · hear a 40s preview · unlock the full song with 1 credit"
+              : "Sign in to start — new accounts get 2 free songs"}
+          </p>
 
           {error && (
             <div className="mt-4 rounded-lg border border-[#ff2d78]/40 bg-[#ff2d78]/10 px-4 py-3 text-sm text-[#ff2d78]">
@@ -1405,7 +1263,18 @@ export default function Home() {
                 </button>
               </div>
 
-              <AudioPlayer title={result.title} singer={result.singer} taskId={taskId} saved={!!songId} songId={songId} />
+              <AudioPlayer
+                title={result.title}
+                singer={result.singer}
+                taskId={taskId}
+                songId={songId}
+                credits={credits}
+                onUnlocked={(c) => setCredits(c)}
+                onNeedCredits={() => {
+                  setShowBuyCredits(true);
+                  setBuyError("");
+                }}
+              />
             </div>
 
             <div className="px-6 py-6">
