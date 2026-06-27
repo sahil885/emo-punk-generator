@@ -36,6 +36,24 @@ export const posts: Post[] = [
     excerpt:
       "Minor keys, confessional lyrics, quiet-loud dynamics: a quick guide to what makes a song emo, and how it differs from pop punk.",
   },
+  {
+    slug: "emo-breakup-song",
+    title: "How to Make an Emo Breakup Song About Your Ex (with AI)",
+    description:
+      "Heartbroken? Turn it into a song. Here's how to make an emo breakup song about your ex with AI — full lyrics, vocals, and music in minutes. First songs free.",
+    date: "2026-06-27",
+    excerpt:
+      "Breakups are emo's whole reason for existing. Here's how to turn the worst text, the last voicemail, or a 2am spiral into a full breakup anthem.",
+  },
+  {
+    slug: "how-to-write-emo-lyrics",
+    title: "How to Write Emo & Pop Punk Lyrics (with AI Examples)",
+    description:
+      "A practical guide to writing emo and pop punk lyrics: structure, the confessional voice, imagery, and hooks — plus how to use AI to draft a full song.",
+    date: "2026-06-27",
+    excerpt:
+      "The exact techniques behind great emo lyrics — specificity, quiet-loud contrast, the confessional 'I' — and how to get there fast with AI.",
+  },
 ];
 
 export function getPost(slug: string): Post | undefined {
