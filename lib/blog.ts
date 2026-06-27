@@ -54,6 +54,24 @@ export const posts: Post[] = [
     excerpt:
       "The exact techniques behind great emo lyrics — specificity, quiet-loud contrast, the confessional 'I' — and how to get there fast with AI.",
   },
+  {
+    slug: "ai-diss-track-generator",
+    title: "How to Make a Diss Track with AI (Pop Punk Style)",
+    description:
+      "Make a sung, pop punk diss track about anyone with AI — full lyrics, vocals, and beat in minutes. Not a rap generator: this roasts in anthemic emo style.",
+    date: "2026-06-28",
+    excerpt:
+      "Most diss track generators spit rap bars. Here's how to make a sung, anthemic pop punk diss track that actually slaps on TikTok — about your ex, your enemy, anyone.",
+  },
+  {
+    slug: "songs-like-emo-bands",
+    title: "Make a Song That Sounds Like Paramore, MCR, or Fall Out Boy",
+    description:
+      "Want a song that sounds like My Chemical Romance, Paramore, or Fall Out Boy? Here's how to get each band's vibe with AI — vocalist, themes, and prompt tips.",
+    date: "2026-06-28",
+    excerpt:
+      "How to dial in the sound of your favorite emo and pop punk bands with AI — the vocalist choice, lyrical themes, and prompts that capture each one's vibe.",
+  },
 ];
 
 export function getPost(slug: string): Post | undefined {
