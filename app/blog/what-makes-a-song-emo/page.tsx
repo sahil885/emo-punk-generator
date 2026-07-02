@@ -94,6 +94,14 @@ export default function Page() {
           melodic lead lines over a punk-rooted rhythm section.
         </li>
       </ul>
+      <p>
+        These ingredients show up most dramatically in the genre&apos;s slow
+        songs — we break that form down in{" "}
+        <Link href="/blog/what-makes-a-great-emo-ballad">
+          what makes a great emo ballad
+        </Link>
+        .
+      </p>
 
       <h2>The lyrical ingredients</h2>
       <p>

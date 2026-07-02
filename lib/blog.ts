@@ -20,9 +20,9 @@ export const posts: Post[] = [
   },
   {
     slug: "turn-your-words-into-an-emo-song",
-    title: "Turn Your Words (or Texts) Into an Emo Song with AI",
+    title: "Turn Your Texts Into an Emo Song with AI (Viral Trend, Explained)",
     description:
-      "That TikTok trend where people turn their texts into an emo song? Here's how to do it yourself — paste any words and get a real song with vocals, free.",
+      "How to turn your texts into an emo song with AI — paste the words, pick a vocalist, and get a real song with vocals in minutes. The viral trend, explained.",
     date: "2026-06-17",
     excerpt:
       "The viral 'turn your texts into an emo song' trend, explained — and how to make your own from a screenshot, a voice note, or a late-night thought.",
@@ -71,6 +71,15 @@ export const posts: Post[] = [
     date: "2026-06-28",
     excerpt:
       "How to dial in the sound of your favorite emo and pop punk bands with AI — the vocalist choice, lyrical themes, and prompts that capture each one's vibe.",
+  },
+  {
+    slug: "what-makes-a-great-emo-ballad",
+    title: "What Makes a Great Emo Ballad? The Elements, Explained",
+    description:
+      "The elements that define a great emo ballad: quiet-loud dynamics, confessional lyrics, the build, and the breakdown — with classic examples and how to write your own.",
+    date: "2026-06-28",
+    excerpt:
+      "From the whispered first verse to the chorus that levels you — the exact elements that make an emo ballad great, and how to write one yourself.",
   },
 ];
 
