@@ -1,21 +1,10 @@
-import type { Metadata } from "next";
 import Link from "next/link";
 import BlogShell, { type FaqItem } from "@/components/BlogShell";
-import { getPost } from "@/lib/blog";
+import { getPost, postMetadata } from "@/lib/blog";
 
 const post = getPost("what-makes-a-song-emo")!;
 
-export const metadata: Metadata = {
-  title: post.title,
-  description: post.description,
-  alternates: { canonical: `/blog/${post.slug}` },
-  openGraph: {
-    title: post.title,
-    description: post.description,
-    url: `https://texttoemo.com/blog/${post.slug}`,
-    type: "article",
-  },
-};
+export const metadata = postMetadata(post);
 
 const faq: FaqItem[] = [
   {

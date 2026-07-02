@@ -1,3 +1,5 @@
+import type { Metadata } from "next";
+
 // Single source of truth for blog posts — used by the index page, each
 // article's metadata, and the sitemap. Article bodies live in their page.tsx.
 export interface Post {
@@ -6,6 +8,30 @@ export interface Post {
   description: string; // meta description
   date: string; // ISO date
   excerpt: string; // shown on the blog index
+}
+
+// Shared per-article metadata: canonical, OpenGraph and Twitter cards with the
+// branded OG image. (Nested segments don't inherit the root file-based OG
+// image once they define their own openGraph, so it's set explicitly here.)
+export function postMetadata(post: Post): Metadata {
+  return {
+    title: post.title,
+    description: post.description,
+    alternates: { canonical: `/blog/${post.slug}` },
+    openGraph: {
+      title: post.title,
+      description: post.description,
+      url: `https://texttoemo.com/blog/${post.slug}`,
+      type: "article",
+      images: ["/opengraph-image"],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: post.title,
+      description: post.description,
+      images: ["/opengraph-image"],
+    },
+  };
 }
 
 export const posts: Post[] = [
