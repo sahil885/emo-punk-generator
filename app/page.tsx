@@ -64,6 +64,9 @@ function AudioPlayer({
   const [unlocking, setUnlocking] = useState(false);
   const [unlockError, setUnlockError] = useState("");
   const elapsedTickRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  // When the audio source is swapped (preview → full on unlock), continue
+  // playback if the user was already listening.
+  const shouldAutoplayRef = useRef(false);
 
   const stopPoll = useCallback(() => {
     if (pollRef.current) {
@@ -112,6 +115,14 @@ function AudioPlayer({
     const audio = audioRef.current;
     if (!audio) return;
 
+    // The <audio> element remounts when the source changes (e.g. preview → full
+    // on unlock). The old element is destroyed without firing pause/ended, so
+    // reset the transient playback state here or the UI gets stuck "playing".
+    setPlaying(false);
+    setElapsed(0);
+    setDuration(0);
+    if (elapsedTickRef.current) clearInterval(elapsedTickRef.current);
+
     const onPlay = () => {
       setPlaying(true);
       elapsedTickRef.current = setInterval(() => {
@@ -130,6 +141,11 @@ function AudioPlayer({
     const onLoadedMetadata = () => {
       if (audio.duration && !isNaN(audio.duration)) {
         setDuration(Math.floor(audio.duration));
+      }
+      // Continue playback across a source swap if the user was mid-listen.
+      if (shouldAutoplayRef.current) {
+        shouldAutoplayRef.current = false;
+        audio.play().catch(() => {});
       }
     };
 
@@ -174,6 +190,8 @@ function AudioPlayer({
       });
       const data = await res.json();
       if (res.ok && data.ok) {
+        // If they were listening to the preview, keep playing the full track.
+        shouldAutoplayRef.current = playing;
         setUnlocked(true);
         // Swap the player to the full track.
         setAudioUrl(`/api/stream?songId=${encodeURIComponent(songId)}&v=full`);
