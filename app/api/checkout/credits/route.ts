@@ -28,8 +28,8 @@ export async function POST(req: NextRequest) {
         price_data: {
           currency: "usd",
           product_data: {
-            name: `EMO PUNK AI — ${packInfo.label}`,
-            description: `${packInfo.credits} song generations for EMO PUNK AI`,
+            name: `Text to Emo — ${packInfo.label}`,
+            description: `${packInfo.credits} credits to unlock full songs on Text to Emo`,
           },
           unit_amount: packInfo.amount,
         },
@@ -40,6 +40,11 @@ export async function POST(req: NextRequest) {
     success_url: `${origin}/?credits_session={CHECKOUT_SESSION_ID}`,
     cancel_url: `${origin}/`,
     customer_email: session.user.email,
+    custom_text: {
+      after_submit: {
+        message: "Questions or need help? Email support at sahil@texttoemo.com",
+      },
+    },
     metadata: {
       type: "credits",
       pack,
