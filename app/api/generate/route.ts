@@ -10,6 +10,21 @@ import { sql } from "@/lib/db";
 const FREE_DAILY_LIMIT = 10;
 const CREDITED_DAILY_LIMIT = 50;
 
+// Rotated per generation to force variety in how songs open, so the model
+// stops defaulting to the same "2am in a car" opener every time.
+const OPENING_APPROACHES = [
+  "Open dropped into the middle of a moment or an argument, already in motion.",
+  "Open on one specific concrete object or detail — not a time of day.",
+  "Open with a line of remembered dialogue, or a text message, in quotes.",
+  "Open by speaking directly to 'you'.",
+  "Open with a physical sensation, or something the narrator's body is doing.",
+  "Open with a question the narrator can't answer.",
+  "Open inside a specific room or place — a bedroom, kitchen, school hallway, party, bus, bathroom — not a car or the street.",
+  "Open with a lie the narrator is telling themselves.",
+  "Open in daylight or at an unexpected hour — deliberately not late at night.",
+  "Open on a small, mundane action that quietly means everything.",
+];
+
 export async function POST(req: NextRequest) {
   // ── Login required to generate ──────────────────────────────────────
   const session = await auth();
@@ -60,6 +75,8 @@ export async function POST(req: NextRequest) {
       ? "female vocalist in the style of Hayley Williams (Paramore), Lynn Gunn (PVRIS), or Avril Lavigne"
       : "male vocalist in the style of Pete Wentz/Patrick Stump (Fall Out Boy), Billie Joe Armstrong (Green Day), or Oli Sykes (BMTH)";
 
+  const opening = OPENING_APPROACHES[Math.floor(Math.random() * OPENING_APPROACHES.length)];
+
   const prompt = `You are an emo pop punk songwriter. Transform the following words or phrase into a complete emo pop punk song.
 
 User's words: "${words}"
@@ -76,13 +93,15 @@ Write a full song with these exact sections, labeled clearly:
 [FINAL CHORUS]
 
 Rules:
-- Emo pop punk style: angst, heartbreak, defiance, raw emotion, suburban teenage pain
-- Rhyme scheme should feel natural, not forced
-- Chorus should be anthemic and repeatable
-- Use the user's words/theme as the emotional core
-- Bridge should be the emotional climax — more intense or stripped back
-- Keep it authentic to the genre: references to late nights, driving, screaming, falling apart, holding on
-- Song title should be dramatic and emo (output it as: TITLE: "Song Title Here" on the very first line)
+- Emo pop punk style: angst, heartbreak, defiance, raw emotion — but earn it with specific, personal detail, not generic scenery.
+- Build ALL imagery from the user's own words and situation above. The song should feel like it could only be about THIS, not a template.
+- Opening line approach: ${opening}
+- AVOID overused emo clichés. Do NOT open with or lean on: "2am" (or any specific late-night hour), driving/parked cars, sitting outside someone's house, flickering streetlights, empty streets/boulevards, or staring at a phone. These are exhausted — find fresher, more specific images.
+- Rhyme scheme should feel natural, not forced.
+- Chorus should be anthemic and repeatable.
+- Use the user's words/theme as the emotional core.
+- Bridge should be the emotional climax — more intense or stripped back.
+- Song title should be dramatic and emo, and specific to this song (output it as: TITLE: "Song Title Here" on the very first line).
 
 Output format:
 TITLE: "Song Title Here"
@@ -100,6 +119,7 @@ etc.`;
     const message = await client.messages.create({
       model: "claude-sonnet-4-6",
       max_tokens: 1024,
+      temperature: 1,
       messages: [{ role: "user", content: prompt }],
     });
 
