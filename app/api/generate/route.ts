@@ -3,10 +3,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { sql } from "@/lib/db";
 
-// Free generations per user per day. Generation is free (you get a preview);
-// credits are only spent to unlock the full song. This cap protects against
-// runaway Suno usage.
-const DAILY_GENERATION_LIMIT = 10;
+// Daily generation caps. Generation is free (you get a preview); credits are
+// spent to unlock the full song. The cap protects against runaway Suno usage by
+// free users — but customers who hold credits are paying users and shouldn't be
+// throttled at the free-tier limit, so they get a much higher (still bounded) cap.
+const FREE_DAILY_LIMIT = 10;
+const CREDITED_DAILY_LIMIT = 50;
 
 export async function POST(req: NextRequest) {
   // ── Login required to generate ──────────────────────────────────────
@@ -26,15 +28,17 @@ export async function POST(req: NextRequest) {
   }
 
   // ── Per-user daily generation cap ──────────────────────────────────
+  // Paying users (those holding credits) get the higher cap.
+  const dailyLimit = user.credits > 0 ? CREDITED_DAILY_LIMIT : FREE_DAILY_LIMIT;
   const recent = await sql`
     SELECT count(*)::int AS n FROM songs
     WHERE "userId" = ${user.id} AND created_at > now() - interval '24 hours'
   `;
   const usedToday = (recent[0] as { n: number }).n;
-  if (usedToday >= DAILY_GENERATION_LIMIT) {
+  if (usedToday >= dailyLimit) {
     return NextResponse.json(
       {
-        error: `You've hit today's limit of ${DAILY_GENERATION_LIMIT} songs. Come back tomorrow 🎸`,
+        error: `You've hit today's limit of ${dailyLimit} songs. Come back tomorrow 🎸`,
         rateLimited: true,
       },
       { status: 429 }
