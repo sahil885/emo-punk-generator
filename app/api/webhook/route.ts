@@ -26,10 +26,10 @@ export async function POST(req: NextRequest) {
     // receives every checkout event. Only act on Text to Emo credit purchases
     // (identified by our metadata + our success_url); acknowledge everything
     // else so Stripe doesn't retry.
-    const isTextToEmoCredits =
-      session.metadata?.type === "credits" &&
-      (session.success_url?.includes("texttoemo.com") ?? false);
-    if (!isTextToEmoCredits) {
+    if (
+      session.metadata?.type !== "credits" ||
+      !(session.success_url?.includes("texttoemo.com") ?? false)
+    ) {
       return NextResponse.json({ received: true });
     }
 
