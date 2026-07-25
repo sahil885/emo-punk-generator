@@ -22,8 +22,14 @@ export async function POST(req: NextRequest) {
   if (event.type === "checkout.session.completed") {
     const session = event.data.object as Stripe.Checkout.Session;
 
-    // Only handle credit purchases
-    if (session.metadata?.type !== "credits") {
+    // This Stripe account is shared across several apps, so every endpoint
+    // receives every checkout event. Only act on Text to Emo credit purchases
+    // (identified by our metadata + our success_url); acknowledge everything
+    // else so Stripe doesn't retry.
+    const isTextToEmoCredits =
+      session.metadata?.type === "credits" &&
+      (session.success_url?.includes("texttoemo.com") ?? false);
+    if (!isTextToEmoCredits) {
       return NextResponse.json({ received: true });
     }
 
