@@ -116,6 +116,15 @@ export const posts: Post[] = [
     excerpt:
       "The most emo move you can make with a crush? Write the song you'll never send. Here's how to turn that 2am feeling into a full pop-punk track in minutes.",
   },
+  {
+    slug: "how-to-make-a-sad-song-with-ai",
+    title: "How to Make a Sad Song with AI (That Actually Hurts)",
+    description:
+      "Learn how to make a sad song with AI — type what hurts, pick a vocalist, and get full emo lyrics, vocals, and music in minutes. Your first songs are free.",
+    date: "2026-07-27",
+    excerpt:
+      "Generic sad-music generators give you moody background loops. Here's how to make a sad song with real words, real vocals, and a chorus that actually hurts.",
+  },
 ];
 
 export function getPost(slug: string): Post | undefined {
