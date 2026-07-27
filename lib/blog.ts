@@ -125,6 +125,15 @@ export const posts: Post[] = [
     excerpt:
       "Generic sad-music generators give you moody background loops. Here's how to make a sad song with real words, real vocals, and a chorus that actually hurts.",
   },
+  {
+    slug: "make-a-song-about-someone",
+    title: "How to Make a Song About Someone with AI (Ex, Crush, Anyone)",
+    description:
+      "How to make a song about someone with AI — your ex, your crush, your best friend, anyone. Type one real detail and get full emo lyrics and vocals in minutes.",
+    date: "2026-07-27",
+    excerpt:
+      "Ex, crush, best friend, worst enemy — anyone can be a song. Here's how to make a song about someone with AI, starting from one specific, slightly embarrassing detail.",
+  },
 ];
 
 export function getPost(slug: string): Post | undefined {
