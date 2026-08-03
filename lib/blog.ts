@@ -134,6 +134,15 @@ export const posts: Post[] = [
     excerpt:
       "Ex, crush, best friend, worst enemy — anyone can be a song. Here's how to make a song about someone with AI, starting from one specific, slightly embarrassing detail.",
   },
+  {
+    slug: "emo-song-ideas",
+    title: "50 Emo Song Ideas & Prompts (Turn One Into a Real Song)",
+    description:
+      "50 emo song ideas and prompts you can steal — breakups, crushes, diss tracks, 2am spirals. Pick one, paste it in, and get a full song with vocals in minutes.",
+    date: "2026-08-03",
+    excerpt:
+      "Stuck staring at an empty text box? Here are 50 emo song ideas — organized by feeling — that you can paste straight into a generator and hear sung back to you.",
+  },
 ];
 
 export function getPost(slug: string): Post | undefined {
