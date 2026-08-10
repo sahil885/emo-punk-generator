@@ -143,6 +143,15 @@ export const posts: Post[] = [
     excerpt:
       "Stuck staring at an empty text box? Here are 50 emo song ideas — organized by feeling — that you can paste straight into a generator and hear sung back to you.",
   },
+  {
+    slug: "song-for-your-best-friend",
+    title: "How to Make a Song for Your Best Friend with AI (Not Cheesy)",
+    description:
+      "How to make a song for your best friend with AI without it sounding like a greeting card. Real lyrics, real vocals, done in minutes. Your first songs are free.",
+    date: "2026-08-10",
+    excerpt:
+      "Most friendship songs sound like a birthday card set to music. Here's how to make a song for your best friend that's actually specific enough to make them cry.",
+  },
 ];
 
 export function getPost(slug: string): Post | undefined {
