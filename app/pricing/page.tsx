@@ -39,7 +39,12 @@ const faq = [
   {
     question: "Do credits expire?",
     answer:
-      "No. Credits never expire — buy a pack and use it whenever you like.",
+      "No. Credits never expire — buy a pack and use it whenever you like. The song files themselves are a separate thing: you have 7 days to download a track before it's removed from our servers, but once you've downloaded it, it's yours forever.",
+  },
+  {
+    question: "How long do I have to download my song?",
+    answer:
+      "7 days from when you make it. Hosting audio is the most expensive part of running Text to Emo, so tracks are removed after that to keep prices low. Your library shows how many days each song has left — download the ones you love and they're yours to keep permanently.",
   },
   {
     question: "Is this a subscription?",
@@ -49,7 +54,7 @@ const faq = [
   {
     question: "What do I get when I unlock a song?",
     answer:
-      "One credit unlocks the complete song — full-length audio with vocals and music — plus the ability to download the track and keep it.",
+      "One credit unlocks the complete song — full-length audio with vocals and music — plus the MP3 download. Save the file within 7 days and it's yours to keep and post anywhere, with no watermark.",
   },
 ];
 
@@ -379,7 +384,7 @@ export default function PricingPage() {
               {
                 icon: "🔓",
                 title: "Unlock with 1 credit",
-                body: "Spend a single credit to unlock the complete track and download it. It stays in your library forever.",
+                body: "Spend a single credit to unlock the complete track, then save the MP3 within 7 days. Once downloaded, it's yours to keep and post anywhere.",
               },
             ].map((s) => (
               <div

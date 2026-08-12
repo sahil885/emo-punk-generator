@@ -4,6 +4,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useSession, signIn, signOut } from "next-auth/react";
 import { PACK_LIST, PACKS, isPackId, perSong, savingsPct, type PackId } from "@/lib/pricing";
+import { AUDIO_RETENTION_DAYS, isExpired, retentionLabel } from "@/lib/retention";
 
 type Singer = "male" | "female";
 
@@ -608,6 +609,10 @@ function SongsModal({
             Previews are saved here — unlock the full song with a credit.
             {typeof credits === "number" ? ` You have ${credits} credit${credits !== 1 ? "s" : ""}.` : ""}
           </p>
+          <p className="text-[11px] text-[#00cfff]/80 mt-1.5">
+            Songs are playable for {AUDIO_RETENTION_DAYS} days — download the
+            ones you want to keep.
+          </p>
         </div>
 
         <div className="overflow-y-auto flex-1 -mx-2 px-2">
@@ -652,8 +657,21 @@ function SongsModal({
                         {song.singer === "female" ? "Female" : "Male"} vocalist ·{" "}
                         {new Date(song.created_at).toLocaleDateString()}
                       </p>
+                      {song.hasAudio && (
+                        <p
+                          className={`text-[11px] mt-0.5 ${
+                            isExpired(song.created_at)
+                              ? "text-white/30"
+                              : "text-[#00cfff]"
+                          }`}
+                        >
+                          {isExpired(song.created_at)
+                            ? "Audio removed after 7 days"
+                            : retentionLabel(song.created_at)}
+                        </p>
+                      )}
                     </div>
-                    {song.hasAudio ? (
+                    {song.hasAudio && !isExpired(song.created_at) ? (
                       <button
                         onClick={() => togglePlay(song)}
                         className="w-9 h-9 rounded-full bg-gradient-to-r from-[#ff2d78] to-[#9b30ff] flex items-center justify-center flex-shrink-0 hover:opacity-90 transition-opacity"
@@ -669,6 +687,14 @@ function SongsModal({
                           </svg>
                         )}
                       </button>
+                    ) : song.hasAudio ? (
+                      // Expired: a play button here just fails silently.
+                      <span
+                        className="text-[10px] text-white/25 flex-shrink-0"
+                        title="The audio file has been removed to save storage"
+                      >
+                        Expired
+                      </span>
                     ) : (
                       <span className="text-[10px] text-white/30 flex-shrink-0">audio pending</span>
                     )}
@@ -681,6 +707,7 @@ function SongsModal({
                       {expandedId === song.id ? "Hide lyrics" : "Lyrics"}
                     </button>
                     {song.hasAudio &&
+                      !isExpired(song.created_at) &&
                       (song.unlocked ? (
                         <a
                           href={`/api/download?songId=${encodeURIComponent(song.id)}`}
@@ -690,6 +717,8 @@ function SongsModal({
                           Download
                         </a>
                       ) : (
+                        // Hidden once expired: unlocking would spend a credit
+                        // on a file that no longer exists.
                         <button
                           onClick={() => unlockSong(song)}
                           disabled={unlockingId === song.id}
@@ -1200,7 +1229,7 @@ export default function Home() {
               <ul className="mt-3 mb-1 flex flex-col gap-1.5 text-xs text-white/60">
                 {[
                   "Full-length track, not the 60s preview",
-                  "MP3 download — yours to keep",
+                  `MP3 download — ${AUDIO_RETENTION_DAYS} days to save it, then it's yours forever`,
                   "Post it anywhere · no watermark",
                 ].map((benefit) => (
                   <li key={benefit} className="flex items-start gap-2">
