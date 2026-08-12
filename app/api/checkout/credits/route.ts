@@ -18,7 +18,9 @@ export async function POST(req: NextRequest) {
   const origin = req.headers.get("origin") || "http://localhost:3000";
 
   const checkout = await getStripe().checkout.sessions.create({
-    payment_method_types: ["card"],
+    // No payment_method_types: pinning it to ["card"] suppressed Apple Pay and
+    // Google Pay. Letting Stripe pick automatically surfaces the wallets, which
+    // matters because nearly all our traffic is mobile.
     line_items: [
       {
         price_data: {

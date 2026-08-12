@@ -60,9 +60,11 @@ export const PACKS: Record<PackId, Pack> = {
     id: "25pack",
     credits: 25,
     amount: 3999,
+    // No badge: a second badge competes with "Most popular" and splits
+    // attention. This tier sells on price-per-song, which is shown anyway.
     label: "25 Songs Pack",
     price: "$39.99",
-    badge: "Best value",
+    badge: null,
     highlight: false,
     blurb: "Cheapest per song — for the prolific.",
   },

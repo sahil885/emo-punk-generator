@@ -861,13 +861,15 @@ export default function Home() {
 
   // ── Generate song ────────────────────────────────────────────────────────────
   const generate = async () => {
-    if (!words.trim()) return;
-    // Login is required to generate.
+    // Login is required to generate, so check that before the empty-input
+    // guard: a signed-out visitor who taps the CTA with an empty box should
+    // get the sign-in prompt, not a dead button.
     if (!isSignedIn) {
       setShowSignIn(true);
       setSignInError("");
       return;
     }
+    if (!words.trim()) return;
     setLoading(true);
     setError("");
     setRateLimited(false);
@@ -1030,9 +1032,15 @@ export default function Home() {
         {/* ── Auth bar ─────────────────────────────────────────────── */}
         <div className="flex justify-end mb-6 min-h-[32px]">
           {authStatus === "loading" ? null : isSignedIn ? (
-            // Wraps on narrow phones — four pills overflow a 375px viewport,
+            // Wraps on narrow phones — the pills overflow a 375px viewport,
             // and the page clips (overflow-hidden) rather than scrolling.
             <div className="flex items-center justify-end flex-wrap gap-2 sm:gap-3">
+              <Link
+                href="/pricing"
+                className="text-xs font-bold text-white/45 hover:text-white transition-colors px-1"
+              >
+                Pricing
+              </Link>
               {/* Credit balance chip */}
               <div className="flex items-center gap-1.5 text-xs border border-[#9b30ff]/40 rounded-full px-3 py-1.5 bg-[#9b30ff]/10">
                 <span className="text-[#9b30ff]">⚡</span>
@@ -1063,15 +1071,23 @@ export default function Home() {
               </button>
             </div>
           ) : (
-            <button
-              onClick={() => { setShowSignIn(true); setSignInError(""); }}
-              className="flex items-center gap-2 text-sm font-bold text-white bg-gradient-to-r from-[#ff2d78] to-[#9b30ff] rounded-full px-5 py-2 hover:opacity-90 hover:scale-105 transition-all shadow-lg shadow-[#9b30ff]/30"
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
-              </svg>
-              Sign In
-            </button>
+            <div className="flex items-center gap-3">
+              <Link
+                href="/pricing"
+                className="text-xs font-bold text-white/45 hover:text-white transition-colors px-1"
+              >
+                Pricing
+              </Link>
+              <button
+                onClick={() => { setShowSignIn(true); setSignInError(""); }}
+                className="flex items-center gap-2 text-sm font-bold text-white bg-gradient-to-r from-[#ff2d78] to-[#9b30ff] rounded-full px-5 py-2 hover:opacity-90 hover:scale-105 transition-all shadow-lg shadow-[#9b30ff]/30"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+                </svg>
+                Sign In
+              </button>
+            </div>
           )}
         </div>
 
@@ -1145,15 +1161,62 @@ export default function Home() {
                 </svg>
               </button>
               <div className="text-center mb-2">
-                <p className="text-2xl mb-2">🪙</p>
-                <h3 className="text-xl font-black text-white">Buy Credits</h3>
-                <p className="text-sm text-white/55 mt-1">
-                  1 credit unlocks the full song + download.
-                </p>
-                <p className="text-xs text-white/35 mt-0.5">
-                  Credits never expire.
+                {/* Inline SVG, not an emoji: 🪙 (U+1FA99, Emoji 13.0) has no
+                    glyph on older devices and rendered as a tofu box — a
+                    broken-looking site at the exact moment we ask for a card. */}
+                <svg
+                  className="mx-auto mb-2"
+                  width="30"
+                  height="30"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  aria-hidden="true"
+                >
+                  <circle cx="12" cy="12" r="9" fill="#ff2d78" fillOpacity="0.18" />
+                  <circle cx="12" cy="12" r="9" stroke="#ff2d78" strokeWidth="1.6" />
+                  <path
+                    d="M12 7.5v9M14.4 9.6c-.5-.7-1.4-1.1-2.4-1.1-1.4 0-2.4.7-2.4 1.8 0 1 .8 1.5 2.4 1.8 1.6.3 2.6.9 2.6 2 0 1.2-1.1 1.9-2.6 1.9-1.1 0-2.1-.4-2.6-1.2"
+                    stroke="#ff2d78"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                  />
+                </svg>
+                <h3 className="text-xl font-black text-white">
+                  {result ? "Unlock your song" : "Buy Credits"}
+                </h3>
+                {/* Keep the song they just made in front of them — it's what
+                    they're emotionally attached to, and it vanished before. */}
+                {result && (
+                  <p className="text-sm text-white/80 font-semibold mt-1 px-2 truncate">
+                    “{result.title}”
+                  </p>
+                )}
+                <p className="text-xs text-white/45 mt-1.5">
+                  Credits never expire · no subscription
                 </p>
               </div>
+
+              {/* Spell out what a credit actually buys */}
+              <ul className="mt-3 mb-1 flex flex-col gap-1.5 text-xs text-white/60">
+                {[
+                  "Full-length track, not the 60s preview",
+                  "MP3 download — yours to keep",
+                  "Post it anywhere · no watermark",
+                ].map((benefit) => (
+                  <li key={benefit} className="flex items-start gap-2">
+                    <svg
+                      className="w-3.5 h-3.5 mt-0.5 flex-shrink-0"
+                      viewBox="0 0 24 24"
+                      fill="#00cfff"
+                      aria-hidden="true"
+                    >
+                      <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                    </svg>
+                    {benefit}
+                  </li>
+                ))}
+              </ul>
+
               <CreditPacks selected={selectedPack} onSelect={setSelectedPack} />
 
               {buyError && (
@@ -1280,14 +1343,26 @@ export default function Home() {
             </div>
           )}
 
+          {/* Free offer — above the button, not buried in grey below it.
+              Signed-out visitors are the ones who need to know it's free. */}
+          {!isSignedIn && (
+            <p className="text-center text-sm text-white/70 mb-3">
+              Free to generate · free 60-second preview ·{" "}
+              <span className="text-[#00cfff] font-semibold">2 free songs</span>{" "}
+              when you sign up
+            </p>
+          )}
+
           {/* Generate button */}
           <button
             onClick={generate}
-            disabled={loading || !words.trim()}
+            // Only greyed out for signed-in users with an empty box. A dead
+            // primary CTA on landing is the same "you can't" signal as a padlock.
+            disabled={loading || (isSignedIn && !words.trim())}
             className="w-full relative rounded-xl py-4 font-black text-lg tracking-wide uppercase transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed overflow-hidden group"
             style={{
               background:
-                loading || !words.trim()
+                loading || (isSignedIn && !words.trim())
                   ? "rgba(155, 48, 255, 0.3)"
                   : "linear-gradient(135deg, #ff2d78 0%, #9b30ff 50%, #00cfff 100%)",
             }}
@@ -1307,7 +1382,9 @@ export default function Home() {
               ) : isSignedIn ? (
                 "⚡ Generate Song"
               ) : (
-                "🔒 Sign in to generate"
+                // No padlock: a lock reads as "you can't" at the exact moment
+                // we want "you can". Same click, free-first framing.
+                "Make your first song — free →"
               )}
             </span>
           </button>
@@ -1316,7 +1393,7 @@ export default function Home() {
           <p className="text-center text-xs text-white/25 mt-3">
             {isSignedIn
               ? "Free to generate · hear a 60s preview · unlock the full song with 1 credit"
-              : "Sign in to start — new accounts get 2 free songs"}
+              : "No card needed · takes about a minute"}
           </p>
 
           {error && (

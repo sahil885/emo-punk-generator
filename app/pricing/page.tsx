@@ -34,7 +34,7 @@ const faq = [
   {
     question: "Do I need to buy credits to try it?",
     answer:
-      "No. Sign in and you can generate songs for free and hear a 60-second preview of every one. You also get free credits when you sign up, so your first full songs cost nothing.",
+      "No. Sign in and you can generate songs for free and hear a 60-second preview of every one. You also get 2 free songs when you sign up, so your first full tracks cost nothing.",
   },
   {
     question: "Do credits expire?",
@@ -137,7 +137,9 @@ export default function PricingPage() {
         {/* Header */}
         <div className="text-center mb-10 sm:mb-12">
           <div className="inline-flex items-center gap-2 text-xs font-bold tracking-widest text-[#ff2d78] uppercase mb-4 border border-[#ff2d78]/30 rounded-full px-4 py-1.5">
-            <span>🪙</span> Pricing
+            {/* Not 🪙 (U+1FA99, Emoji 13.0) — it has no glyph on older devices
+                and falls back to a tofu box. 🎵 is Unicode 6.0, safe anywhere. */}
+            <span>🎵</span> Pricing
           </div>
           <h1 className="text-3xl sm:text-5xl font-black text-white mb-4 leading-tight tracking-tight">
             Making songs is{" "}
@@ -151,6 +153,46 @@ export default function PricingPage() {
             download it.
           </p>
         </div>
+
+        {/* ── Hear one first ───────────────────────────────────────────
+            Sits above the prices on purpose: nobody should be asked to weigh
+            $3.99 before they've heard what the product actually produces. */}
+        <section className="mb-10 sm:mb-12">
+          <p className="text-center text-xs font-bold tracking-widest text-white/40 uppercase mb-3">
+            Hear a real one first
+          </p>
+          <div className="max-w-2xl mx-auto rounded-2xl border border-white/10 bg-white/3 p-3 sm:p-4">
+            <div className="relative w-full aspect-video overflow-hidden rounded-xl bg-black/40">
+              <iframe
+                // nocookie host + lazy load: the player is below-the-fold
+                // weight on a mostly-mobile audience.
+                src="https://www.youtube-nocookie.com/embed/3kvHlCvNbtk?rel=0"
+                title="The Last Page Of A Villian's Fairytale — made with Text to Emo"
+                loading="lazy"
+                allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerPolicy="strict-origin-when-cross-origin"
+                allowFullScreen
+                className="absolute inset-0 w-full h-full border-0"
+              />
+            </div>
+            <div className="flex items-center justify-between gap-3 flex-wrap px-1 pt-3">
+              <div className="min-w-0">
+                <p className="text-sm font-bold text-white truncate">
+                  “The Last Page Of A Villian&apos;s Fairytale”
+                </p>
+                <p className="text-xs text-white/40 mt-0.5">
+                  Written and produced start to finish by Text to Emo
+                </p>
+              </div>
+              <Link
+                href="/"
+                className="inline-flex items-center justify-center min-h-[40px] rounded-xl px-4 text-sm font-bold text-white bg-white/8 hover:bg-white/15 transition-colors whitespace-nowrap"
+              >
+                Make one free →
+              </Link>
+            </div>
+          </div>
+        </section>
 
         {/* ── Mobile: stacked cards ─────────────────────────────────── */}
         <div className="flex flex-col gap-4 md:hidden">
@@ -384,7 +426,7 @@ export default function PricingPage() {
           </p>
           <p className="text-sm text-white/50 mb-5 max-w-md mx-auto">
             Sign in, type anything, and hear it as an emo pop punk track in
-            minutes. You get free credits to unlock your first songs.
+            minutes. You get 2 free songs when you sign up.
           </p>
           <Link
             href="/"
