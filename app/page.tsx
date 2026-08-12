@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useSession, signIn, signOut } from "next-auth/react";
+import { PACK_LIST, PACKS, isPackId, perSong, savingsPct, type PackId } from "@/lib/pricing";
 
 type Singer = "male" | "female";
 
@@ -415,50 +416,36 @@ function LyricsDisplay({ lyrics }: { lyrics: string }) {
 }
 
 // ─── Credit Packs ────────────────────────────────────────────────────────────
-const CREDIT_PACKS = [
-  {
-    id: "3pack" as const,
-    credits: 3,
-    price: "$7.49",
-    per: "$2.50",
-    badge: null as string | null,
-    highlight: false,
-  },
-  {
-    id: "10pack" as const,
-    credits: 10,
-    price: "$19.99",
-    per: "$2.00",
-    badge: "Best value · save 20%",
-    highlight: true,
-  },
-];
-
+// Pack data lives in lib/pricing.ts so the modal, /pricing and Stripe agree.
 function CreditPacks({
   selected,
   onSelect,
 }: {
-  selected: "3pack" | "10pack";
-  onSelect: (pack: "3pack" | "10pack") => void;
+  selected: PackId;
+  onSelect: (pack: PackId) => void;
 }) {
   return (
-    <div className="flex flex-col gap-3 mt-4">
-      {CREDIT_PACKS.map((p) => {
+    <div className="flex flex-col gap-2.5 mt-4">
+      {PACK_LIST.map((p) => {
         const isSel = selected === p.id;
         const accent = p.highlight ? "#ff2d78" : "#9b30ff";
+        const saving = savingsPct(p);
         return (
           <button
             key={p.id}
             onClick={() => onSelect(p.id)}
             aria-pressed={isSel}
-            className="relative w-full rounded-2xl border-2 px-4 py-4 flex items-center justify-between gap-3 text-left transition-all"
+            className="relative w-full rounded-2xl border-2 px-4 py-3.5 flex items-center justify-between gap-3 text-left transition-all"
             style={{
               borderColor: isSel ? accent : "rgba(255,255,255,0.12)",
               background: isSel ? `${accent}1f` : "rgba(255,255,255,0.03)",
             }}
           >
             {p.badge && (
-              <span className="absolute -top-2.5 left-4 bg-[#ff2d78] text-white text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wide shadow-lg">
+              <span
+                className="absolute -top-2.5 left-4 text-white text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wide shadow-lg"
+                style={{ background: p.highlight ? "#ff2d78" : "#9b30ff" }}
+              >
                 {p.badge}
               </span>
             )}
@@ -475,9 +462,18 @@ function CreditPacks({
               <div className="min-w-0">
                 <div className="flex items-baseline gap-1.5">
                   <span className="text-2xl font-black text-white">{p.credits}</span>
-                  <span className="text-sm font-bold text-white/70">credits</span>
+                  <span className="text-sm font-bold text-white/70">
+                    {p.credits === 1 ? "credit" : "credits"}
+                  </span>
                 </div>
-                <div className="text-xs text-white/45 mt-0.5">Unlock {p.credits} full songs</div>
+                <div className="text-xs text-white/45 mt-0.5">
+                  {p.credits === 1
+                    ? "Unlock 1 full song"
+                    : `Unlock ${p.credits} full songs`}
+                  {saving > 0 && (
+                    <span className="text-[#00cfff] font-semibold"> · save {saving}%</span>
+                  )}
+                </div>
               </div>
             </div>
             <div className="text-right flex-shrink-0">
@@ -487,7 +483,7 @@ function CreditPacks({
               >
                 {p.price}
               </div>
-              <div className="text-[11px] text-white/40 mt-1">{p.per} / song</div>
+              <div className="text-[11px] text-white/40 mt-1">{perSong(p)} / song</div>
             </div>
           </button>
         );
@@ -757,7 +753,7 @@ export default function Home() {
   const [showBuyCredits, setShowBuyCredits] = useState(false);
   const [buyingCredits, setBuyingCredits] = useState(false);
   const [buyError, setBuyError] = useState("");
-  const [selectedPack, setSelectedPack] = useState<"3pack" | "10pack">("10pack");
+  const [selectedPack, setSelectedPack] = useState<PackId>("10pack");
   const [showSongs, setShowSongs] = useState(false);
   const [songId, setSongId] = useState<string | null>(null);
 
@@ -798,6 +794,28 @@ export default function Home() {
       .catch(() => {});
   }, [fetchCredits]);
 
+  // ── Deep link from /pricing (?pack=…) ───────────────────────────────────────
+  // Opens the buy modal on the chosen pack so the pricing page converts in one
+  // hop instead of dropping people on the homepage to find "Buy credits".
+  useEffect(() => {
+    if (authStatus === "loading") return;
+    const params = new URLSearchParams(window.location.search);
+    const pack = params.get("pack");
+    if (!pack) return;
+
+    window.history.replaceState({}, "", "/");
+    if (!isPackId(pack)) return;
+
+    setSelectedPack(pack);
+    if (authStatus === "authenticated") {
+      setShowBuyCredits(true);
+      setBuyError("");
+    } else {
+      setShowSignIn(true);
+      setSignInError("");
+    }
+  }, [authStatus]);
+
   // ── Sign-in handler ──────────────────────────────────────────────────────────
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -819,7 +837,7 @@ export default function Home() {
   };
 
   // ── Buy credits ──────────────────────────────────────────────────────────────
-  const handleBuyCredits = async (pack: "3pack" | "10pack") => {
+  const handleBuyCredits = async (pack: PackId) => {
     setBuyingCredits(true);
     setBuyError("");
     try {
@@ -1007,12 +1025,14 @@ export default function Home() {
         </div>
       )}
 
-      <div className="relative z-10 max-w-2xl mx-auto px-4 py-12">
+      <div className="relative z-10 max-w-2xl mx-auto px-4 py-8 sm:py-12">
 
         {/* ── Auth bar ─────────────────────────────────────────────── */}
         <div className="flex justify-end mb-6 min-h-[32px]">
           {authStatus === "loading" ? null : isSignedIn ? (
-            <div className="flex items-center gap-3">
+            // Wraps on narrow phones — four pills overflow a 375px viewport,
+            // and the page clips (overflow-hidden) rather than scrolling.
+            <div className="flex items-center justify-end flex-wrap gap-2 sm:gap-3">
               {/* Credit balance chip */}
               <div className="flex items-center gap-1.5 text-xs border border-[#9b30ff]/40 rounded-full px-3 py-1.5 bg-[#9b30ff]/10">
                 <span className="text-[#9b30ff]">⚡</span>
@@ -1109,7 +1129,9 @@ export default function Home() {
           >
             <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
             <div
-              className="relative w-full max-w-sm rounded-2xl border border-[#ff2d78]/40 bg-[#0f0520] p-6 shadow-2xl shadow-[#ff2d78]/20 lyrics-appear"
+              // Four packs are taller than a landscape phone — scroll rather
+              // than clip, so the checkout CTA stays reachable.
+              className="relative w-full max-w-sm max-h-[90vh] overflow-y-auto rounded-2xl border border-[#ff2d78]/40 bg-[#0f0520] p-6 shadow-2xl shadow-[#ff2d78]/20 lyrics-appear"
               onClick={(e) => e.stopPropagation()}
             >
               <button
@@ -1153,7 +1175,7 @@ export default function Home() {
                     Redirecting to checkout…
                   </>
                 ) : (
-                  `Continue · ${CREDIT_PACKS.find((p) => p.id === selectedPack)?.price ?? ""}`
+                  `Continue · ${PACKS[selectedPack].price}`
                 )}
               </button>
 
@@ -1165,11 +1187,11 @@ export default function Home() {
         )}
 
         {/* ── Header ──────────────────────────────────────────────── */}
-        <div className="text-center mb-12">
+        <div className="text-center mb-8 sm:mb-12">
           <div className="inline-flex items-center gap-2 text-xs font-bold tracking-widest text-[#ff2d78] uppercase mb-4 border border-[#ff2d78]/30 rounded-full px-4 py-1.5">
             <span>⚡</span> AI Song Generator
           </div>
-          <h1 className="text-5xl sm:text-6xl font-black text-white mb-3 glitch-text leading-none tracking-tight">
+          <h1 className="text-4xl sm:text-6xl font-black text-white mb-3 glitch-text leading-none tracking-tight">
             TEXT
             <span className="bg-gradient-to-r from-[#ff2d78] via-[#9b30ff] to-[#00cfff] bg-clip-text text-transparent"> TO </span>
             EMO
@@ -1370,11 +1392,15 @@ export default function Home() {
         <p className="text-center text-xs text-white/20 mt-10">
           Powered by Claude AI + Suno · Full song in minutes
         </p>
-        <p className="text-center text-xs text-white/30 mt-3">
+        <nav className="flex items-center justify-center flex-wrap gap-x-4 gap-y-2 text-xs text-white/30 mt-3">
+          <Link href="/pricing" className="hover:text-white/60 transition-colors underline underline-offset-2">
+            Pricing
+          </Link>
+          <span className="text-white/15">·</span>
           <Link href="/blog" className="hover:text-white/60 transition-colors underline underline-offset-2">
             Read the blog: how to make an emo song with AI
           </Link>
-        </p>
+        </nav>
       </div>
     </main>
   );

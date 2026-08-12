@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Analytics from "@/components/Analytics";
@@ -13,6 +13,15 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
+
+// Most traffic is mobile: lock the layout to device width, allow pinch-zoom
+// for accessibility, and colour the browser chrome to match the dark theme.
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  themeColor: "#0a0208",
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://texttoemo.com"),

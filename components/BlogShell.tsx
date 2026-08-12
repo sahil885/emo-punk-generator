@@ -141,6 +141,15 @@ export default function BlogShell({
           >
             ⚡ Open the generator
           </Link>
+          <p className="text-xs text-white/35 mt-3">
+            Free to generate ·{" "}
+            <Link
+              href="/pricing"
+              className="underline underline-offset-2 hover:text-white/70 transition-colors"
+            >
+              see pricing
+            </Link>
+          </p>
         </div>
 
         {/* Internal links to sibling posts */}

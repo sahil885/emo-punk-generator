@@ -1,11 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { getStripe } from "@/lib/stripe";
-
-const PACKS = {
-  "3pack": { credits: 3, amount: 749, label: "3 Songs Pack" },
-  "10pack": { credits: 10, amount: 1999, label: "10 Songs Pack" },
-} as const;
+import { PACKS, isPackId } from "@/lib/pricing";
 
 export async function POST(req: NextRequest) {
   const session = await auth();
@@ -13,11 +9,11 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Sign in to buy credits" }, { status: 401 });
   }
 
-  const { pack } = await req.json() as { pack: keyof typeof PACKS };
-  const packInfo = PACKS[pack];
-  if (!packInfo) {
+  const { pack } = (await req.json()) as { pack?: unknown };
+  if (!isPackId(pack)) {
     return NextResponse.json({ error: "Invalid pack" }, { status: 400 });
   }
+  const packInfo = PACKS[pack];
 
   const origin = req.headers.get("origin") || "http://localhost:3000";
 
@@ -29,7 +25,10 @@ export async function POST(req: NextRequest) {
           currency: "usd",
           product_data: {
             name: `Text to Emo — ${packInfo.label}`,
-            description: `${packInfo.credits} credits to unlock full songs on Text to Emo`,
+            description:
+              packInfo.credits === 1
+                ? "1 credit to unlock a full song on Text to Emo"
+                : `${packInfo.credits} credits to unlock full songs on Text to Emo`,
           },
           unit_amount: packInfo.amount,
         },
