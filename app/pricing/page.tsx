@@ -167,7 +167,7 @@ export default function PricingPage() {
                 // nocookie host + lazy load: the player is below-the-fold
                 // weight on a mostly-mobile audience.
                 src="https://www.youtube-nocookie.com/embed/3kvHlCvNbtk?rel=0"
-                title="The Last Page Of A Villian's Fairytale — made with Text to Emo"
+                title="The Last Page of a Villain's Fairytale — made with Text to Emo"
                 loading="lazy"
                 allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                 referrerPolicy="strict-origin-when-cross-origin"
@@ -178,7 +178,7 @@ export default function PricingPage() {
             <div className="flex items-center justify-between gap-3 flex-wrap px-1 pt-3">
               <div className="min-w-0">
                 <p className="text-sm font-bold text-white truncate">
-                  “The Last Page Of A Villian&apos;s Fairytale”
+                  “The Last Page of a Villain&apos;s Fairytale”
                 </p>
                 <p className="text-xs text-white/40 mt-0.5">
                   Written and produced start to finish by Text to Emo
