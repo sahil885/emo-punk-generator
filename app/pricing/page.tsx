@@ -361,7 +361,8 @@ export default function PricingPage() {
         </div>
 
         <p className="text-center text-xs text-white/30 mt-5">
-          🔒 Secure checkout via Stripe · Credits never expire · No subscription
+          🔒 Secure checkout via Stripe · No subscription · Credits never expire
+          · 7 days to download each track
         </p>
 
         {/* ── How credits work ──────────────────────────────────────── */}
