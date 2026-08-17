@@ -10,7 +10,7 @@ const faq: FaqItem[] = [
   {
     question: "How do I turn my texts into an emo song?",
     answer:
-      "Open Text to Emo, paste the words or the text thread you want to use, pick a male or female vocalist, and generate. The AI writes verses and a chorus around your words and produces a full song with vocals and instruments in a couple of minutes.",
+      "Three steps: paste the words or text thread into Text to Emo, pick a male or female vocalist, and hit generate. The AI writes verses and a chorus around your exact words and produces a full song with sung vocals, guitars, and drums in about two minutes. Generating and a 60-second preview are free after you sign in.",
   },
   {
     question: "Is the 'turn your texts into an emo song' trend free to do?",
@@ -25,7 +25,7 @@ const faq: FaqItem[] = [
   {
     question: "Can I share or post the song I make?",
     answer:
-      "Yes. You can download your song as an MP3 and post it on TikTok, YouTube Shorts, Instagram, or send it straight to whoever inspired it. Sharing is the whole point of the trend.",
+      "Yes. Once you unlock a track you have 7 days to download the MP3 — after that it's on your device to keep — and you can post it on TikTok, YouTube Shorts, Instagram, or send it straight to whoever inspired it. Sharing is the whole point of the trend.",
   },
   {
     question: "Will it actually sound like a real song?",
@@ -38,16 +38,50 @@ export default function Page() {
   return (
     <BlogShell post={post} faq={faq}>
       <p>
-        You&apos;ve probably seen the videos: someone screenshots a brutal text
-        thread, feeds it into an AI, and out comes a dramatic emo anthem with a
-        screaming chorus about &quot;seen at 11:47.&quot; The &quot;turn your
-        texts into an emo song&quot; trend blew up on TikTok and YouTube Shorts
-        for a simple reason — it&apos;s hilarious, it&apos;s cathartic, and the
-        results are weirdly good. Here&apos;s how to make your own, and how to
-        make it sound like a real band instead of a one-time gag.
+        <strong>
+          To turn your texts into an emo song: paste the words into{" "}
+          <Link href="/">Text to Emo</Link>, pick a male or female vocalist, and
+          hit generate.
+        </strong>{" "}
+        The AI writes verses and a chorus around your exact words and performs
+        them as a full pop-punk track with vocals, guitars, and drums. It takes
+        about two minutes, and your first songs are free.
+      </p>
+
+      <h2>Turn your texts into an emo song in 3 steps</h2>
+      <ol>
+        <li>
+          <strong>Paste the realest line.</strong> Open the generator and drop in
+          the single most devastating thing in the thread &mdash;
+          &quot;k.&quot;, &quot;we need to talk&quot;, &quot;happy birthday
+          (late)&quot;. That line becomes your hook. One sentence of plain
+          context helps: &quot;my ex texted me happy birthday a week late.&quot;
+        </li>
+        <li>
+          <strong>Pick the voice.</strong> A female vocalist for a
+          Paramore-style kiss-off, a male vocalist for Fall Out Boy melodrama.
+          Same words, completely different song.
+        </li>
+        <li>
+          <strong>Generate, then regenerate.</strong> You get a free 60-second
+          preview of every version. Run it three or four times &mdash; the
+          melody and phrasing shift each time &mdash; and keep the one that
+          sounds like a track you&apos;d actually save.
+        </li>
+      </ol>
+      <p>
+        That&apos;s the whole process. Everything below is how to make it sound
+        like a real band instead of a one-time gag.
       </p>
 
       <h2>Why turning your words into a song works so well</h2>
+      <p>
+        You&apos;ve probably seen the videos: someone screenshots a brutal text
+        thread, feeds it into an AI, and out comes a dramatic anthem with a
+        screaming chorus about &quot;seen at 11:47.&quot; The trend blew up on
+        TikTok and YouTube Shorts for a simple reason &mdash; it&apos;s
+        hilarious, it&apos;s cathartic, and the results are weirdly good.
+      </p>
       <p>
         Emo has always been about turning private, messy feelings into something
         you can shout along to. Your texts, your notes app, your 2am thoughts —
@@ -57,31 +91,6 @@ export default function Page() {
         ingredients in{" "}
         <Link href="/blog/what-makes-a-song-emo">what makes a song emo</Link>.)
       </p>
-
-      <h2>How to turn your words into an emo song</h2>
-      <p>
-        Open <Link href="/">Text to Emo</Link>, paste your words, pick a
-        vocalist, and generate. That&apos;s the whole thing. But a few choices
-        make the difference between &quot;funny once&quot; and &quot;actually
-        sounds like a real band&quot;:
-      </p>
-      <ul>
-        <li>
-          <strong>Paste the realest part.</strong> The single most devastating
-          line — &quot;k.&quot;, &quot;we need to talk&quot;, &quot;happy
-          birthday (late)&quot; — is your hook. Lead with it.
-        </li>
-        <li>
-          <strong>Add context in plain words.</strong> You don&apos;t have to
-          write poetry. &quot;my ex texted me happy birthday a week late&quot; is
-          a perfect prompt.
-        </li>
-        <li>
-          <strong>Match the vocalist to the vibe.</strong> Try a female
-          vocalist for a Paramore-style kiss-off, or a male vocalist for Fall Out
-          Boy melodrama.
-        </li>
-      </ul>
 
       <h2>A worked example</h2>
       <p>
@@ -134,9 +143,9 @@ export default function Page() {
           AI builds a better chorus around a single strong idea.
         </li>
         <li>
-          <strong>Use the regenerate button.</strong> Run it three or four times.
-          The melodies and phrasing shift each time — pick the version that
-          sounds most like a track you&apos;d actually save.
+          <strong>Name the small detail, not the big feeling.</strong> &quot;You
+          replied to my paragraph with a thumbs up&quot; lands harder than
+          &quot;you broke my heart.&quot; Concrete beats dramatic every time.
         </li>
       </ul>
 
@@ -145,8 +154,9 @@ export default function Page() {
         The magic of the trend isn&apos;t just the joke — it&apos;s that you end
         up with an actual song. AI writes the verses and chorus around your
         words, performs it with real-sounding vocals, and produces it with
-        guitars and drums. You can play it back, regenerate until it&apos;s
-        perfect, and download it to post or send to whoever inspired it.
+        guitars and drums. Play it back, regenerate until it&apos;s right, then
+        unlock it and download the MP3 within 7 days — once it&apos;s on your
+        device it&apos;s yours to keep, post, or send to whoever inspired it.
       </p>
       <p>
         It&apos;s free to start, so the only risk is accidentally writing a

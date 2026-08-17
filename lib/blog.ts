@@ -46,18 +46,18 @@ export const posts: Post[] = [
   },
   {
     slug: "turn-your-words-into-an-emo-song",
-    title: "Turn Your Texts Into an Emo Song with AI (Viral Trend, Explained)",
+    title: "Turn Your Texts Into an Emo Song (Free AI Generator)",
     description:
-      "How to turn your texts into an emo song with AI — paste the words, pick a vocalist, and get a real song with vocals in minutes. The viral trend, explained.",
+      "Paste a text, pick a vocalist, get a full emo song with real vocals in minutes. No band, no studio, no instruments. Your first songs are free — start now.",
     date: "2026-06-17",
     excerpt:
       "The viral 'turn your texts into an emo song' trend, explained — and how to make your own from a screenshot, a voice note, or a late-night thought.",
   },
   {
     slug: "what-makes-a-song-emo",
-    title: "What Makes a Song Emo? Emo vs. Pop Punk, Explained",
+    title: "Emo vs. Pop Punk: The Real Difference, With Examples",
     description:
-      "What actually makes a song emo? A plain-English guide to emo's sound, lyrics, and subgenres — and how emo differs from pop punk — with examples.",
+      "Emo and pop punk get used interchangeably and they are not the same thing. The sound, the lyrics, the subgenres — sorted out with songs you already know.",
     date: "2026-06-17",
     excerpt:
       "Minor keys, confessional lyrics, quiet-loud dynamics: a quick guide to what makes a song emo, and how it differs from pop punk.",
@@ -100,9 +100,9 @@ export const posts: Post[] = [
   },
   {
     slug: "what-makes-a-great-emo-ballad",
-    title: "What Makes a Great Emo Ballad? The Elements, Explained",
+    title: "How to Write an Emo Ballad: The Elements That Land",
     description:
-      "The elements that define a great emo ballad: quiet-loud dynamics, confessional lyrics, the build, and the breakdown — with classic examples and how to write your own.",
+      "The quiet first verse, the build, the breakdown that levels you — the elements behind every great emo ballad, and how to turn yours into a real song today.",
     date: "2026-06-28",
     excerpt:
       "From the whispered first verse to the chorus that levels you — the exact elements that make an emo ballad great, and how to write one yourself.",

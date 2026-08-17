@@ -110,7 +110,23 @@ export default function BlogShell({
         <h1 className="text-3xl sm:text-4xl font-black text-white leading-tight mb-3">
           {post.title}
         </h1>
-        <p className="text-xs text-white/35 mb-8">{prettyDate}</p>
+        <p className="text-xs text-white/35 mb-6">{prettyDate}</p>
+
+        {/* Above-the-fold CTA. Most search traffic here is transactional — people
+            looking for the generator, not an article about it — so surface the tool
+            before the prose rather than only at the end. */}
+        <div className="mb-8 flex flex-col sm:flex-row sm:items-center gap-3 rounded-xl border border-[#9b30ff]/30 bg-[#0f0520]/60 px-4 py-3">
+          <p className="text-sm text-white/60 flex-1">
+            Want the song, not the article? Drop any words in and hear it back in
+            minutes.
+          </p>
+          <Link
+            href="/"
+            className="inline-flex shrink-0 items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-bold text-white bg-gradient-to-r from-[#ff2d78] to-[#9b30ff] hover:opacity-90 transition-opacity"
+          >
+            ⚡ Try it free
+          </Link>
+        </div>
 
         <div className="article-content">{children}</div>
 
