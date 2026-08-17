@@ -202,7 +202,9 @@ export default function Page() {
         Send it with no explanation. That&apos;s the correct delivery method for
         a best friend song and it is not close. A birthday, a move, a wedding, a
         random Tuesday when they&apos;ve had a bad week &mdash; all valid, and
-        the random Tuesday is arguably the strongest play.
+        the random Tuesday is arguably the strongest play. If you want it to
+        land as an actual present, there&apos;s more on using one as a{" "}
+        <Link href="/personalized-song-gift">personalized song gift</Link>.
       </p>
       <p>
         You can also post it. Friendship songs do numbers on TikTok and Instagram

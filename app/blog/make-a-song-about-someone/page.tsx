@@ -193,6 +193,12 @@ export default function Page() {
         people never share it at all, which is completely valid. The point was
         getting it out of your head and into a chorus.
       </p>
+      <p>
+        If the person you have in mind is someone you actually like, the same
+        thing works as a{" "}
+        <Link href="/personalized-song-gift">personalized song gift</Link> — a
+        birthday, an anniversary, or a random Tuesday when they need it.
+      </p>
 
       <h2>Turn the person into a track</h2>
       <p>

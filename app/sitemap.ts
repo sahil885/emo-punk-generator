@@ -18,6 +18,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.8,
     },
     {
+      // Commercial landing page — buying intent, so it ranks above the blog in
+      // priority and sits alongside /pricing.
+      url: `${BASE}/personalized-song-gift`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.9,
+    },
+    {
       url: `${BASE}/blog`,
       lastModified: new Date(),
       changeFrequency: "weekly",
