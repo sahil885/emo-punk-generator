@@ -18,6 +18,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.8,
     },
     {
+      // Head-term hub. Commercial intent, so it ranks above the blog in
+      // priority and sits alongside /pricing.
+      url: `${BASE}/ai-song-generator`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.9,
+    },
+    {
       // Commercial landing page — buying intent, so it ranks above the blog in
       // priority and sits alongside /pricing.
       url: `${BASE}/personalized-song-gift`,

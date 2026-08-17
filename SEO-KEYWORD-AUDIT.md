@@ -179,3 +179,62 @@ The cluster head is `personalized song gift` + `custom song gift` — both 1k–
 `anniversary song` has the volume but Low competition and a A$0.06 floor bid, which
 means most of that traffic is people looking for *songs about anniversaries*, not
 buyers. Treat it as secondary.
+
+---
+
+# Part 6 — Head terms: alternatives cluster + SERP difficulty (added 2026-08-17)
+
+## Alternative / comparison intent (Keyword Planner, US)
+
+| Keyword | Avg. monthly searches | Competition | Top-of-page bid |
+|---|---|---|---|
+| best ai song generator | **1k – 10k** | High | A$2.42 – 8.88 |
+| ai song generator from text | 100 – 1k (**+900% YoY**) | Medium | A$0.84 – 5.65 |
+| ai band name generator | 100 – 1k | Low | A$0.03 – 3.53 |
+| suno alternative | 100 – 1k (**+900% YoY**) | Medium | A$1.84 – 7.02 |
+| ai song generator with lyrics | 10 – 100 | Medium | A$0.63 – 5.56 |
+| ai song generator like suno | 10 – 100 | High | — |
+| suno ai alternative free | 10 – 100 | Low | — |
+| emo ai song generator | no data | — | — |
+| pop punk ai generator | no data | — | — |
+| make a song from a text message | no data | — | — |
+
+`ai song generator from text` is the bridge term: it sits inside the head-term
+category but carries the qualifier that describes exactly what this product does —
+and GSC already shows traction on the "turn texts into a song" family. `suno
+alternative` is the other one worth holding, both at +900% YoY.
+
+Note that `emo ai song generator` and `pop punk ai generator` return **no data**,
+which is Part 1's finding restated: the genre framing has no search demand even when
+bolted onto a category that does.
+
+## SERP difficulty check — `ai music generator`
+
+Live SERP inspection (US), with Moz metrics from the browser extension:
+
+| Position | Result | DA | Referring domains |
+|---|---|---|---|
+| 1 | Reddit r/MusicNotes thread | 92 | — |
+| 2 | **aisong.io** | **1** | **0** |
+| 3 | Suno | 65 | 463 |
+| 4 | tomusic.ai — "Text to Music: AI Music Generator & Lyric to Song Maker" | 36 | 591 |
+
+Extension-reported SEO Difficulty: **40/100** (off-page 46, on-page 29).
+
+**This overturns the caution in CONTENT-PLAN.md.** That plan said a site with 13
+clicks/quarter would not rank for head terms quickly, and framed the hub as a 6–12
+month asset. A DA-1 site with **zero referring domains sitting at position 2** on a
+10k–100k keyword means authority is not the gate on this SERP — relevance and page
+quality are. The category is new enough that Google is still rewarding topical fit
+over link equity.
+
+Two supporting signals: tomusic.ai ranks at position 4 with a **"Text to Music"**
+framing, which is the same angle texttoemo already has GSC traction on; and Google's
+own related-keyword panel lists `ai music generator from text` and `ai music
+generator from lyrics`, confirming the text-input qualifier is a real sub-intent
+rather than our invention.
+
+**Revised expectation:** the hub is worth attacking now rather than treating as a
+long-term play. Entry is more likely through the qualified variants (`from text`,
+`with lyrics`, `free`) than the bare head term, but the bare term is not the wall it
+looked like from volume figures alone.
