@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { posts, type Post } from "@/lib/blog";
+import { livePosts, type Post } from "@/lib/blog";
 
 const SITE = "https://texttoemo.com";
 
@@ -20,7 +20,7 @@ export default function BlogShell({
   faq: FaqItem[];
   children: React.ReactNode;
 }) {
-  const others = posts.filter((p) => p.slug !== post.slug).slice(0, 3);
+  const others = livePosts.filter((p) => p.slug !== post.slug).slice(0, 3);
   const url = `${SITE}/blog/${post.slug}`;
   const prettyDate = new Date(post.date).toLocaleDateString("en-US", {
     year: "numeric",

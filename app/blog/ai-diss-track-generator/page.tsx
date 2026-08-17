@@ -38,13 +38,16 @@ export default function Page() {
   return (
     <BlogShell post={post} faq={faq}>
       <p>
-        Somebody did you dirty. The classic move is to vent in the group chat.
-        The better move? Turn it into a diss track with a chorus so catchy they
-        can&apos;t even be mad. Here&apos;s how to make one with AI in a couple of
-        minutes — no studio, no rapping required.
+        <strong>
+          This is an AI diss track generator that sings instead of raps.
+        </strong>{" "}
+        Name what someone did, pick a vocalist, and{" "}
+        <Link href="/">Text to Emo</Link> writes and performs a full pop-punk
+        diss track — lyrics, guitars, drums, and a shout-along chorus — in a
+        couple of minutes. No studio, no rapping required.
       </p>
 
-      <h2>The twist: a pop punk diss track, not a rap one</h2>
+      <h2>A pop punk diss track, not a rap one</h2>
       <p>
         Search &quot;AI diss track generator&quot; and you&apos;ll find a dozen
         tools that spit rap battle bars. They&apos;re fine — but they all sound

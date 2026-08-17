@@ -238,3 +238,60 @@ rather than our invention.
 long-term play. Entry is more likely through the qualified variants (`from text`,
 `with lyrics`, `free`) than the bare head term, but the bare term is not the wall it
 looked like from volume figures alone.
+
+---
+
+# Part 7 — Page-level GSC data, and a second correction (added 2026-08-17)
+
+Per-URL performance, last 3 months:
+
+| Page | Clicks | Impressions | Position |
+|---|---|---|---|
+| /blog/how-to-write-emo-lyrics | 2 | **405** | 7.2 |
+| /blog/turn-your-words-into-an-emo-song | 3 | 336 | 7.3 |
+| /blog/what-makes-a-song-emo | 2 | 300 | 10.7 |
+| / (homepage) | 5 | 132 | 14.1 |
+| /blog/what-makes-a-great-emo-ballad | 0 | 75 | 4.5 |
+| /blog (index) | 0 | 41 | 42.1 |
+| /blog/how-to-make-an-emo-song | 0 | 34 | 7.1 |
+| /blog/song-for-your-best-friend | 1 | 33 | 13.1 |
+| /blog/emo-breakup-song | 0 | 13 | 7.2 |
+| /blog/song-for-your-crush | 0 | 9 | 9.7 |
+| /blog/songs-like-emo-bands | 0 | 8 | 13.5 |
+| /blog/make-a-song-about-someone | 0 | 5 | 15.8 |
+| /blog/how-to-make-a-sad-song-with-ai | 0 | 5 | 22.2 |
+| /blog/ai-diss-track-generator | 0 | 5 | **90.8** |
+| /blog/emo-song-ideas | 0 | 1 | 3.0 |
+
+**This corrects CONTENT-PLAN.md Priority 3 in two places.**
+
+The plan said re-target `how-to-write-emo-lyrics` to `punk lyrics generator`. It is
+the **best-performing page on the site** — 405 impressions at position 7.2. Changing
+its target would have risked the single largest source of impressions the site has.
+It is also the biggest remaining CTR opportunity: 0.5% at position 7.2.
+
+The plan also marked `song-for-your-best-friend` for consolidation. It is the
+fifth-best page by impressions, one week after publishing, with a real click. Keyword
+Planner reported no data for that term; GSC disagrees — the same lesson as Part 4.
+
+`ai-diss-track-generator` sits at **position 90.8** on a keyword with 100–1k volume.
+That is an on-page problem, not a merge candidate: the page was competing against
+rap-focused SERPs without saying "AI diss track generator" anywhere prominent.
+
+## What was actually done
+
+| Page | Action |
+|---|---|
+| how-to-write-emo-lyrics | Title/meta rewrite only. **Not re-targeted.** |
+| emo-breakup-song | Re-targeted to `song about my ex` (100–1k, Low, +900% 3mo) |
+| ai-diss-track-generator | Title + opening rewritten for keyword coverage |
+| what-makes-a-song-emo | Already retitled in 584f32e — left alone to avoid muddying measurement |
+| song-for-your-best-friend | **Kept.** Plan was wrong. |
+| songs-like-emo-bands | **Kept** — 8 impressions, borderline, not worth the churn |
+| emo-song-ideas | Merged → /blog/turn-your-words-into-an-emo-song |
+| make-a-song-about-someone | Merged → /personalized-song-gift |
+| how-to-make-a-sad-song-with-ai | Merged → /ai-song-generator |
+
+Merges are 301s in `next.config.ts`. Source entries stay in `lib/blog.ts` flagged
+`mergedInto`, and `livePosts` drops them from the index, sitemap, and sibling links —
+so reversing any merge is a one-line change rather than a resurrection.

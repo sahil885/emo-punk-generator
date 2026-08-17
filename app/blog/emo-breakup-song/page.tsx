@@ -38,17 +38,20 @@ export default function Page() {
   return (
     <BlogShell post={post} faq={faq}>
       <p>
-        Here&apos;s a fact about emo: the entire genre basically exists to deal
-        with breakups. Heartbreak, the 2am spiral, the playlist you can&apos;t
-        stop playing — that&apos;s the raw material emo was built on. So when a
-        relationship ends, you don&apos;t have to just sit with it. You can turn
-        it into a song with a chorus you can scream in the car.
+        <strong>
+          To make a song about your ex: drop the most specific thing they did
+          into <Link href="/">Text to Emo</Link>, pick a vocalist, and generate.
+        </strong>{" "}
+        You get full lyrics, real sung vocals, and a chorus you can scream in the
+        car — in about two minutes, with no instruments and no studio.
       </p>
       <p>
-        This guide walks through how to make an emo breakup song about your ex
-        with AI — what to write, how to make it land, and how to go from a fresh
-        heartbreak to a finished anthem in a few minutes, no instruments
-        required.
+        Here&apos;s a fact about emo: the entire genre basically exists to deal
+        with breakups. Heartbreak, the 2am spiral, the playlist you can&apos;t
+        stop playing — that&apos;s the raw material it was built on. So when a
+        relationship ends, you don&apos;t have to just sit with it. Below is what
+        to write, how to make it land, and how to get from a fresh heartbreak to
+        a finished anthem.
       </p>
 
       <h2>Why a breakup is the perfect emo song</h2>

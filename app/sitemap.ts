@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { posts } from "@/lib/blog";
+import { livePosts } from "@/lib/blog";
 
 const BASE = "https://texttoemo.com";
 
@@ -39,7 +39,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "weekly",
       priority: 0.7,
     },
-    ...posts.map((p) => ({
+    ...livePosts.map((p) => ({
       url: `${BASE}/blog/${p.slug}`,
       lastModified: new Date(p.date),
       changeFrequency: "monthly" as const,

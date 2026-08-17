@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { posts } from "@/lib/blog";
+import { livePosts } from "@/lib/blog";
 
 export const metadata: Metadata = {
   title: "Blog — Making Emo Songs with AI | Text to Emo",
@@ -36,7 +36,7 @@ export default function BlogIndex() {
         </p>
 
         <ul className="flex flex-col gap-6">
-          {posts.map((post) => (
+          {livePosts.map((post) => (
             <li
               key={post.slug}
               className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 hover:border-[#9b30ff]/40 transition-colors"

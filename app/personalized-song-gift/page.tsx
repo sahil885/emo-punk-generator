@@ -352,10 +352,10 @@ export default function PersonalizedSongGiftPage() {
           <ul className="flex flex-col gap-3">
             <li>
               <Link
-                href="/blog/make-a-song-about-someone"
+                href="/blog/emo-breakup-song"
                 className="text-[#ff64a6] hover:text-[#ff2d78] font-semibold transition-colors"
               >
-                How to Make a Song About Someone with AI
+                How to Make a Song About Your Ex
               </Link>
             </li>
             <li>

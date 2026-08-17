@@ -145,7 +145,11 @@ export default function Page() {
         One sentence is plenty. Longer prompts almost always make the lyrics
         vaguer, because you end up explaining the friendship instead of showing
         one frame of it. If you want more angles to steal, there&apos;s a whole
-        pile in our list of <Link href="/blog/emo-song-ideas">emo song ideas</Link>.
+        pile in{" "}
+        <Link href="/blog/turn-your-words-into-an-emo-song">
+          turning your own words into a song
+        </Link>
+        .
       </p>
 
       <h2>Step 3: Choose the voice that sounds like your friendship</h2>

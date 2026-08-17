@@ -8,6 +8,17 @@ export interface Post {
   description: string; // meta description
   date: string; // ISO date
   excerpt: string; // shown on the blog index
+  /**
+   * Set when a post has been consolidated into a stronger page. The entry stays
+   * in `posts` so the route still type-checks and builds, but a permanent
+   * redirect in next.config.ts intercepts the URL before it renders, and
+   * `livePosts` drops it from the index, the sitemap, and sibling links.
+   *
+   * Kept rather than deleted so the merge is reversible and the reasoning is
+   * visible: each of these earned under 6 impressions in 3 months (see
+   * SEO-KEYWORD-AUDIT.md Part 7).
+   */
+  mergedInto?: string;
 }
 
 // Shared per-article metadata: canonical, OpenGraph and Twitter cards with the
@@ -64,27 +75,27 @@ export const posts: Post[] = [
   },
   {
     slug: "emo-breakup-song",
-    title: "How to Make an Emo Breakup Song About Your Ex (with AI)",
+    title: "How to Make a Song About Your Ex (in About Two Minutes)",
     description:
-      "Heartbroken? Turn it into a song. Here's how to make an emo breakup song about your ex with AI — full lyrics, vocals, and music in minutes. First songs free.",
+      "Turn the last text, the worst voicemail, or a 2am spiral into a song about your ex — full lyrics, real vocals, done in minutes. Your first songs are free.",
     date: "2026-06-27",
     excerpt:
-      "Breakups are emo's whole reason for existing. Here's how to turn the worst text, the last voicemail, or a 2am spiral into a full breakup anthem.",
+      "A song about your ex is emo's whole reason for existing. Here's how to turn the worst text, the last voicemail, or a 2am spiral into a full breakup anthem.",
   },
   {
     slug: "how-to-write-emo-lyrics",
-    title: "How to Write Emo & Pop Punk Lyrics (with AI Examples)",
+    title: "How to Write Emo Lyrics That Don't Sound Fake",
     description:
-      "A practical guide to writing emo and pop punk lyrics: structure, the confessional voice, imagery, and hooks — plus how to use AI to draft a full song.",
+      "Most emo lyrics fail the same way — adjectives instead of details. The specific techniques that make them land, with examples, plus how to draft a full song.",
     date: "2026-06-27",
     excerpt:
       "The exact techniques behind great emo lyrics — specificity, quiet-loud contrast, the confessional 'I' — and how to get there fast with AI.",
   },
   {
     slug: "ai-diss-track-generator",
-    title: "How to Make a Diss Track with AI (Pop Punk Style)",
+    title: "AI Diss Track Generator — Sung, Not Rapped",
     description:
-      "Make a sung, pop punk diss track about anyone with AI — full lyrics, vocals, and beat in minutes. Not a rap generator: this roasts in anthemic emo style.",
+      "Make a diss track with AI about anyone — full lyrics, real vocals, and a beat in minutes. Not a rap generator: this one roasts in anthemic pop punk style.",
     date: "2026-06-28",
     excerpt:
       "Most diss track generators spit rap bars. Here's how to make a sung, anthemic pop punk diss track that actually slaps on TikTok — about your ex, your enemy, anyone.",
@@ -124,6 +135,8 @@ export const posts: Post[] = [
     date: "2026-07-27",
     excerpt:
       "Generic sad-music generators give you moody background loops. Here's how to make a sad song with real words, real vocals, and a chorus that actually hurts.",
+    // 5 impressions / position 22.2 in 3 months. Folded into the head-term hub.
+    mergedInto: "/ai-song-generator",
   },
   {
     slug: "make-a-song-about-someone",
@@ -133,6 +146,9 @@ export const posts: Post[] = [
     date: "2026-07-27",
     excerpt:
       "Ex, crush, best friend, worst enemy — anyone can be a song. Here's how to make a song about someone with AI, starting from one specific, slightly embarrassing detail.",
+    // 5 impressions / position 15.8 in 3 months. Folded into the gift page,
+    // which covers the same "song about a person" intent with buying intent.
+    mergedInto: "/personalized-song-gift",
   },
   {
     slug: "emo-song-ideas",
@@ -142,6 +158,9 @@ export const posts: Post[] = [
     date: "2026-08-03",
     excerpt:
       "Stuck staring at an empty text box? Here are 50 emo song ideas — organized by feeling — that you can paste straight into a generator and hear sung back to you.",
+    // 1 impression in 3 months despite ranking position 3.0 — it wins a term
+    // nobody searches. Folded into the post about supplying your own words.
+    mergedInto: "/blog/turn-your-words-into-an-emo-song",
   },
   {
     slug: "song-for-your-best-friend",
@@ -153,6 +172,13 @@ export const posts: Post[] = [
       "Most friendship songs sound like a birthday card set to music. Here's how to make a song for your best friend that's actually specific enough to make them cry.",
   },
 ];
+
+/**
+ * Posts that are still live in search and navigation. Everything user-facing —
+ * the blog index, the sitemap, sibling "keep reading" links — reads from this,
+ * so consolidating a post is a one-line change rather than a hunt.
+ */
+export const livePosts: Post[] = posts.filter((p) => !p.mergedInto);
 
 export function getPost(slug: string): Post | undefined {
   return posts.find((p) => p.slug === slug);
