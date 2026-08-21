@@ -171,6 +171,15 @@ export const posts: Post[] = [
     excerpt:
       "Most friendship songs sound like a birthday card set to music. Here's how to make a song for your best friend that's actually specific enough to make them cry.",
   },
+  {
+    slug: "ai-lyrics-generator",
+    title: "AI Lyrics Generator: Get Emo Lyrics and Hear Them Sung",
+    description:
+      "An AI lyrics generator that writes real emo and pop-punk lyrics from your own words — then sings them back with real vocals in minutes. Your first songs are free.",
+    date: "2026-08-22",
+    excerpt:
+      "Most AI lyrics generators hand you a block of text and wish you luck. Here's how to get emo lyrics written from your actual words — and hear them sung back.",
+  },
 ];
 
 /**
