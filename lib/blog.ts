@@ -84,9 +84,22 @@ export const posts: Post[] = [
   },
   {
     slug: "how-to-write-emo-lyrics",
-    title: "How to Write Emo Lyrics That Don't Sound Fake",
+    // Second title/meta pass (2026-08-22), different hypothesis to the first.
+    //
+    // This is the site's engine: 330 of 734 impressions in the last 28 days
+    // (45%), position 7.5, 0.6% CTR. Filtering GSC to this URL returns "No
+    // data" on the query table — not one of those 330 impressions came from a
+    // query above the anonymisation threshold. So the demand is hundreds of
+    // distinct long-tail phrasings, almost certainly "emo lyrics about ___".
+    //
+    // Those searchers want the lyrics, not a lesson in writing them. The old
+    // title led with the verb ("How to Write…"), which promises homework. This
+    // one leads with the noun they typed and offers both paths — the craft
+    // guide the page actually contains, and the generator that does it for
+    // them. Ranking isn't the problem here; the snippet is.
+    title: "Emo Lyrics That Don't Sound Fake (Write or Generate)",
     description:
-      "Most emo lyrics fail the same way — adjectives instead of details. The specific techniques that make them land, with examples, plus how to draft a full song.",
+      "Emo lyrics about anyone — an ex, a friend, a 2am thought. The techniques that make them land, plus a free generator that writes and sings them in minutes.",
     date: "2026-06-27",
     excerpt:
       "The exact techniques behind great emo lyrics — specificity, quiet-loud contrast, the confessional 'I' — and how to get there fast with AI.",
