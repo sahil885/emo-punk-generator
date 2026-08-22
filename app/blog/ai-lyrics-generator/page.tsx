@@ -225,8 +225,8 @@ export default function Page() {
           around their words, which is a specific kind of justice.
         </li>
         <li>
-          <strong>The ex.</strong> The whole reason the genre exists. There
-          &apos;s a longer guide to this in{" "}
+          <strong>The ex.</strong> The whole reason the genre exists.
+          There&apos;s a longer guide to this in{" "}
           <Link href="/blog/emo-breakup-song">
             making a song about your ex
           </Link>
