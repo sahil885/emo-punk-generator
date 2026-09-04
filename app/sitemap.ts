@@ -34,6 +34,23 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.9,
     },
     {
+      // Transactional page for the "turn texts into an emo song" family —
+      // ~118 GSC impressions across ~20 phrasings, zero clicks, all of it
+      // currently landing on a blog post. See the page file for the data.
+      url: `${BASE}/turn-texts-into-an-emo-song`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.9,
+    },
+    {
+      // The brand's own category term. Ranks position 22–28 today because
+      // nothing on the site was product-shaped for it.
+      url: `${BASE}/emo-song-generator`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.9,
+    },
+    {
       url: `${BASE}/blog`,
       lastModified: new Date(),
       changeFrequency: "weekly",

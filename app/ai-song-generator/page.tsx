@@ -261,11 +261,16 @@ export default function AiSongGeneratorPage() {
           </p>
           <p>
             That&apos;s the mechanic behind the{" "}
-            <Link href="/blog/turn-your-words-into-an-emo-song">
+            <Link href="/turn-texts-into-an-emo-song">
               turn your texts into an emo song
             </Link>{" "}
             trend, and it works because you&apos;re not asking the AI to invent
             a feeling — you&apos;re handing it one and asking for a chorus.
+          </p>
+          <p>
+            If you want the genre-specific version of this tool rather than the
+            general one, that&apos;s the{" "}
+            <Link href="/emo-song-generator">emo song generator</Link>.
           </p>
 
           <h2>What you get</h2>
