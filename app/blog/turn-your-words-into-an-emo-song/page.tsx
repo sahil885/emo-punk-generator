@@ -47,6 +47,15 @@ export default function Page() {
         them as a full pop-punk track with vocals, guitars, and drums. It takes
         about two minutes, and your first songs are free.
       </p>
+      <p>
+        <em>
+          Just want the tool rather than the write-up? Go straight to{" "}
+          <Link href="/turn-texts-into-an-emo-song">
+            turn texts into an emo song
+          </Link>
+          .
+        </em>
+      </p>
 
       <h2>Turn your texts into an emo song in 3 steps</h2>
       <ol>

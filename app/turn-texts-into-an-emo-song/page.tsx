@@ -374,6 +374,14 @@ export default function TurnTextsIntoAnEmoSongPage() {
             </li>
             <li>
               <Link
+                href="/blog/turn-your-words-into-an-emo-song"
+                className="text-[#ff64a6] hover:text-[#ff2d78] font-semibold transition-colors"
+              >
+                The longer write-up: turning your texts into an emo song
+              </Link>
+            </li>
+            <li>
+              <Link
                 href="/blog/emo-breakup-song"
                 className="text-[#ff64a6] hover:text-[#ff2d78] font-semibold transition-colors"
               >
