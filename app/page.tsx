@@ -3,7 +3,16 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useSession, signIn, signOut } from "next-auth/react";
-import { PACK_LIST, PACKS, isPackId, perSong, savingsPct, type PackId } from "@/lib/pricing";
+import {
+  PACK_LIST,
+  PACKS,
+  discountedAmount,
+  formatCents,
+  isPackId,
+  perSong,
+  savingsPct,
+  type PackId,
+} from "@/lib/pricing";
 import { AUDIO_RETENTION_DAYS, isExpired, retentionLabel } from "@/lib/retention";
 
 type Singer = "male" | "female";
@@ -421,9 +430,12 @@ function LyricsDisplay({ lyrics }: { lyrics: string }) {
 function CreditPacks({
   selected,
   onSelect,
+  discountPercent,
 }: {
   selected: PackId;
   onSelect: (pack: PackId) => void;
+  /** Live first-song offer, if any — shows struck-through list prices. */
+  discountPercent?: number;
 }) {
   return (
     <div className="flex flex-col gap-2.5 mt-4">
@@ -431,6 +443,7 @@ function CreditPacks({
         const isSel = selected === p.id;
         const accent = p.highlight ? "#ff2d78" : "#9b30ff";
         const saving = savingsPct(p);
+        const amount = discountPercent ? discountedAmount(p, discountPercent) : p.amount;
         return (
           <button
             key={p.id}
@@ -478,18 +491,83 @@ function CreditPacks({
               </div>
             </div>
             <div className="text-right flex-shrink-0">
+              {discountPercent ? (
+                <div className="text-[11px] text-white/35 line-through leading-none mb-1">
+                  {p.price}
+                </div>
+              ) : null}
               <div
                 className="text-xl font-black leading-none"
                 style={{ color: p.highlight ? "#ff2d78" : "#fff" }}
               >
-                {p.price}
+                {discountPercent ? formatCents(amount) : p.price}
               </div>
-              <div className="text-[11px] text-white/40 mt-1">{perSong(p)} / song</div>
+              <div className="text-[11px] text-white/40 mt-1">{perSong(p, amount)} / song</div>
             </div>
           </button>
         );
       })}
     </div>
+  );
+}
+
+// ─── First-song offer ────────────────────────────────────────────────────────
+// 20% off one pack for 24 hours after a user's first song. The server decides
+// eligibility and applies the price at checkout; this is just the display.
+interface Offer {
+  id: string;
+  percent: number;
+  endsAt: string;
+}
+
+/** Milliseconds until `endsAt`, ticking once a second. 0 when absent or past. */
+function useTimeLeft(endsAt: string | null): number {
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    if (!endsAt) return;
+    const id = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(id);
+  }, [endsAt]);
+  return endsAt ? Math.max(0, new Date(endsAt).getTime() - now) : 0;
+}
+
+function formatTimeLeft(ms: number): string {
+  const s = Math.floor(ms / 1000);
+  return [Math.floor(s / 3600), Math.floor((s % 3600) / 60), s % 60]
+    .map((n) => String(n).padStart(2, "0"))
+    .join(":");
+}
+
+function OfferBanner({
+  percent,
+  msLeft,
+  onClaim,
+}: {
+  percent: number;
+  msLeft: number;
+  onClaim: () => void;
+}) {
+  return (
+    <button
+      onClick={onClaim}
+      className="w-full rounded-2xl border border-[#ff2d78]/50 bg-gradient-to-r from-[#ff2d78]/15 to-[#9b30ff]/15 px-4 py-3 flex items-center justify-between gap-3 text-left hover:border-[#ff2d78] transition-colors"
+    >
+      <span className="min-w-0">
+        <span className="block text-sm font-black text-white">
+          🎉 {percent}% off any credit pack
+        </span>
+        <span className="block text-xs text-white/60 mt-0.5">
+          First-song bonus · ends in{" "}
+          <span className="font-mono font-bold text-[#00cfff] tabular-nums">
+            {formatTimeLeft(msLeft)}
+          </span>{" "}
+          · only offered once
+        </span>
+      </span>
+      <span className="flex-shrink-0 text-xs font-bold text-white bg-gradient-to-r from-[#ff2d78] to-[#9b30ff] rounded-full px-3 py-1.5">
+        Claim
+      </span>
+    </button>
   );
 }
 
@@ -785,14 +863,17 @@ export default function Home() {
   const [selectedPack, setSelectedPack] = useState<PackId>("10pack");
   const [showSongs, setShowSongs] = useState(false);
   const [songId, setSongId] = useState<string | null>(null);
+  const [offer, setOffer] = useState<Offer | null>(null);
+  const offerMsLeft = useTimeLeft(offer?.endsAt ?? null);
 
-  // ── Fetch credit balance when user is signed in ─────────────────────────────
+  // ── Fetch credit balance (and any live offer) when signed in ────────────────
   const fetchCredits = useCallback(async () => {
     if (authStatus !== "authenticated") return;
     try {
       const res = await fetch("/api/credits");
       const data = await res.json();
       if (typeof data.credits === "number") setCredits(data.credits);
+      setOffer(data.offer ?? null);
     } catch {
       /* silent */
     }
@@ -816,6 +897,8 @@ export default function Home() {
           setCreditsSuccess(true);
           setNoCredits(false);
           setRateLimited(false);
+          // The offer is single-use: any purchase ends it.
+          setOffer(null);
           if (typeof data.credits === "number") setCredits(data.credits);
           setTimeout(() => setCreditsSuccess(false), 6000);
         }
@@ -934,6 +1017,8 @@ export default function Home() {
       setResult(lyricsData);
       setSongId(lyricsData.songId ?? null);
       setLoading(false);
+      // A first song starts the 24-hour offer — pick it up straight away.
+      fetchCredits();
 
       const audioRes = await fetch("/api/audio/start", {
         method: "POST",
@@ -974,6 +1059,11 @@ export default function Home() {
 
   const isBlocked = noCredits;
   const isSignedIn = authStatus === "authenticated";
+  const offerActive = isSignedIn && offer !== null && offerMsLeft > 0;
+  const openBuyCredits = () => {
+    setShowBuyCredits(true);
+    setBuyError("");
+  };
 
   const signInFormBlock = !signInDone ? (
     <>
@@ -1120,6 +1210,17 @@ export default function Home() {
           )}
         </div>
 
+        {/* ── First-song offer (persists across visits for 24h) ──────── */}
+        {offerActive && offer && (
+          <div className="mb-6">
+            <OfferBanner
+              percent={offer.percent}
+              msLeft={offerMsLeft}
+              onClaim={openBuyCredits}
+            />
+          </div>
+        )}
+
         {/* ── Sign-in modal ───────────────────────────────────────── */}
         {showSignIn && !isSignedIn && (
           <div
@@ -1223,6 +1324,14 @@ export default function Home() {
                 <p className="text-xs text-white/45 mt-1.5">
                   Credits never expire · no subscription
                 </p>
+                {offerActive && offer && (
+                  <p className="inline-block mt-2.5 text-xs font-bold text-white rounded-full border border-[#ff2d78]/50 bg-[#ff2d78]/15 px-3 py-1">
+                    🎉 {offer.percent}% first-song discount applied · ends in{" "}
+                    <span className="font-mono text-[#00cfff] tabular-nums">
+                      {formatTimeLeft(offerMsLeft)}
+                    </span>
+                  </p>
+                )}
               </div>
 
               {/* Spell out what a credit actually buys */}
@@ -1246,7 +1355,11 @@ export default function Home() {
                 ))}
               </ul>
 
-              <CreditPacks selected={selectedPack} onSelect={setSelectedPack} />
+              <CreditPacks
+                selected={selectedPack}
+                onSelect={setSelectedPack}
+                discountPercent={offerActive && offer ? offer.percent : undefined}
+              />
 
               {buyError && (
                 <p className="text-xs text-[#ff2d78] mt-3 text-center">{buyError}</p>
@@ -1267,7 +1380,11 @@ export default function Home() {
                     Redirecting to checkout…
                   </>
                 ) : (
-                  `Continue · ${PACKS[selectedPack].price}`
+                  `Continue · ${
+                    offerActive && offer
+                      ? formatCents(discountedAmount(PACKS[selectedPack], offer.percent))
+                      : PACKS[selectedPack].price
+                  }`
                 )}
               </button>
 
@@ -1473,11 +1590,20 @@ export default function Home() {
                 songId={songId}
                 credits={credits}
                 onUnlocked={(c) => setCredits(c)}
-                onNeedCredits={() => {
-                  setShowBuyCredits(true);
-                  setBuyError("");
-                }}
+                onNeedCredits={openBuyCredits}
               />
+
+              {/* The top banner is scrolled out of view by the time a song is
+                  ready, so repeat the offer right under the player. */}
+              {offerActive && offer && (
+                <div className="mt-4">
+                  <OfferBanner
+                    percent={offer.percent}
+                    msLeft={offerMsLeft}
+                    onClaim={openBuyCredits}
+                  />
+                </div>
+              )}
             </div>
 
             <div className="px-6 py-6">

@@ -84,9 +84,34 @@ export function isPackId(value: unknown): value is PackId {
   return typeof value === "string" && Object.hasOwn(PACKS, value);
 }
 
-/** Per-song price, e.g. "$1.60". */
-export function perSong(pack: Pack): string {
-  return `$${(pack.amount / pack.credits / 100).toFixed(2)}`;
+/** Per-song price, e.g. "$1.60". Pass `amount` to price a discounted pack. */
+export function perSong(pack: Pack, amount: number = pack.amount): string {
+  return `$${(amount / pack.credits / 100).toFixed(2)}`;
+}
+
+export function formatCents(cents: number): string {
+  return `$${(cents / 100).toFixed(2)}`;
+}
+
+// ─── First-song offer ────────────────────────────────────────────────────────
+// 20% off one pack, for 24 hours after a user's first song, until they buy.
+// Whether a user is eligible is decided server-side (lib/offer.ts); this is the
+// maths shared by the checkout route and the buy modal so they always agree.
+export const FIRST_SONG_OFFER = {
+  id: "first_song_20",
+  percent: 20,
+  windowHours: 24,
+} as const;
+
+export function offerEndsAt(firstSongAt: string | Date): Date {
+  return new Date(
+    new Date(firstSongAt).getTime() + FIRST_SONG_OFFER.windowHours * 3_600_000
+  );
+}
+
+/** Pack price in cents after a percentage discount, e.g. 1999 at 20% → 1599. */
+export function discountedAmount(pack: Pack, percent: number): number {
+  return Math.round((pack.amount * (100 - percent)) / 100);
 }
 
 /** Whole-percent saving vs. buying single songs. 0 for the single-song pack. */

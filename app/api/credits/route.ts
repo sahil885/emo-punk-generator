@@ -1,18 +1,21 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { sql } from "@/lib/db";
+import { getActiveOffer } from "@/lib/offer";
 
-/** GET /api/credits — returns the signed-in user's credit balance */
+/** GET /api/credits — the signed-in user's credit balance and any live offer */
 export async function GET() {
   const session = await auth();
-  if (!session?.user?.email) {
-    return NextResponse.json({ credits: null, signedIn: false });
+  const email = session?.user?.email;
+  if (!email) {
+    return NextResponse.json({ credits: null, signedIn: false, offer: null });
   }
 
-  const rows = await sql`
-    SELECT credits FROM users WHERE email = ${session.user.email}
-  `;
+  const [rows, offer] = await Promise.all([
+    sql`SELECT credits FROM users WHERE email = ${email}`,
+    getActiveOffer(email),
+  ]);
   const credits = (rows[0] as { credits: number } | undefined)?.credits ?? 0;
 
-  return NextResponse.json({ credits, signedIn: true });
+  return NextResponse.json({ credits, signedIn: true, offer });
 }

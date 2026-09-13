@@ -142,6 +142,13 @@ etc.`;
     `;
     const songId = (saved[0] as { id: string }).id;
 
+    // Start the first-song offer clock. Written once and never overwritten, so
+    // deleting songs and generating again can't reopen the 24-hour window.
+    await sql`
+      UPDATE users SET first_song_at = NOW()
+      WHERE id = ${user.id} AND first_song_at IS NULL
+    `;
+
     return NextResponse.json({
       title,
       lyrics,
