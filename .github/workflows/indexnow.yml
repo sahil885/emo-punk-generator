@@ -1,0 +1,38 @@
+name: IndexNow
+
+# After each successful production deploy on Vercel, submit the pages that
+# changed to IndexNow (Bing, Yandex and others) so they're re-crawled quickly.
+# Vercel reports deploys to GitHub, which is what fires deployment_status.
+on: deployment_status
+
+permissions:
+  contents: read
+  deployments: read
+
+concurrency:
+  group: indexnow
+  cancel-in-progress: false
+
+jobs:
+  submit:
+    if: >-
+      github.event.deployment_status.state == 'success' &&
+      github.event.deployment.environment == 'Production'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.deployment.sha }}
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Submit changed pages
+        run: node scripts/indexnow.mjs
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEPLOYMENT_ID: ${{ github.event.deployment.id }}
+          DEPLOYMENT_SHA: ${{ github.event.deployment.sha }}
