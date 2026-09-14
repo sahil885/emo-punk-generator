@@ -2,7 +2,7 @@ import type { Adapter } from "next-auth/adapters";
 import { sql } from "@/lib/db";
 
 // Free songs granted to every brand-new account as a signup bonus.
-const SIGNUP_CREDITS = 2;
+export const SIGNUP_CREDITS = 2;
 
 export function NeonAdapter(): Adapter {
   return {
