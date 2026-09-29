@@ -59,12 +59,19 @@ async function keyFileIsLive(key) {
 
 // Which public paths a changed source file affects. Anything not listed
 // (API routes, scripts, config, styles) doesn't change a page worth re-crawling.
-function pathsForFile(file, allPostPaths) {
+function pathsForFile(file, allPostPaths, allLandingPaths) {
   const post = file.match(/^app\/blog\/([^/]+)\//);
   if (post) return [`/blog/${post[1]}`];
   if (file === "app/blog/page.tsx" || file === "lib/blog.ts") return ["/blog"];
   if (file === "components/BlogShell.tsx") return allPostPaths;
   if (file.startsWith("app/pricing/")) return ["/pricing"];
+  // Top-level landing pages: app/<slug>/page.tsx → /<slug>.
+  const landing = file.match(/^app\/([a-z0-9-]+)\/page\.tsx$/);
+  if (landing) return [`/${landing[1]}`];
+  // The shared landing shell changes every generator page.
+  if (file === "components/GeneratorLanding.tsx" || file === "lib/landings.ts") {
+    return allLandingPaths;
+  }
   if (
     ["app/page.tsx", "components/HomeApp.tsx", "components/HomeInfo.tsx", "lib/about.ts"].includes(file)
   ) {
@@ -104,9 +111,11 @@ function changedFiles(fromSha, toSha) {
 async function main() {
   const key = readKey();
   const sitemap = await liveSitemapUrls();
-  const allPostPaths = sitemap
-    .map((u) => normalize(u).slice(SITE.length))
-    .filter((p) => p.startsWith("/blog/"));
+  const allPaths = sitemap.map((u) => normalize(u).slice(SITE.length));
+  const allPostPaths = allPaths.filter((p) => p.startsWith("/blog/"));
+  const allLandingPaths = allPaths.filter(
+    (p) => p.length > 1 && !p.startsWith("/blog") && p !== "/pricing"
+  );
 
   let paths;
   if (ALL) {
@@ -120,7 +129,7 @@ async function main() {
       return;
     }
     const files = changedFiles(from, to);
-    paths = [...new Set(files.flatMap((f) => pathsForFile(f, allPostPaths)))];
+    paths = [...new Set(files.flatMap((f) => pathsForFile(f, allPostPaths, allLandingPaths)))];
     console.log(`Mode: changes ${from.slice(0, 7)}..${to.slice(0, 7)} — ${files.length} files → ${paths.length} pages`);
   }
 

@@ -840,7 +840,22 @@ const EXAMPLES = [
 // `info` is the server-rendered explainer (components/HomeInfo.tsx), passed in
 // from app/page.tsx so its copy and structured data ship as plain HTML rather
 // than in this client bundle.
-export default function Home({ info }: { info?: React.ReactNode }) {
+export default function Home({
+  info,
+  eyebrow,
+  heading,
+  subheading,
+  breadcrumb,
+}: {
+  /** Server-rendered copy shown under the generator. */
+  info?: React.ReactNode;
+  /** Landing pages reuse this whole component so the working generator is on
+   *  the page itself, and override the header to match what they rank for. */
+  eyebrow?: string;
+  heading?: React.ReactNode;
+  subheading?: React.ReactNode;
+  breadcrumb?: React.ReactNode;
+}) {
   const { data: session, status: authStatus } = useSession();
 
   const [words, setWords] = useState("");
@@ -1408,18 +1423,22 @@ export default function Home({ info }: { info?: React.ReactNode }) {
           </div>
         )}
 
+        {breadcrumb}
+
         {/* ── Header ──────────────────────────────────────────────── */}
         <div className="text-center mb-8 sm:mb-12">
           <div className="inline-flex items-center gap-2 text-xs font-bold tracking-widest text-[#ff2d78] uppercase mb-4 border border-[#ff2d78]/30 rounded-full px-4 py-1.5">
-            <span>⚡</span> AI Song Generator
+            <span>⚡</span> {eyebrow ?? "AI Song Generator"}
           </div>
-          <h1 className="text-4xl sm:text-6xl font-black text-white mb-3 glitch-text leading-none tracking-tight">
-            TEXT
-            <span className="bg-gradient-to-r from-[#ff2d78] via-[#9b30ff] to-[#00cfff] bg-clip-text text-transparent"> TO </span>
-            EMO
-          </h1>
+          {heading ?? (
+            <h1 className="text-4xl sm:text-6xl font-black text-white mb-3 glitch-text leading-none tracking-tight">
+              TEXT
+              <span className="bg-gradient-to-r from-[#ff2d78] via-[#9b30ff] to-[#00cfff] bg-clip-text text-transparent"> TO </span>
+              EMO
+            </h1>
+          )}
           <p className="text-white/50 text-lg">
-            Drop your words. We&apos;ll turn them into an emo pop punk song.
+            {subheading ?? "Drop your words. We'll turn them into an emo pop punk song."}
           </p>
         </div>
 

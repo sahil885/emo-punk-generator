@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { livePosts, type Post } from "@/lib/blog";
+import { GENERATOR_LANDINGS } from "@/lib/landings";
 
 const SITE = "https://texttoemo.com";
 
@@ -203,6 +204,35 @@ export default function BlogShell({
                   className="text-[#ff64a6] hover:text-[#ff2d78] font-semibold transition-colors"
                 >
                   {p.title}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {/* Links to the tool pages. The audit found /turn-texts-into-an-emo-song
+            earning a single impression in 90 days partly because nothing linked
+            to it; every article now does. */}
+        <div className="mt-8 border-t border-white/10 pt-6">
+          <p className="text-xs font-bold tracking-widest text-white/40 uppercase mb-4">
+            Make one now
+          </p>
+          <ul className="flex flex-col gap-3">
+            <li>
+              <Link
+                href="/turn-texts-into-an-emo-song"
+                className="text-[#00cfff] hover:text-[#7ee4ff] font-semibold transition-colors"
+              >
+                Turn your texts into an emo song
+              </Link>
+            </li>
+            {GENERATOR_LANDINGS.slice(0, 4).map((l) => (
+              <li key={l.path}>
+                <Link
+                  href={l.path}
+                  className="text-[#00cfff] hover:text-[#7ee4ff] font-semibold transition-colors"
+                >
+                  {l.label}
                 </Link>
               </li>
             ))}

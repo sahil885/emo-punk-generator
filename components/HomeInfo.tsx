@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { PACK_LIST } from "@/lib/pricing";
+import { GENERATOR_LANDINGS } from "@/lib/landings";
 import {
   FREE_SONGS,
   HOME_FAQ,
@@ -107,6 +108,28 @@ export default function HomeInfo() {
           See pricing
         </Link>
       </p>
+
+      {/* Tool pages, linked from the homepage so they aren't orphaned. */}
+      <h2 className="text-xl sm:text-2xl font-black text-white text-center mt-12 mb-5">
+        Make a specific kind of song
+      </h2>
+      <div className="grid gap-2.5 sm:grid-cols-2">
+        <Link
+          href="/turn-texts-into-an-emo-song"
+          className="rounded-xl border border-white/10 bg-white/3 px-4 py-3 text-sm font-semibold text-white hover:border-[#00cfff]/40 transition-colors"
+        >
+          Turn your texts into an emo song →
+        </Link>
+        {GENERATOR_LANDINGS.map((l) => (
+          <Link
+            key={l.path}
+            href={l.path}
+            className="rounded-xl border border-white/10 bg-white/3 px-4 py-3 text-sm font-semibold text-white hover:border-[#00cfff]/40 transition-colors"
+          >
+            {l.label} →
+          </Link>
+        ))}
+      </div>
 
       <h2 className="text-xl sm:text-2xl font-black text-white text-center mt-10 mb-5">
         Questions

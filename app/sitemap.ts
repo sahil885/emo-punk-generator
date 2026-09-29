@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { livePosts } from "@/lib/blog";
+import { ALL_LANDINGS } from "@/lib/landings";
 
 const BASE = "https://texttoemo.com";
 
@@ -17,39 +18,15 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "monthly",
       priority: 0.8,
     },
-    {
-      // Head-term hub. Commercial intent, so it ranks above the blog in
-      // priority and sits alongside /pricing.
-      url: `${BASE}/ai-song-generator`,
+    // Commercial landing pages — buying intent, so they rank above the blog.
+    // The list lives in lib/landings.ts so adding a page updates the sitemap,
+    // the internal links between them, and the "more generators" lists at once.
+    ...ALL_LANDINGS.map((l) => ({
+      url: `${BASE}${l.path}`,
       lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.9,
-    },
-    {
-      // Commercial landing page — buying intent, so it ranks above the blog in
-      // priority and sits alongside /pricing.
-      url: `${BASE}/personalized-song-gift`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.9,
-    },
-    {
-      // Transactional page for the "turn texts into an emo song" family —
-      // ~118 GSC impressions across ~20 phrasings, zero clicks, all of it
-      // currently landing on a blog post. See the page file for the data.
-      url: `${BASE}/turn-texts-into-an-emo-song`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.9,
-    },
-    {
-      // The brand's own category term. Ranks position 22–28 today because
-      // nothing on the site was product-shaped for it.
-      url: `${BASE}/emo-song-generator`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.9,
-    },
+      changeFrequency: "monthly" as const,
+      priority: l.priority,
+    })),
     {
       url: `${BASE}/blog`,
       lastModified: new Date(),
