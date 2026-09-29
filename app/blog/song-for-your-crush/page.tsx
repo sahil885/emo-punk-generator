@@ -15,7 +15,7 @@ const faq: FaqItem[] = [
   {
     question: "Is it free to make a crush song?",
     answer:
-      "Yes — you sign in and generate for free, and you hear a 60-second preview of every version. You only spend a credit (new accounts get free ones to start) when you want to unlock the full track and download it to keep or share.",
+      "Yes — you sign in and generate for free, and you hear a 60-second preview of every version. You only spend a credit (new accounts get one free to start) when you want to unlock the full track and download it to keep or share.",
   },
   {
     question: "What should I write in a song about my crush?",
@@ -188,7 +188,7 @@ export default function Page() {
         thinking about,{" "}
         <Link href="/">open the generator</Link>, pick a voice, and let the
         quiet-verse, loud-chorus, minor-key formula do the rest. Send it, post it,
-        or keep it forever in your drafts. Your first songs are free.
+        or keep it forever in your drafts. Your first song is free.
       </p>
     </BlogShell>
   );

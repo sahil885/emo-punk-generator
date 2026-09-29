@@ -93,7 +93,7 @@ export default function Page() {
         is close but not quite them, change a detail and run it again — swapping
         one line rewrites the imagery and the chorus. When a version makes you
         put your hand over your mouth, unlock it and download the full track.
-        Your first songs are free, so regenerating is just free dice-rolling.
+        Generating is always free, so regenerating is just free dice-rolling.
       </p>
 
       <h2>Who are you writing about? Pick your angle</h2>
@@ -205,7 +205,7 @@ export default function Page() {
         You don&apos;t need a band, a studio, or permission. You need the one
         detail you keep replaying. <Link href="/">Open the generator</Link>, type
         it, pick a voice, and give the person in your head a soundtrack instead
-        of a running commentary. Your first songs are free — start with the one
+        of a running commentary. Your first song is free — start with the one
         you&apos;ve been mentally writing for months.
       </p>
     </BlogShell>

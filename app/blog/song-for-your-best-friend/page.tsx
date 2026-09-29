@@ -225,7 +225,7 @@ export default function Page() {
         <Link href="/">Open the generator</Link>, paste it in, pick your
         vocalist, and let Claude write the lyrics and Suno sing them back to you.
         Generating and a 60-second preview are free after you sign in, and your
-        first songs are free &mdash; which means the only thing standing between
+        first song is free &mdash; which means the only thing standing between
         you and a real friendship anthem is deciding which memory you&apos;re
         brave enough to use.
       </p>

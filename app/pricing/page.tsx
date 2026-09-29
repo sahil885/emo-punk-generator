@@ -34,7 +34,7 @@ const faq = [
   {
     question: "Do I need to buy credits to try it?",
     answer:
-      "No. Sign in and you can generate songs for free and hear a 60-second preview of every one. You also get 2 free songs when you sign up, so your first full tracks cost nothing.",
+      "No. Sign in and you can generate songs for free and hear a 60-second preview of every one. You also get 1 free song when you sign up, so your first full track costs nothing.",
   },
   {
     question: "Do credits expire?",
@@ -432,7 +432,7 @@ export default function PricingPage() {
           </p>
           <p className="text-sm text-white/50 mb-5 max-w-md mx-auto">
             Sign in, type anything, and hear it as an emo pop punk track in
-            minutes. You get 2 free songs when you sign up.
+            minutes. You get 1 free song when you sign up.
           </p>
           <Link
             href="/"

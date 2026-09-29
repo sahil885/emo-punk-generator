@@ -5,13 +5,14 @@
 // Prices come from lib/pricing.ts and the download window from lib/retention.ts;
 // don't restate either as a literal here.
 
-import { SIGNUP_CREDITS } from "@/lib/authAdapter";
-import { PACK_LIST, PACKS, perSong } from "@/lib/pricing";
+import { FREE_SONGS_PHRASE, PACK_LIST, PACKS, SIGNUP_CREDITS, perSong } from "@/lib/pricing";
 import { AUDIO_RETENTION_DAYS } from "@/lib/retention";
 
 export const SITE_URL = "https://texttoemo.com";
 
 export const FREE_SONGS_ON_SIGNUP = SIGNUP_CREDITS;
+/** e.g. "1 free song" — already pluralised, so copy can drop it straight in. */
+export const FREE_SONGS = FREE_SONGS_PHRASE;
 
 const cheapestPerSong = PACK_LIST.reduce((low, p) =>
   p.amount / p.credits < low.amount / low.credits ? p : low
@@ -25,9 +26,9 @@ export const SITE_SUMMARY =
   "memory, a text message — into a full emo or pop punk song with lyrics, " +
   "vocals and music. AI writes the lyrics in seconds and the finished track " +
   "is ready in a few minutes. It's free to try: every song comes with a free " +
-  `60-second preview, new accounts get ${FREE_SONGS_ON_SIGNUP} free full ` +
-  `songs, and after that a full song costs ${PRICE_SINGLE}, or as little as ` +
-  `${PRICE_LOWEST_PER_SONG} per song in a credit pack.`;
+  `60-second preview, new accounts get ${FREE_SONGS_PHRASE}, and after that a ` +
+  `full song costs ${PRICE_SINGLE}, or as little as ${PRICE_LOWEST_PER_SONG} ` +
+  "per song in a credit pack.";
 
 export interface FaqItem {
   question: string;
@@ -52,7 +53,7 @@ export const HOME_FAQ: FaqItem[] = [
     question: "Is Text to Emo free?",
     answer:
       "Generating songs is free, and every song includes a free 60-second " +
-      `preview. New accounts get ${FREE_SONGS_ON_SIGNUP} free full songs. After ` +
+      `preview. New accounts get ${FREE_SONGS_PHRASE}. After ` +
       `that, unlocking a full song costs one credit: ${PRICE_SINGLE} for a ` +
       `single song, or down to ${PRICE_LOWEST_PER_SONG} per song in a credit ` +
       "pack. There's no subscription and credits never expire.",

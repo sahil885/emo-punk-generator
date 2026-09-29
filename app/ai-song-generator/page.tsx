@@ -44,7 +44,7 @@ const faq = [
   {
     question: "Is there a free AI song generator?",
     answer:
-      "Generating a song and hearing a 60-second preview is free here after you sign in, and new accounts get free songs to start. You spend a credit only to unlock the full track and download it, which starts at $3.99 with packs bringing it down to about $1.60 a song. There is no subscription.",
+      "Generating a song and hearing a 60-second preview is free here after you sign in, and new accounts get a free song to start. You spend a credit only to unlock the full track and download it, which starts at $3.99 with packs bringing it down to about $1.60 a song. There is no subscription.",
   },
   {
     question: "Can AI make a song from text I paste in?",

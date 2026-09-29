@@ -9,6 +9,14 @@
 // Pack ids are persisted on Stripe sessions and in the purchases table — never
 // rename an existing one, only add.
 
+// Free credits granted to every brand-new account. Lives here, not in the auth
+// adapter, so client components can quote it without pulling in the database.
+export const SIGNUP_CREDITS = 1;
+
+/** "1 free song" / "2 free songs" — the phrase used across the site's copy. */
+export const FREE_SONGS_PHRASE =
+  SIGNUP_CREDITS === 1 ? "1 free song" : `${SIGNUP_CREDITS} free songs`;
+
 export type PackId = "1pack" | "3pack" | "10pack" | "25pack";
 
 export interface Pack {

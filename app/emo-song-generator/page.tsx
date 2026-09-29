@@ -20,9 +20,9 @@ import { PACKS } from "@/lib/pricing";
 // question-shaped content gets absorbed by AI Overviews while tool pages keep
 // the click, and the homepage converts 7–10x better than any blog post.
 
-const TITLE = "Emo Song Generator — Free AI Emo & Pop Punk Songs";
+const TITLE = "Emo Song Generator — Hear Your Words Sung in 2 Minutes";
 const DESCRIPTION =
-  "An emo song generator that writes the lyrics and sings them. Type any words, pick a vocalist, get a full emo pop punk track in minutes. First songs free.";
+  "An emo song generator that writes the lyrics and sings them. Type any words, pick a vocalist, and hear a full emo pop punk track in about two minutes. First song free.";
 const URL = "https://texttoemo.com/emo-song-generator";
 
 export const metadata: Metadata = {
@@ -54,7 +54,7 @@ const faq = [
   {
     question: "Is this emo song generator free?",
     answer:
-      `Generating a song and hearing a 60-second preview are free once you sign in, and new accounts get free songs to start. You spend a credit only to unlock the full track and download it, from ${PACKS["1pack"].price} a song with packs bringing it down further. No subscription.`,
+      `Generating a song and hearing a 60-second preview are free once you sign in, and new accounts get a free song to start. You spend a credit only to unlock the full track and download it, from ${PACKS["1pack"].price} a song with packs bringing it down further. No subscription.`,
   },
   {
     question: "How is this different from Suno or a general AI music generator?",
@@ -330,7 +330,7 @@ export default function EmoSongGeneratorPage() {
             any idea what a chord is.{" "}
             <Link href="/">Open the generator</Link>, type the thing
             you&apos;ve been turning over all week, and hear it sung back.
-            Generating and previewing are free, and your first songs are free
+            Generating and previewing are free, and your first song is free
             &mdash; so trying it costs you two minutes and nothing else.
           </p>
         </div>

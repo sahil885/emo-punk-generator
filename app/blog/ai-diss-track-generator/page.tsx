@@ -20,7 +20,7 @@ const faq: FaqItem[] = [
   {
     question: "Is it free to make a diss track?",
     answer:
-      "Yes — sign in and generate for free, with a 60-second preview of every track. You only spend a credit (you get free ones to start) to unlock the full song and download it.",
+      "Yes — sign in and generate for free, with a 60-second preview of every track. You only spend a credit (you get one free to start) to unlock the full song and download it.",
   },
   {
     question: "What should I write for the best diss track?",
@@ -125,7 +125,7 @@ export default function Page() {
         The point isn&apos;t revenge — it&apos;s that you walk away with a real
         track instead of just a bad mood. Type who wronged you and what they did,{" "}
         <Link href="/">open the generator</Link>, and let the guitars do the
-        roasting. Your first songs are free, so the only risk is making a diss so
+        roasting. Your first song is free, so the only risk is making a diss so
         catchy you accidentally write a hit.
       </p>
     </BlogShell>

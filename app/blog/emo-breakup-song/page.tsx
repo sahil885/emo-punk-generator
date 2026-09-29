@@ -15,7 +15,7 @@ const faq: FaqItem[] = [
   {
     question: "Is it free to make a breakup song?",
     answer:
-      "Yes — you sign in and generate for free, and you hear a 60-second preview of every song. You only spend a credit (you get free ones to start) when you want to unlock the full track and download it.",
+      "Yes — you sign in and generate for free, and you hear a 60-second preview of every song. You only spend a credit (you get one free to start) when you want to unlock the full track and download it.",
   },
   {
     question: "What should I write to get the best breakup song?",
@@ -161,7 +161,7 @@ export default function Page() {
         that you walk away with an actual track instead of just a bad week. Type
         the thing you can&apos;t stop thinking about,{" "}
         <Link href="/">open the generator</Link>, and let the quiet-verse,
-        loud-chorus, minor-key formula do the rest. Your first songs are free.
+        loud-chorus, minor-key formula do the rest. Your first song is free.
       </p>
     </BlogShell>
   );

@@ -116,16 +116,38 @@ export default function BlogShell({
             looking for the generator, not an article about it — so surface the tool
             before the prose rather than only at the end. */}
         <div className="mb-8 flex flex-col sm:flex-row sm:items-center gap-3 rounded-xl border border-[#9b30ff]/30 bg-[#0f0520]/60 px-4 py-3">
-          <p className="text-sm text-white/60 flex-1">
-            Want the song, not the article? Drop any words in and hear it back in
-            minutes.
-          </p>
-          <Link
-            href="/"
-            className="inline-flex shrink-0 items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-bold text-white bg-gradient-to-r from-[#ff2d78] to-[#9b30ff] hover:opacity-90 transition-opacity"
-          >
-            ⚡ Try it free
-          </Link>
+          {post.ctaPrompt ? (
+            // One click to a running generator: the link carries the example
+            // words, so the box is already filled in when the page opens.
+            <>
+              <p className="text-sm text-white/60 flex-1">
+                Want the song, not the article? Hear{" "}
+                <span className="text-white/85 italic">
+                  &ldquo;{post.ctaPrompt}&rdquo;
+                </span>{" "}
+                sung back in about two minutes.
+              </p>
+              <Link
+                href={`/?words=${encodeURIComponent(post.ctaPrompt)}`}
+                className="inline-flex shrink-0 items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-bold text-white bg-gradient-to-r from-[#ff2d78] to-[#9b30ff] hover:opacity-90 transition-opacity"
+              >
+                ⚡ Make this song free
+              </Link>
+            </>
+          ) : (
+            <>
+              <p className="text-sm text-white/60 flex-1">
+                Want the song, not the article? Drop any words in and hear it back
+                in minutes.
+              </p>
+              <Link
+                href="/"
+                className="inline-flex shrink-0 items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-bold text-white bg-gradient-to-r from-[#ff2d78] to-[#9b30ff] hover:opacity-90 transition-opacity"
+              >
+                ⚡ Try it free
+              </Link>
+            </>
+          )}
         </div>
 
         <div className="article-content">{children}</div>
@@ -149,7 +171,7 @@ export default function BlogShell({
             Make your own emo song now
           </p>
           <p className="text-sm text-white/50 mb-4">
-            Drop any words and get a full track with vocals in minutes. Your first songs are free.
+            Drop any words and get a full track with vocals in minutes. Your first song is free.
           </p>
           <Link
             href="/"

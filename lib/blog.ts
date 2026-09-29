@@ -19,6 +19,12 @@ export interface Post {
    * SEO-KEYWORD-AUDIT.md Part 7).
    */
   mergedInto?: string;
+  /**
+   * Example words for the "make this song" block at the top of the article.
+   * Links to /?words=… so the generator opens prefilled and ready to run —
+   * the search traffic these pages get is mostly people who want the tool.
+   */
+  ctaPrompt?: string;
 }
 
 // Shared per-article metadata: canonical, OpenGraph and Twitter cards with the
@@ -57,33 +63,39 @@ export const posts: Post[] = [
   },
   {
     slug: "turn-your-words-into-an-emo-song",
-    title: "Turn Your Texts Into an Emo Song (Free AI Generator)",
+    ctaPrompt: "k. have a good life then",
+    title:
+      "Turn Your Texts Into an Emo Song — Hear It in 2 Minutes",
     description:
-      "Paste a text, pick a vocalist, get a full emo song with real vocals in minutes. No band, no studio, no instruments. Your first songs are free — start now.",
+      "Paste a text message, pick a vocalist, and hear it sung back as a full emo song with guitars and drums in about two minutes. No band, no studio. First song free.",
     date: "2026-06-17",
     excerpt:
       "The viral 'turn your texts into an emo song' trend, explained — and how to make your own from a screenshot, a voice note, or a late-night thought.",
   },
   {
     slug: "what-makes-a-song-emo",
-    title: "Emo vs. Pop Punk: The Real Difference, With Examples",
+    ctaPrompt: "everyone grew out of it except me",
+    title:
+      "Emo vs. Pop Punk: The Difference — and Hear It Yourself",
     description:
-      "Emo and pop punk get used interchangeably and they are not the same thing. The sound, the lyrics, the subgenres — sorted out with songs you already know.",
+      "What actually makes a song emo, how it differs from pop punk, and the subgenres sorted out. Then turn your own words into one and hear it in about two minutes.",
     date: "2026-06-17",
     excerpt:
       "Minor keys, confessional lyrics, quiet-loud dynamics: a quick guide to what makes a song emo, and how it differs from pop punk.",
   },
   {
     slug: "emo-breakup-song",
+    ctaPrompt: "you returned my hoodie and nothing else",
     title: "How to Make a Song About Your Ex (in About Two Minutes)",
     description:
-      "Turn the last text, the worst voicemail, or a 2am spiral into a song about your ex — full lyrics, real vocals, done in minutes. Your first songs are free.",
+      "Turn the last text, the worst voicemail, or a 2am spiral into a song about your ex — full lyrics, real vocals, done in minutes. Your first song is free.",
     date: "2026-06-27",
     excerpt:
       "A song about your ex is emo's whole reason for existing. Here's how to turn the worst text, the last voicemail, or a 2am spiral into a full breakup anthem.",
   },
   {
     slug: "how-to-write-emo-lyrics",
+    ctaPrompt: "i keep rewriting the message and never sending it",
     // Second title/meta pass (2026-08-22), different hypothesis to the first.
     //
     // This is the site's engine: 330 of 734 impressions in the last 28 days
@@ -97,15 +109,17 @@ export const posts: Post[] = [
     // one leads with the noun they typed and offers both paths — the craft
     // guide the page actually contains, and the generator that does it for
     // them. Ranking isn't the problem here; the snippet is.
-    title: "Emo Lyrics That Don't Sound Fake (Write or Generate)",
+    title:
+      "Emo Lyrics in 2 Minutes — Write Them or Hear Them Sung",
     description:
-      "Emo lyrics about anyone — an ex, a friend, a 2am thought. The techniques that make them land, plus a free generator that writes and sings them in minutes.",
+      "The techniques behind emo lyrics that don't sound fake — plus a free generator that writes yours and sings them back with real vocals in about two minutes.",
     date: "2026-06-27",
     excerpt:
       "The exact techniques behind great emo lyrics — specificity, quiet-loud contrast, the confessional 'I' — and how to get there fast with AI.",
   },
   {
     slug: "ai-diss-track-generator",
+    ctaPrompt: "you never once paid me back and you know it",
     title: "AI Diss Track Generator — Sung, Not Rapped",
     description:
       "Make a diss track with AI about anyone — full lyrics, real vocals, and a beat in minutes. Not a rap generator: this one roasts in anthemic pop punk style.",
@@ -124,15 +138,18 @@ export const posts: Post[] = [
   },
   {
     slug: "what-makes-a-great-emo-ballad",
-    title: "How to Write an Emo Ballad: The Elements That Land",
+    ctaPrompt: "i still can't delete your voicemail",
+    title:
+      "Emo Ballads: What Makes One Hurt — and Write Your Own",
     description:
-      "The quiet first verse, the build, the breakdown that levels you — the elements behind every great emo ballad, and how to turn yours into a real song today.",
+      "The quiet first verse, the build, the breakdown that levels you — what's behind every great emo ballad, and how to turn your own into one you can hear sung.",
     date: "2026-06-28",
     excerpt:
       "From the whispered first verse to the chorus that levels you — the exact elements that make an emo ballad great, and how to write one yourself.",
   },
   {
     slug: "song-for-your-crush",
+    ctaPrompt: "you said my name and i forgot how to talk",
     title: "How to Make a Song for Your Crush with AI (in Minutes)",
     description:
       "Got a crush you can't stop thinking about? Here's how to make a song for your crush with AI — full emo lyrics, vocals, and music in minutes. First songs free.",
@@ -142,9 +159,10 @@ export const posts: Post[] = [
   },
   {
     slug: "how-to-make-a-sad-song-with-ai",
+    ctaPrompt: "the house is the same, it's just quieter now",
     title: "How to Make a Sad Song with AI (That Actually Hurts)",
     description:
-      "Learn how to make a sad song with AI — type what hurts, pick a vocalist, and get full emo lyrics, vocals, and music in minutes. Your first songs are free.",
+      "Learn how to make a sad song with AI — type what hurts, pick a vocalist, and get full emo lyrics, vocals, and music in minutes. Your first song is free.",
     date: "2026-07-27",
     excerpt:
       "Generic sad-music generators give you moody background loops. Here's how to make a sad song with real words, real vocals, and a chorus that actually hurts.",
@@ -179,7 +197,7 @@ export const posts: Post[] = [
     slug: "song-for-your-best-friend",
     title: "How to Make a Song for Your Best Friend with AI (Not Cheesy)",
     description:
-      "How to make a song for your best friend with AI without it sounding like a greeting card. Real lyrics, real vocals, done in minutes. Your first songs are free.",
+      "How to make a song for your best friend with AI without it sounding like a greeting card. Real lyrics, real vocals, done in minutes. Your first song is free.",
     date: "2026-08-10",
     excerpt:
       "Most friendship songs sound like a birthday card set to music. Here's how to make a song for your best friend that's actually specific enough to make them cry.",
@@ -188,7 +206,7 @@ export const posts: Post[] = [
     slug: "ai-lyrics-generator",
     title: "AI Lyrics Generator: Get Emo Lyrics and Hear Them Sung",
     description:
-      "An AI lyrics generator that writes real emo and pop-punk lyrics from your own words — then sings them back with real vocals in minutes. Your first songs are free.",
+      "An AI lyrics generator that writes real emo and pop-punk lyrics from your own words — then sings them back with real vocals in minutes. Your first song is free.",
     date: "2026-08-22",
     excerpt:
       "Most AI lyrics generators hand you a block of text and wish you luck. Here's how to get emo lyrics written from your actual words — and hear them sung back.",

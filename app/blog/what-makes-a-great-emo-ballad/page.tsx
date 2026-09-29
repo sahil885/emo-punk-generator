@@ -184,7 +184,7 @@ export default function Page() {
         and a stripped bridge before the final chorus detonates. Master the
         contrast between restraint and release and you&apos;ve mastered the
         form. Then <Link href="/">turn your own 2am moment into one</Link> —
-        your first songs are free.
+        your first song is free.
       </p>
     </BlogShell>
   );

@@ -10,7 +10,7 @@ const faq: FaqItem[] = [
   {
     question: "Is it free to make an emo song with AI?",
     answer:
-      "Yes. On Text to Emo your first songs are free, with no credit card required. You can generate a few tracks, find the one that hits, and download it. After your free songs you can buy credit packs to keep making more.",
+      "Yes. Generating songs and hearing a 60-second preview of each one is free, with no credit card required — so you can make a few tracks and find the one that hits. Your first full song is free too; after that, credit packs unlock more.",
   },
   {
     question: "Do I need to know how to make music or play an instrument?",

@@ -40,7 +40,7 @@ const faq = [
   {
     question: "How do I make a personalized song as a gift?",
     answer:
-      "Write one specific thing about them — a memory, an inside joke, the thing they always say — then pick a male or female vocalist and generate. You get a free 60-second preview, so you can hear the song before you decide to keep it. Unlocking the full track and downloading it costs one credit, and your first songs are free.",
+      "Write one specific thing about them — a memory, an inside joke, the thing they always say — then pick a male or female vocalist and generate. You get a free 60-second preview, so you can hear the song before you decide to keep it. Unlocking the full track and downloading it costs one credit, and your first song is free.",
   },
   {
     question: "How much does a personalized song gift cost?",
@@ -334,7 +334,7 @@ export default function PersonalizedSongGiftPage() {
           </p>
           <p className="text-sm text-white/50 mb-4">
             Write it, pick a voice, and hear their song in about two minutes.
-            Your first songs are free.
+            Your first song is free.
           </p>
           <Link
             href="/"

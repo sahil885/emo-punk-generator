@@ -24,7 +24,7 @@ import { PACKS } from "@/lib/pricing";
 
 const TITLE = "Turn Texts Into an Emo Song — Free AI Generator";
 const DESCRIPTION =
-  "Paste any text message and turn it into a full emo song with real vocals in about two minutes. Free to generate and preview. Your first songs are free.";
+  "Paste any text message and turn it into a full emo song with real vocals in about two minutes. Free to generate and preview. Your first song is free.";
 const URL = "https://texttoemo.com/turn-texts-into-an-emo-song";
 
 export const metadata: Metadata = {
@@ -61,7 +61,7 @@ const faq = [
   {
     question: "Is it free to turn texts into an emo song?",
     answer:
-      `Generating and hearing a 60-second preview are free after you sign in, and new accounts get free songs to start. Unlocking the full track and downloading it costs one credit — ${PACKS["1pack"].price} for a single song, less in a pack. There's no subscription.`,
+      `Generating and hearing a 60-second preview are free after you sign in, and new accounts get a free song to start. Unlocking the full track and downloading it costs one credit — ${PACKS["1pack"].price} for a single song, less in a pack. There's no subscription.`,
   },
   {
     question: "What kind of texts make the best songs?",

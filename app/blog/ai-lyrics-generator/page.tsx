@@ -23,7 +23,7 @@ const faq: FaqItem[] = [
   {
     question: "Is there a free AI lyrics generator?",
     answer:
-      "On Text to Emo, generating is free once you sign in, and so is a 60-second preview of the finished song — lyrics, vocals, guitars and all. New accounts get free songs to start. You only spend a credit when you want to unlock the full track and download it. So you can hear whether the lyrics actually land before you decide anything.",
+      "On Text to Emo, generating is free once you sign in, and so is a 60-second preview of the finished song — lyrics, vocals, guitars and all. New accounts get a free song to start. You only spend a credit when you want to unlock the full track and download it. So you can hear whether the lyrics actually land before you decide anything.",
   },
   {
     question: "Can an AI lyrics generator write lyrics about a specific person?",
@@ -263,7 +263,7 @@ export default function Page() {
         <Link href="/">Open the generator</Link>, paste it in, pick a vocalist,
         and let Claude write the lyrics and Suno sing them back at you.
         Generating and a 60-second preview are free after you sign in, and your
-        first songs are free.
+        first song is free.
       </p>
       <p>
         Use the detail you&apos;d be slightly embarrassed to say out loud.

@@ -92,7 +92,7 @@ export default function Page() {
         sad-ish but not <em>your</em> sad, change a detail and regenerate —
         swap &quot;I miss you&quot; for the street name, the hoodie, the exact
         hour. When a version genuinely gets you, unlock it and download the
-        full track. Your first songs are free.
+        full track. Your first song is free.
       </p>
 
       <h2>Sad song ideas: what to type when you&apos;re stuck</h2>

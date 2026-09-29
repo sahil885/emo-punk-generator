@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { PACK_LIST } from "@/lib/pricing";
 import {
-  FREE_SONGS_ON_SIGNUP,
+  FREE_SONGS,
   HOME_FAQ,
   PRICE_LOWEST_PER_SONG,
   PRICE_SINGLE,
@@ -84,7 +84,7 @@ export default function HomeInfo() {
           {
             step: "3",
             title: "Hear it, then unlock",
-            body: `Free 60-second preview. ${FREE_SONGS_ON_SIGNUP} free full songs to start.`,
+            body: `Free 60-second preview, and ${FREE_SONGS} to start.`,
           },
         ].map((s) => (
           <div

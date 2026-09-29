@@ -25,7 +25,7 @@ const faq: FaqItem[] = [
   {
     question: "Is it free to make a song in my favorite band's style?",
     answer:
-      "Yes — sign in, generate for free, and hear a 60-second preview of each song. You spend a credit (free ones to start) only to unlock the full track and download it.",
+      "Yes — sign in, generate for free, and hear a 60-second preview of each song. You spend a credit (one free to start) only to unlock the full track and download it.",
   },
   {
     question: "Will it sound exactly like the band?",
@@ -135,7 +135,7 @@ export default function Page() {
         chasing, choose the matching vocalist, write one honest line, and{" "}
         <Link href="/blog/how-to-make-an-emo-song">generate a full emo song</Link>.
         Regenerate until it gives you that exact 2005-bedroom-floor feeling — your
-        first songs are free.
+        first song is free.
       </p>
     </BlogShell>
   );

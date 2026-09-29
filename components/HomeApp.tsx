@@ -11,6 +11,7 @@ import {
   isPackId,
   perSong,
   savingsPct,
+  FREE_SONGS_PHRASE,
   type PackId,
 } from "@/lib/pricing";
 import { AUDIO_RETENTION_DAYS, isExpired, retentionLabel } from "@/lib/retention";
@@ -866,6 +867,7 @@ export default function Home({ info }: { info?: React.ReactNode }) {
   const [selectedPack, setSelectedPack] = useState<PackId>("10pack");
   const [showSongs, setShowSongs] = useState(false);
   const [songId, setSongId] = useState<string | null>(null);
+  const wordsRef = useRef<HTMLTextAreaElement | null>(null);
   const [offer, setOffer] = useState<Offer | null>(null);
   const offerMsLeft = useTimeLeft(offer?.endsAt ?? null);
 
@@ -909,25 +911,33 @@ export default function Home({ info }: { info?: React.ReactNode }) {
       .catch(() => {});
   }, [fetchCredits]);
 
-  // ── Deep link from /pricing (?pack=…) ───────────────────────────────────────
-  // Opens the buy modal on the chosen pack so the pricing page converts in one
-  // hop instead of dropping people on the homepage to find "Buy credits".
+  // ── Deep links: /pricing (?pack=…) and blog CTAs (?words=…) ────────────────
+  // ?pack opens the buy modal on that pack, so the pricing page converts in one
+  // hop. ?words prefills the box from a blog post's "make this song" block, so
+  // that CTA lands on a generator that's ready to run rather than an empty form.
   useEffect(() => {
     if (authStatus === "loading") return;
     const params = new URLSearchParams(window.location.search);
     const pack = params.get("pack");
-    if (!pack) return;
+    const seed = params.get("words");
+    if (!pack && !seed) return;
 
     window.history.replaceState({}, "", "/");
-    if (!isPackId(pack)) return;
 
-    setSelectedPack(pack);
-    if (authStatus === "authenticated") {
-      setShowBuyCredits(true);
-      setBuyError("");
-    } else {
-      setShowSignIn(true);
-      setSignInError("");
+    if (seed) {
+      setWords(seed.slice(0, 300));
+      wordsRef.current?.scrollIntoView({ block: "center" });
+    }
+
+    if (pack && isPackId(pack)) {
+      setSelectedPack(pack);
+      if (authStatus === "authenticated") {
+        setShowBuyCredits(true);
+        setBuyError("");
+      } else {
+        setShowSignIn(true);
+        setSignInError("");
+      }
     }
   }, [authStatus]);
 
@@ -1461,6 +1471,7 @@ export default function Home({ info }: { info?: React.ReactNode }) {
               Your words / phrase
             </label>
             <textarea
+              ref={wordsRef}
               value={words}
               onChange={(e) => setWords(e.target.value)}
               onKeyDown={(e) => {
@@ -1497,7 +1508,7 @@ export default function Home({ info }: { info?: React.ReactNode }) {
           {!isSignedIn && (
             <p className="text-center text-sm text-white/70 mb-3">
               Free to generate · free 60-second preview ·{" "}
-              <span className="text-[#00cfff] font-semibold">2 free songs</span>{" "}
+              <span className="text-[#00cfff] font-semibold">{FREE_SONGS_PHRASE}</span>{" "}
               when you sign up
             </p>
           )}
