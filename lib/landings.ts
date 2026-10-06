@@ -31,6 +31,13 @@ export const GENERATOR_LANDINGS: Landing[] = [
 
 export const OTHER_LANDINGS: Landing[] = [
   {
+    // The "free" qualifier on the head terms — a different question from the
+    // hub's, so it gets its own page rather than a section.
+    path: "/free-ai-song-generator",
+    label: "Free AI song generator",
+    priority: 0.9,
+  },
+  {
     path: "/turn-texts-into-an-emo-song",
     label: "Turn texts into an emo song",
     priority: 0.9,

@@ -295,6 +295,45 @@ export default function PersonalizedSongGiftPage() {
             </li>
           </ul>
 
+          <h2>Making one for a best friend</h2>
+          <p>
+            Friendship songs are the most underwritten category there is —
+            everybody writes love songs and breakup songs, almost nobody writes
+            the one about the person who drove four hours when it went wrong.
+            That scarcity is exactly why one lands so hard as a gift.
+          </p>
+          <p>
+            The trick is to resist summarising the friendship. Ten years
+            compressed into four minutes produces a greetings card. One specific
+            memory produces a song:
+          </p>
+          <ul>
+            <li>
+              <strong>Pick one scene, not the whole history.</strong> The night
+              you sat in the car park until 3am. The thing they said that you
+              still quote.
+            </li>
+            <li>
+              <strong>Write it as one sentence they&apos;d recognise.</strong> If
+              they&apos;d know instantly what you meant, it&apos;s specific
+              enough. If anyone&apos;s best friend could receive it, go narrower.
+            </li>
+            <li>
+              <strong>Match the voice to the friendship.</strong> The female
+              vocalist suits sharp and funny; the male vocalist suits earnest and
+              dramatic. Most friendships are the first one.
+            </li>
+            <li>
+              <strong>Keep the joke in.</strong> Sincerity lands harder when
+              there&apos;s something stupid next to it — the nickname, the
+              running bit, the terrible thing you both did.
+            </li>
+          </ul>
+          <p>
+            Emo suits this better than a sweet acoustic treatment, because
+            friendship at volume sounds like devotion rather than sentiment.
+          </p>
+
           <h2>What you get</h2>
           <ul>
             <li>A full-length song with sung vocals, guitars, and drums</li>

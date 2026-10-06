@@ -17,6 +17,13 @@ const nextConfig: NextConfig = {
       // source entries stay in lib/blog.ts (flagged `mergedInto`) so reversing
       // any of these is a one-line change.
       {
+        // 1 impression at position 73 in 90 days — the newest and weakest post,
+        // folded into the gift cluster as a "best friend" section.
+        source: "/blog/song-for-your-best-friend",
+        destination: "/personalized-song-gift",
+        permanent: true,
+      },
+      {
         source: "/blog/emo-song-ideas",
         destination: "/blog/turn-your-words-into-an-emo-song",
         permanent: true,

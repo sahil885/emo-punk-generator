@@ -195,6 +195,7 @@ export const posts: Post[] = [
   },
   {
     slug: "song-for-your-best-friend",
+    mergedInto: "/personalized-song-gift",
     title: "How to Make a Song for Your Best Friend with AI (Not Cheesy)",
     description:
       "How to make a song for your best friend with AI without it sounding like a greeting card. Real lyrics, real vocals, done in minutes. Your first song is free.",

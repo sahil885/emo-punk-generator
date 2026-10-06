@@ -47,6 +47,11 @@ const faq = [
       "Generating a song and hearing a 60-second preview is free here after you sign in, and new accounts get a free song to start. You spend a credit only to unlock the full track and download it, which starts at $3.99 with packs bringing it down to about $1.60 a song. There is no subscription.",
   },
   {
+    question: "Is this an AI music generator too?",
+    answer:
+      "It depends what you mean by music generator. Most of them make instrumental audio — loops and backing tracks for video. This makes complete songs: lyrics, a sung vocal, guitars and drums. There's no instrumental-only mode and no stem export, so if you want background music with no vocal, use a general-purpose music generator instead.",
+  },
+  {
     question: "Can AI make a song from text I paste in?",
     answer:
       "Yes, and it is the thing this generator is built around. Paste a text message, a note from your phone, or a single sentence, and the lyrics get written around your actual words rather than a generic prompt. Short and specific works better than long and explanatory.",
@@ -249,6 +254,23 @@ export default function AiSongGeneratorPage() {
             tool aimed at forty. If you want any genre on demand, use a
             general-purpose generator. If you want <em>this</em> convincingly,
             specialisation is the reason to pick it.
+          </p>
+
+          <h2>AI music generator or AI song generator?</h2>
+          <p>
+            People search both and usually mean slightly different things. An AI
+            music generator, in most tools, produces instrumental audio — a
+            backing track, a loop, something to put under a video. An AI song
+            generator is supposed to give you the whole thing: words, a voice
+            singing them, and a band behind it.
+          </p>
+          <p>
+            This is the second kind. There&apos;s no instrumental-only mode and
+            no stem export; every run comes back as a finished song with sung
+            vocals, because the lyrics are the part it&apos;s built around. If
+            what you need is background music with no vocal, a general-purpose
+            music generator is the better tool and it would be daft to pretend
+            otherwise.
           </p>
 
           <h2>Making a song from text you already have</h2>
