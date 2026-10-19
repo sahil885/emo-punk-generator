@@ -1,5 +1,6 @@
 import Link from "next/link";
 import BlogShell, { type FaqItem } from "@/components/BlogShell";
+import GeneratorEmbed from "@/components/GeneratorEmbed";
 import { getPost, postMetadata } from "@/lib/blog";
 
 const post = getPost("what-makes-a-great-emo-ballad")!;
@@ -46,6 +47,8 @@ export default function Page() {
         elements, and they&apos;re surprisingly consistent from Dashboard
         Confessional to My Chemical Romance to Paramore.
       </p>
+
+      <GeneratorEmbed />
 
       <h2>The 5 elements of a great emo ballad</h2>
 

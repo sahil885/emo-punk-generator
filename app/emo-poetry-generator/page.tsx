@@ -67,6 +67,10 @@ export default function EmoPoetryGeneratorPage() {
       faq={faq}
       related={relatedGenerators(PATH)}
     >
+      <p>
+        Text to Emo writes emo verses from your own words and, if you want them sung, performs them as a full pop-punk song in about two minutes. The first song is free.
+      </p>
+
       <h2>Poetry that doesn&apos;t stop at the page</h2>
       <p>
         Emo has always sat on the border between poetry and music — the lyric

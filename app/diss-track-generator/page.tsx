@@ -70,6 +70,10 @@ export default function DissTrackGeneratorPage() {
       faq={faq}
       related={relatedGenerators(PATH)}
     >
+      <p>
+        Text to Emo writes a sung pop-punk diss track from your own words in about two minutes, and your first song is free.
+      </p>
+
       <h2>Why a sung diss lands harder than a rapped one</h2>
       <p>
         Search for a diss track generator and you get a dozen tools producing rap

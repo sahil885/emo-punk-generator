@@ -1,5 +1,6 @@
 import Link from "next/link";
 import BlogShell, { type FaqItem } from "@/components/BlogShell";
+import GeneratorEmbed from "@/components/GeneratorEmbed";
 import { getPost, postMetadata } from "@/lib/blog";
 
 const post = getPost("what-makes-a-song-emo")!;
@@ -16,6 +17,21 @@ const faq: FaqItem[] = [
     question: "What's the difference between emo and pop punk?",
     answer:
       "They overlap heavily, but pop punk is brighter and faster with lighter themes like youth and rebellion (Green Day, blink-182), while emo carries more emotional weight and leans melancholic and introspective (early Paramore, My Chemical Romance). Most modern 'emo' songs are really emo-pop or pop-punk hybrids.",
+  },
+  {
+    question: "What makes a song emo?",
+    answer:
+      "Three things together: dynamics that move between quiet and loud, lyrics that are confessional and specific rather than general, and a vocal that sounds like it means it — strained, cracking, occasionally screamed. A sad song isn't automatically emo; it's emo when the feeling is pointed inward and sung like an admission.",
+  },
+  {
+    question: "Is pop punk emo?",
+    answer:
+      "No, though they overlap and plenty of bands get filed under both. Pop punk is faster and brighter, aimed outward at boredom, friends and your hometown; emo is more dynamic and aimed inward at your own feelings. Bands like My Chemical Romance and Paramore sit close enough to the line that fans have argued about them for twenty years.",
+  },
+  {
+    question: "Is emo a subgenre of punk?",
+    answer:
+      "Yes. Emo began in the mid-1980s Washington DC hardcore punk scene as 'emotional hardcore' — Rites of Spring and Embrace are the usual starting points. It kept punk's instrumentation and energy and pointed the lyrics inward, then drifted further from punk with each wave, which is why 2000s emo often sounds closer to pop or indie rock than to hardcore.",
   },
   {
     question: "What are the main emo subgenres?",
@@ -42,6 +58,57 @@ const faq: FaqItem[] = [
 export default function Page() {
   return (
     <BlogShell post={post} faq={faq}>
+      {/* Plain answer first: these queries ("emo vs pop punk", "is pop punk
+          emo") rank 8–12 and earn no clicks because the answer is being given
+          above the fold by an AI Overview. */}
+      <p>
+        <strong>
+          The difference between emo and pop punk is where the feeling points.
+        </strong>{" "}
+        Emo turns inward — slower or more dynamic songs, confessional lyrics
+        about your own heartbreak and anxiety, vocals that crack on purpose. Pop
+        punk turns outward — faster, brighter, built around a big shout-along
+        chorus about boredom, friends and getting out of your hometown. Plenty
+        of bands sit in both camps, which is why the argument never ends.
+      </p>
+
+      <div className="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col"></th>
+              <th scope="col">Emo</th>
+              <th scope="col">Pop punk</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">Tempo</th>
+              <td>Varies — quiet verses that build to a loud finish</td>
+              <td>Fast and steady, usually 160&ndash;200 BPM</td>
+            </tr>
+            <tr>
+              <th scope="row">Vocals</th>
+              <td>Strained, cracking, sometimes screamed</td>
+              <td>Clean, nasal, built for a crowd to sing back</td>
+            </tr>
+            <tr>
+              <th scope="row">Lyrics</th>
+              <td>Inward: one specific heartbreak, held still</td>
+              <td>Outward: boredom, friends, leaving town, someone who wronged you</td>
+            </tr>
+            <tr>
+              <th scope="row">Typical bands</th>
+              <td>
+                Sunny Day Real Estate, American Football, My Chemical Romance,
+                Dashboard Confessional
+              </td>
+              <td>Green Day, Blink-182, Sum 41, early Paramore</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
       <p>
         &quot;Emo&quot; gets used for everything from My Chemical Romance to a sad
         TikTok sound, so it&apos;s worth pinning down: what actually makes a song
@@ -51,6 +118,8 @@ export default function Page() {
         2am. Let&apos;s break down where it comes from, the musical and lyrical
         ingredients, the subgenres, and how it differs from pop punk.
       </p>
+
+      <GeneratorEmbed />
 
       <h2>Where emo comes from</h2>
       <p>

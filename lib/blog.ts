@@ -65,9 +65,9 @@ export const posts: Post[] = [
     slug: "turn-your-words-into-an-emo-song",
     ctaPrompt: "k. have a good life then",
     title:
-      "Turn Your Texts Into an Emo Song — Hear It in 2 Minutes",
+      "Emo Songs Made From Texts: 5 Examples That Work",
     description:
-      "Paste a text message, pick a vocalist, and hear it sung back as a full emo song with guitars and drums in about two minutes. No band, no studio. First song free.",
+      "Five kinds of text message that turn into great emo songs — the one-word reply, the late birthday, the non-apology — what each one produces, and which vocalist to pick.",
     date: "2026-06-17",
     excerpt:
       "The viral 'turn your texts into an emo song' trend, explained — and how to make your own from a screenshot, a voice note, or a late-night thought.",

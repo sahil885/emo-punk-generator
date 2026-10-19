@@ -73,6 +73,10 @@ export default function PunkLyricsGeneratorPage() {
       faq={faq}
       related={relatedGenerators(PATH)}
     >
+      <p>
+        Text to Emo writes punk lyrics from whatever you type and performs them as a full pop-punk song in about two minutes, and your first song is free.
+      </p>
+
       <h2>Punk lyrics are short on purpose</h2>
       <p>
         The genre&apos;s whole trick is compression. A punk chorus is usually one

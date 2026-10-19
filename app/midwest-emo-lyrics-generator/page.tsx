@@ -70,6 +70,10 @@ export default function MidwestEmoLyricsGeneratorPage() {
       faq={faq}
       related={relatedGenerators(PATH)}
     >
+      <p>
+        Text to Emo writes midwest-emo-style lyrics from your own words and sings them back as a full song in about two minutes, and your first song is free.
+      </p>
+
       <h2>What transfers, and what doesn&apos;t</h2>
       <p>
         Worth saying plainly before you spend two minutes on it: this writes

@@ -149,3 +149,58 @@ body {
   color: rgba(255, 255, 255, 0.6);
   font-style: italic;
 }
+
+/* The generator embedded inside an article: article typography (pink underlined
+   links, paragraph margins, list bullets) must not leak into the tool's own UI. */
+.article-content .generator-embed p {
+  margin-bottom: 0;
+}
+.article-content .generator-embed a {
+  color: inherit;
+  text-decoration: none;
+  font-weight: inherit;
+}
+.article-content .generator-embed a:hover {
+  color: inherit;
+}
+.article-content .generator-embed ul,
+.article-content .generator-embed ol {
+  margin: 0;
+  display: block;
+}
+.article-content .generator-embed li {
+  list-style: none;
+}
+.article-content .generator-embed strong {
+  color: inherit;
+}
+
+/* Comparison tables inside articles. Wide content scrolls in its own container
+   so the page body never scrolls sideways on a phone. */
+.article-content .table-scroll {
+  overflow-x: auto;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.75rem;
+  margin-bottom: 1.6rem;
+}
+.article-content table {
+  border-collapse: collapse;
+  width: 100%;
+  min-width: 420px;
+  font-size: 0.93rem;
+}
+.article-content th,
+.article-content td {
+  text-align: left;
+  padding: 0.7rem 0.9rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  vertical-align: top;
+}
+.article-content th {
+  color: #fff;
+  font-weight: 700;
+  background: rgba(255, 255, 255, 0.04);
+}
+.article-content tr:last-child td {
+  border-bottom: 0;
+}

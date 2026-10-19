@@ -77,6 +77,10 @@ export default function TurnTextsIntoAnEmoSongPage() {
       productDescription="Turns a real text message into a full emo song with lyrics built from its exact words, performed with sung vocals, guitars and drums."
       faq={faq}
     >
+      <p>
+        Text to Emo turns a text message into a full emo pop-punk song — the lyrics written around your words and sung back to you in about two minutes, with your first song free.
+      </p>
+
       <h2>What the trend is</h2>
       <p>
         Someone takes a message that wrecked them — a breakup text, a

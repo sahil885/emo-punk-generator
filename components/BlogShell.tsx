@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { livePosts, type Post } from "@/lib/blog";
-import { GENERATOR_LANDINGS } from "@/lib/landings";
+import { GENERATOR_PAGES } from "@/lib/landings";
 
 const SITE = "https://texttoemo.com";
 
@@ -226,7 +226,7 @@ export default function BlogShell({
                 Turn your texts into an emo song
               </Link>
             </li>
-            {GENERATOR_LANDINGS.slice(0, 4).map((l) => (
+            {GENERATOR_PAGES.map((l) => (
               <li key={l.path}>
                 <Link
                   href={l.path}

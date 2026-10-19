@@ -76,6 +76,10 @@ export default function EmoLyricsGeneratorPage() {
       faq={faq}
       related={relatedGenerators(PATH)}
     >
+      <p>
+        Text to Emo writes emo lyrics from your own words and sings them back as a full pop-punk song in about two minutes, and your first song is free.
+      </p>
+
       <h2>What the lyrics generator actually writes</h2>
       <p>
         Most lyrics generators hand you a block of rhyming text and stop. This

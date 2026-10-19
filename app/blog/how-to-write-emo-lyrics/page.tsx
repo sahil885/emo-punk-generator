@@ -1,5 +1,6 @@
 import Link from "next/link";
 import BlogShell, { type FaqItem } from "@/components/BlogShell";
+import GeneratorEmbed from "@/components/GeneratorEmbed";
 import { getPost, postMetadata } from "@/lib/blog";
 
 const post = getPost("how-to-write-emo-lyrics")!;
@@ -44,6 +45,16 @@ export default function Page() {
         magic. Whether you&apos;re writing by hand or using AI to draft a full
         song, this guide breaks down how emo and pop punk lyrics actually work —
         structure, voice, imagery, and the mistakes that make them fall flat.
+      </p>
+
+      <GeneratorEmbed />
+
+      <p>
+        Writing in a particular corner of the genre? The{" "}
+        <Link href="/midwest-emo-lyrics-generator">
+          midwest emo lyrics generator
+        </Link>{" "}
+        is aimed at the conversational, run-on, painfully specific end of it.
       </p>
 
       <h2>The one rule that matters most: be specific</h2>

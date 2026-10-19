@@ -1,5 +1,6 @@
 import Link from "next/link";
 import BlogShell, { type FaqItem } from "@/components/BlogShell";
+import GeneratorEmbed from "@/components/GeneratorEmbed";
 import { getPost, postMetadata } from "@/lib/blog";
 
 const post = getPost("turn-your-words-into-an-emo-song")!;
@@ -55,6 +56,57 @@ export default function Page() {
           </Link>
           .
         </em>
+      </p>
+
+      <GeneratorEmbed />
+
+      <h2>5 texts that make great emo songs</h2>
+      <p>
+        These are the message types that produce the best tracks, and what each
+        one tends to turn into. They&apos;re illustrative rather than other
+        people&apos;s real messages &mdash; what you paste in stays private.
+      </p>
+
+      <h3>1. The one-word reply: &ldquo;k.&rdquo;</h3>
+      <p>
+        A single character carrying an entire argument. There&apos;s nothing to
+        paraphrase, so the lyrics have to build everything around the silence
+        after it &mdash; which is exactly what the genre is good at. Pick the
+        female vocalist; contempt sits better in that range than hurt does.
+      </p>
+
+      <h3>2. The late birthday: &ldquo;happy birthday (late)&rdquo;</h3>
+      <p>
+        Nine days late says more about where you rank than a paragraph could.
+        This one reliably produces a chorus about being an afterthought, and it
+        works because the detail &mdash; the number of days &mdash; is
+        unarguable.
+      </p>
+
+      <h3>3. The non-apology: &ldquo;sorry you feel that way&rdquo;</h3>
+      <p>
+        The most singable sentence in the English language. It already scans
+        like a hook, and the song usually hands it straight back as the chorus.
+        Add one line of context so the verses know what the apology was dodging.
+      </p>
+
+      <h3>4. The specific humiliation</h3>
+      <p>
+        &ldquo;I&apos;m at your mum&apos;s, don&apos;t come.&rdquo; Odd,
+        concrete and impossible to invent, which is why it produces verses that
+        sound like they happened rather than verses about heartbreak in general.
+        The stranger the detail, the better the lyric.
+      </p>
+
+      <h3>5. The 3am paragraph you never sent</h3>
+      <p>
+        Still in your drafts, still the most honest thing you wrote this year.
+        Long, rambling inputs suit the male vocalist and tend to come back
+        slower and more theatrical &mdash; closer to a ballad than a kiss-off.
+      </p>
+      <p>
+        If one of those is sitting in your phone right now, the box above is the
+        whole process.
       </p>
 
       <h2>Turn your texts into an emo song in 3 steps</h2>

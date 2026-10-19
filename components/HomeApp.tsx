@@ -846,6 +846,7 @@ export default function Home({
   heading,
   subheading,
   breadcrumb,
+  variant = "page",
 }: {
   /** Server-rendered copy shown under the generator. */
   info?: React.ReactNode;
@@ -855,6 +856,12 @@ export default function Home({
   heading?: React.ReactNode;
   subheading?: React.ReactNode;
   breadcrumb?: React.ReactNode;
+  /**
+   * "page" renders the full homepage shell. "embed" drops the chrome — blobs,
+   * auth bar, header, footer — and renders just the working generator, so
+   * articles can carry the real tool inline instead of a link to it.
+   */
+  variant?: "page" | "embed";
 }) {
   const { data: session, status: authStatus } = useSession();
 
@@ -1153,15 +1160,26 @@ export default function Home({
     </div>
   );
 
+  const isEmbed = variant === "embed";
+  // A page owns <main>; an embed sits inside one, so it must not nest another.
+  const Shell: React.ElementType = isEmbed ? "div" : "main";
+
   return (
-    <main className="min-h-screen relative overflow-hidden">
-      {/* Background blobs */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] rounded-full bg-[#9b30ff]/8 blur-[120px]" />
-        <div className="absolute bottom-[-20%] right-[-10%] w-[600px] h-[600px] rounded-full bg-[#ff2d78]/6 blur-[150px]" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] rounded-full bg-[#00cfff]/3 blur-[180px]" />
-        <div className="absolute inset-0 noise-bg opacity-30" />
-      </div>
+    <Shell
+      className={
+        isEmbed
+          ? "generator-embed relative my-8 not-prose"
+          : "min-h-screen relative overflow-hidden"
+      }
+    >
+      {!isEmbed && (
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] rounded-full bg-[#9b30ff]/8 blur-[120px]" />
+          <div className="absolute bottom-[-20%] right-[-10%] w-[600px] h-[600px] rounded-full bg-[#ff2d78]/6 blur-[150px]" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] rounded-full bg-[#00cfff]/3 blur-[180px]" />
+          <div className="absolute inset-0 noise-bg opacity-30" />
+        </div>
+      )}
 
       {/* Credits success banner */}
       {creditsSuccess && (
@@ -1174,10 +1192,16 @@ export default function Home({
         </div>
       )}
 
-      <div className="relative z-10 max-w-2xl mx-auto px-4 py-8 sm:py-12">
+      <div
+        className={
+          isEmbed
+            ? "relative z-10"
+            : "relative z-10 max-w-2xl mx-auto px-4 py-8 sm:py-12"
+        }
+      >
 
         {/* ── Auth bar ─────────────────────────────────────────────── */}
-        <div className="flex justify-end mb-6 min-h-[32px]">
+        <div className={`${isEmbed ? "hidden" : "flex"} justify-end mb-6 min-h-[32px]`}>
           {authStatus === "loading" ? null : isSignedIn ? (
             // Wraps on narrow phones — the pills overflow a 375px viewport,
             // and the page clips (overflow-hidden) rather than scrolling.
@@ -1426,7 +1450,7 @@ export default function Home({
         {breadcrumb}
 
         {/* ── Header ──────────────────────────────────────────────── */}
-        <div className="text-center mb-8 sm:mb-12">
+        <div className={`text-center mb-8 sm:mb-12 ${isEmbed ? "hidden" : ""}`}>
           <div className="inline-flex items-center gap-2 text-xs font-bold tracking-widest text-[#ff2d78] uppercase mb-4 border border-[#ff2d78]/30 rounded-full px-4 py-1.5">
             <span>⚡</span> {eyebrow ?? "AI Song Generator"}
           </div>
@@ -1654,12 +1678,12 @@ export default function Home({
           </div>
         )}
 
-        {info}
+        {!isEmbed && info}
 
-        <p className="text-center text-xs text-white/20 mt-10">
+        <p className={`text-center text-xs text-white/20 mt-10 ${isEmbed ? "hidden" : ""}`}>
           Powered by Claude AI + Suno · Full song in minutes
         </p>
-        <nav className="flex items-center justify-center flex-wrap gap-x-4 gap-y-2 text-xs text-white/30 mt-3">
+        <nav className={`${isEmbed ? "hidden" : "flex"} items-center justify-center flex-wrap gap-x-4 gap-y-2 text-xs text-white/30 mt-3`}>
           <Link href="/pricing" className="hover:text-white/60 transition-colors underline underline-offset-2">
             Pricing
           </Link>
@@ -1669,6 +1693,6 @@ export default function Home({
           </Link>
         </nav>
       </div>
-    </main>
+    </Shell>
   );
 }
