@@ -16,7 +16,7 @@ import { PACKS } from "@/lib/pricing";
 export const metadata: Metadata = {
   title: "Personalized Song Gift — Written About Them, in Minutes",
   // Price interpolated from lib/pricing so the meta can't drift from checkout.
-  description: `Give a personalized song written about your person, not a template with their name dropped in. Real vocals, yours in minutes, from ${PACKS["1pack"].price}. First songs free.`,
+  description: `Give a personalized song written about your person, not a template with their name dropped in. Real vocals, yours in minutes, from ${PACKS["1pack"].price}. First song free.`,
   alternates: { canonical: "/personalized-song-gift" },
   openGraph: {
     type: "website",

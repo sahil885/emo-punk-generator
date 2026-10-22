@@ -1,4 +1,5 @@
 import { livePosts } from "@/lib/blog";
+import { ALL_LANDINGS } from "@/lib/landings";
 import { PACK_LIST, perSong } from "@/lib/pricing";
 import { HOME_FAQ, SITE_SUMMARY, SITE_URL } from "@/lib/about";
 
@@ -16,6 +17,12 @@ export function GET() {
     "",
     `- [Song generator](${SITE_URL}/): type any words, pick a male or female vocalist, get a full emo / pop punk song`,
     `- [Pricing](${SITE_URL}/pricing): free to generate with a 60-second preview; pay only to unlock full songs`,
+    "",
+    // Every tool page, so an assistant answering "which one do I use for X"
+    // can see them. Until now this file listed only the homepage and pricing.
+    "## Tools",
+    "",
+    ...ALL_LANDINGS.map((l) => `- [${l.label}](${SITE_URL}${l.path}): ${l.summary}`),
     "",
     "## Pricing",
     "",

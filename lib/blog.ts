@@ -152,7 +152,7 @@ export const posts: Post[] = [
     ctaPrompt: "you said my name and i forgot how to talk",
     title: "How to Make a Song for Your Crush with AI (in Minutes)",
     description:
-      "Got a crush you can't stop thinking about? Here's how to make a song for your crush with AI — full emo lyrics, vocals, and music in minutes. First songs free.",
+      "Got a crush you can't stop thinking about? Here's how to make a song for your crush with AI — full emo lyrics, vocals, and music in minutes. First song free.",
     date: "2026-07-21",
     excerpt:
       "The most emo move you can make with a crush? Write the song you'll never send. Here's how to turn that 2am feeling into a full pop-punk track in minutes.",

@@ -55,6 +55,29 @@ export const metadata: Metadata = {
   },
 };
 
+// Brand entity, site-wide. Search engines and AI assistants had nothing tying
+// texttoemo.com to the YouTube channel that hosts the example songs, so the two
+// were separate unknowns rather than one recognisable thing.
+const organizationLd = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "Text to Emo",
+  url: "https://texttoemo.com",
+  logo: "https://texttoemo.com/opengraph-image",
+  description:
+    "Text to Emo turns any words into a full emo or pop punk song — AI writes the lyrics and a sung vocal performs them over guitars and drums.",
+  sameAs: ["https://www.youtube.com/@TextToEmo"],
+  email: "sahil@texttoemo.com",
+};
+
+const webSiteLd = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "Text to Emo",
+  url: "https://texttoemo.com",
+  publisher: { "@type": "Organization", name: "Text to Emo" },
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -63,6 +86,14 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
       <body className="min-h-screen bg-[#0a0208]" suppressHydrationWarning>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationLd) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(webSiteLd) }}
+        />
         <Analytics />
         <Providers>{children}</Providers>
       </body>

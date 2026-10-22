@@ -12,46 +12,79 @@ export interface Landing {
   label: string;
   /** Sitemap priority — commercial pages sit above the blog. */
   priority: number;
+  /** One line for /llms.txt, so AI assistants can see what each page is for. */
+  summary: string;
 }
 
 /** The eight "… generator" pages that cross-link to each other. */
 export const GENERATOR_PAGES: Landing[] = [
-  { path: "/emo-song-generator", label: "Emo song generator", priority: 0.9 },
-  { path: "/emo-lyrics-generator", label: "Emo lyrics generator", priority: 0.9 },
-  { path: "/punk-lyrics-generator", label: "Punk lyrics generator", priority: 0.9 },
+  { path: "/emo-song-generator", label: "Emo song generator", priority: 0.9,
+    summary:
+      "the category page: type any words, get a full emo song with sung vocals", },
+  {
+    path: "/pop-punk-song-generator",
+    label: "Pop punk song generator",
+    priority: 0.9,
+    summary:
+      "pop punk specifically — faster and brighter than emo, built around a shout-along chorus",
+  },
+  { path: "/emo-lyrics-generator", label: "Emo lyrics generator", priority: 0.9,
+    summary:
+      "writes a full emo lyric sheet (verse, chorus, bridge) and sings it back", },
+  { path: "/punk-lyrics-generator", label: "Punk lyrics generator", priority: 0.9,
+    summary:
+      "short, blunt punk lyrics aimed at a person, a job or a town", },
   {
     path: "/emo-song-title-generator",
     label: "Emo song title generator",
     priority: 0.9,
+    summary:
+      "names the song, and writes the track that goes under the title",
   },
-  { path: "/emo-poetry-generator", label: "Emo poetry generator", priority: 0.9 },
+  { path: "/emo-poetry-generator", label: "Emo poetry generator", priority: 0.9,
+    summary:
+      "emo verses to read on the page, then hear performed if you want", },
   {
     path: "/midwest-emo-lyrics-generator",
     label: "Midwest emo lyrics generator",
     priority: 0.9,
+    summary:
+      "conversational, painfully specific midwest-emo-style lyrics",
   },
   {
     path: "/emo-rap-lyrics-generator",
     label: "Emo rap lyrics generator",
     priority: 0.9,
+    summary:
+      "emo rap themes, sung over guitars rather than rapped over a beat",
   },
-  { path: "/diss-track-generator", label: "Diss track generator", priority: 0.9 },
+  { path: "/diss-track-generator", label: "Diss track generator", priority: 0.9,
+    summary:
+      "a sung pop-punk diss track with a chorus, instead of rap bars", },
 ];
 
 /** Commercial pages that aren't part of the generator cross-link set. */
 export const OTHER_LANDINGS: Landing[] = [
-  { path: "/ai-song-generator", label: "AI song generator", priority: 0.9 },
+  { path: "/ai-song-generator", label: "AI song generator", priority: 0.9,
+    summary:
+      "the head-term hub: how it works, and how it compares to general-purpose tools", },
   {
     path: "/free-ai-song-generator",
     label: "Free AI song generator",
     priority: 0.9,
+    summary:
+      "what's free and what isn't — no card to start, no watermark",
   },
   {
     path: "/turn-texts-into-an-emo-song",
     label: "Turn texts into an emo song",
     priority: 0.9,
+    summary:
+      "paste a real text message and hear it sung back as a song",
   },
-  { path: "/personalized-song-gift", label: "Personalized song gift", priority: 0.9 },
+  { path: "/personalized-song-gift", label: "Personalized song gift", priority: 0.9,
+    summary:
+      "a song written about one specific person, as a gift", },
 ];
 
 export const ALL_LANDINGS: Landing[] = [...GENERATOR_PAGES, ...OTHER_LANDINGS];
