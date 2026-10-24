@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { sql } from "@/lib/db";
-import { AUDIO_RETENTION_DAYS, isExpired } from "@/lib/retention";
+import { isSongExpired } from "@/lib/retention";
+import { isStoredUrl } from "@/lib/audioStorage";
 
 // Spend 1 credit to unlock the full song + download for a song the user owns.
 // Idempotent: unlocking an already-unlocked song does not charge again.
@@ -18,13 +19,19 @@ export async function POST(req: NextRequest) {
   }
 
   const rows = await sql`
-    SELECT s.id, s.unlocked, s.created_at, u.credits
+    SELECT s.id, s.unlocked, s.created_at, s.audio_url, u.credits
     FROM songs s
     JOIN users u ON u.id = s."userId"
     WHERE s.id = ${songId} AND u.email = ${userEmail}
   `;
   const song = rows[0] as
-    | { id: string; unlocked: boolean; created_at: string; credits: number }
+    | {
+        id: string;
+        unlocked: boolean;
+        created_at: string;
+        audio_url: string | null;
+        credits: number;
+      }
     | undefined;
   if (!song) {
     return NextResponse.json({ error: "Song not found" }, { status: 404 });
@@ -36,10 +43,17 @@ export async function POST(req: NextRequest) {
 
   // Never charge for a track whose audio has already been removed. The UI hides
   // the button, but this is the guard that actually protects the credit.
-  if (isExpired(song.created_at)) {
+  if (
+    isSongExpired({
+      createdAt: song.created_at,
+      unlocked: song.unlocked,
+      stored: isStoredUrl(song.audio_url),
+    })
+  ) {
     return NextResponse.json(
       {
-        error: `That song is past its ${AUDIO_RETENTION_DAYS}-day download window and the audio has been removed. Generate a new one — it's free.`,
+        error:
+          "That preview has expired and its audio has been removed. Generate a new one — it's free.",
         expired: true,
       },
       { status: 410 }

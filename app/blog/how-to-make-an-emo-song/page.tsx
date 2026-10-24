@@ -99,7 +99,7 @@ export default function Page() {
       <p>
         First result not quite right? Tweak the words and run it again — small
         changes to the input nudge the mood, the imagery, and the hook. When you
-        get one you love, unlock it and download the MP3 within 7 days &mdash;
+        get one you love, unlock it and download the MP3 whenever &mdash;
         once it&apos;s on your device it&apos;s yours to keep.
       </p>
 

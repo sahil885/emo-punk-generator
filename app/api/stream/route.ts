@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { sql } from "@/lib/db";
 import { getFinishedSunoTrack } from "@/lib/suno";
+import { isSongExpired } from "@/lib/retention";
+import { isStoredUrl } from "@/lib/audioStorage";
 
 const PREVIEW_SECONDS = 60;
 const PREVIEW_FALLBACK_BYTES = 1_650_000; // ~60s at ~190kbps when duration unknown
@@ -93,16 +95,36 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "Not signed in" }, { status: 401 });
     }
     const rows = await sql`
-      SELECT s.audio_url, s.task_id, s.unlocked, s.duration FROM songs s
+      SELECT s.audio_url, s.task_id, s.unlocked, s.duration, s.created_at FROM songs s
       JOIN users u ON u.id = s."userId"
       WHERE s.id = ${songId} AND u.email = ${email}
     `;
     const row = rows[0] as
-      | { audio_url: string | null; task_id: string | null; unlocked: boolean; duration: number | null }
+      | {
+          audio_url: string | null;
+          task_id: string | null;
+          unlocked: boolean;
+          duration: number | null;
+          created_at: string;
+        }
       | undefined;
     if (!row) {
       return NextResponse.json({ error: "Not found" }, { status: 404 });
     }
+    // A purged preview still has a URL on the row, but the file is gone.
+    if (
+      isSongExpired({
+        createdAt: row.created_at,
+        unlocked: row.unlocked,
+        stored: isStoredUrl(row.audio_url),
+      })
+    ) {
+      return NextResponse.json(
+        { error: "This preview has expired.", expired: true },
+        { status: 410 }
+      );
+    }
+
     unlocked = row.unlocked;
     duration = row.duration;
     audioUrl = row.audio_url ?? (row.task_id ? await resolveByTask(row.task_id) : null);

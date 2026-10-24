@@ -14,7 +14,7 @@ import {
   FREE_SONGS_PHRASE,
   type PackId,
 } from "@/lib/pricing";
-import { AUDIO_RETENTION_DAYS, isExpired, retentionLabel } from "@/lib/retention";
+import { PREVIEW_RETENTION_DAYS, songRetention } from "@/lib/retention";
 
 type Singer = "male" | "female";
 
@@ -573,6 +573,15 @@ function OfferBanner({
 }
 
 // ─── My Songs library ────────────────────────────────────────────────────────
+/** A song is only "expired" when its audio is actually gone. */
+function songExpired(song: SavedSong): boolean {
+  return songRetention({
+    createdAt: song.created_at,
+    unlocked: song.unlocked,
+    stored: song.stored,
+  }).expired;
+}
+
 interface SavedSong {
   id: string;
   title: string;
@@ -580,6 +589,8 @@ interface SavedSong {
   singer: Singer;
   hasAudio: boolean;
   unlocked: boolean;
+  /** True when the audio is in our storage, so it isn't on a countdown. */
+  stored: boolean;
   image_url: string | null;
   duration: number | null;
   created_at: string;
@@ -689,8 +700,8 @@ function SongsModal({
             {typeof credits === "number" ? ` You have ${credits} credit${credits !== 1 ? "s" : ""}.` : ""}
           </p>
           <p className="text-[11px] text-[#00cfff]/80 mt-1.5">
-            Songs are playable for {AUDIO_RETENTION_DAYS} days — download the
-            ones you want to keep.
+            Unlocked songs stay here. Previews you don&apos;t unlock are
+            cleared after {PREVIEW_RETENTION_DAYS} days.
           </p>
         </div>
 
@@ -736,21 +747,29 @@ function SongsModal({
                         {song.singer === "female" ? "Female" : "Male"} vocalist ·{" "}
                         {new Date(song.created_at).toLocaleDateString()}
                       </p>
-                      {song.hasAudio && (
-                        <p
-                          className={`text-[11px] mt-0.5 ${
-                            isExpired(song.created_at)
-                              ? "text-white/30"
-                              : "text-[#00cfff]"
-                          }`}
-                        >
-                          {isExpired(song.created_at)
-                            ? "Audio removed after 7 days"
-                            : retentionLabel(song.created_at)}
-                        </p>
-                      )}
+                      {song.hasAudio &&
+                        (() => {
+                          const r = songRetention({
+                            createdAt: song.created_at,
+                            unlocked: song.unlocked,
+                            stored: song.stored,
+                          });
+                          return (
+                            <p
+                              className={`text-[11px] mt-0.5 ${
+                                r.expired
+                                  ? "text-white/30"
+                                  : r.permanent
+                                    ? "text-white/45"
+                                    : "text-[#00cfff]"
+                              }`}
+                            >
+                              {r.label}
+                            </p>
+                          );
+                        })()}
                     </div>
-                    {song.hasAudio && !isExpired(song.created_at) ? (
+                    {song.hasAudio && !songExpired(song) ? (
                       <button
                         onClick={() => togglePlay(song)}
                         className="w-9 h-9 rounded-full bg-gradient-to-r from-[#ff2d78] to-[#9b30ff] flex items-center justify-center flex-shrink-0 hover:opacity-90 transition-opacity"
@@ -786,7 +805,7 @@ function SongsModal({
                       {expandedId === song.id ? "Hide lyrics" : "Lyrics"}
                     </button>
                     {song.hasAudio &&
-                      !isExpired(song.created_at) &&
+                      !songExpired(song) &&
                       (song.unlocked ? (
                         <a
                           href={`/api/download?songId=${encodeURIComponent(song.id)}`}
@@ -1390,7 +1409,7 @@ export default function Home({
               <ul className="mt-3 mb-1 flex flex-col gap-1.5 text-xs text-white/60">
                 {[
                   "Full-length track, not the 60s preview",
-                  `MP3 download — ${AUDIO_RETENTION_DAYS} days to save it, then it's yours forever`,
+                  "MP3 download — and the song stays in your library",
                   "Post it anywhere · no watermark",
                 ].map((benefit) => (
                   <li key={benefit} className="flex items-start gap-2">

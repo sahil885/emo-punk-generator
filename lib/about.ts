@@ -6,7 +6,7 @@
 // don't restate either as a literal here.
 
 import { FREE_SONGS_PHRASE, PACK_LIST, PACKS, SIGNUP_CREDITS, perSong } from "@/lib/pricing";
-import { AUDIO_RETENTION_DAYS } from "@/lib/retention";
+import { PREVIEW_RETENTION_DAYS } from "@/lib/retention";
 
 export const SITE_URL = "https://texttoemo.com";
 
@@ -77,9 +77,8 @@ export const HOME_FAQ: FaqItem[] = [
     question: "Can I download and share my song?",
     answer:
       "Yes. An unlocked song downloads as an MP3 with no watermark, so you can " +
-      `post it on TikTok, Instagram or anywhere else. Download it within ` +
-      `${AUDIO_RETENTION_DAYS} days — after that the file is removed from our ` +
-      "servers, but the copy you saved is yours to keep.",
+      "post it on TikTok, Instagram or anywhere else. Unlocked songs stay in " +
+      `your library; previews you don't unlock are cleared after ${PREVIEW_RETENTION_DAYS} days.`,
   },
   {
     question: "Do I need an account?",

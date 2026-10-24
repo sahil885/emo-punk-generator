@@ -26,7 +26,7 @@ const faq: FaqItem[] = [
   {
     question: "Can I share or post the song I make?",
     answer:
-      "Yes. Once you unlock a track you have 7 days to download the MP3 — after that it's on your device to keep — and you can post it on TikTok, YouTube Shorts, Instagram, or send it straight to whoever inspired it. Sharing is the whole point of the trend.",
+      "Yes. An unlocked track stays in your library, so you can download the MP3 whenever — and post it on TikTok, YouTube Shorts, Instagram, or send it straight to whoever inspired it. Sharing is the whole point of the trend.",
   },
   {
     question: "Will it actually sound like a real song?",
@@ -216,7 +216,7 @@ export default function Page() {
         up with an actual song. AI writes the verses and chorus around your
         words, performs it with real-sounding vocals, and produces it with
         guitars and drums. Play it back, regenerate until it&apos;s right, then
-        unlock it and download the MP3 within 7 days — once it&apos;s on your
+        unlock it and download the MP3 whenever — once it&apos;s on your
         device it&apos;s yours to keep, post, or send to whoever inspired it.
       </p>
       <p>

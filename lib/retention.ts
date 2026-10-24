@@ -1,37 +1,89 @@
-// How long a generated track stays downloadable.
+// How long a generated track stays playable.
 //
-// Audio is hosted on the generator's temporary CDN, not ours, so files are
-// removed after a while. Measured against production on 2026-08-12: tracks were
-// still alive at 10.3 days and gone by 19.2 days, with no samples in between —
-// so the real cutoff is somewhere in that range. We advertise 7 days, which is
-// comfortably inside proven territory: better to under-promise than to tell
-// someone they have longer than they do.
+// Until Oct 2026 every song pointed at the generator's temporary CDN, which
+// deletes files after roughly two weeks, so everything expired — including
+// songs people had paid a credit to unlock. We now copy each finished MP3 into
+// our own storage (lib/audioStorage.ts), which changes the rules:
 //
-// Raise this only with evidence of the actual retention window.
-export const AUDIO_RETENTION_DAYS = 7;
+//   • unlocked + ours  → kept indefinitely. Spending a credit buys a song that
+//                        stays, which is the whole point of buying one.
+//   • locked + ours    → a preview. Kept 30 days, then purged, because storing
+//                        previews nobody unlocked is the cost that grows fastest.
+//   • not ours         → a song from before the fix, still on the generator's
+//                        CDN. Measured 2026-08-12: alive at 10.3 days, gone by
+//                        19.2. We advertise 7 days for these, inside proven
+//                        territory. Nothing can extend them; the file isn't ours.
+
+/** Previews we host but nobody unlocked. */
+export const PREVIEW_RETENTION_DAYS = 30;
+
+/** Songs still on the generator's CDN, from before we stored our own copy. */
+export const LEGACY_RETENTION_DAYS = 7;
 
 const DAY_MS = 86_400_000;
 
-export function expiresAt(createdAt: string | Date): Date {
-  return new Date(
-    new Date(createdAt).getTime() + AUDIO_RETENTION_DAYS * DAY_MS
-  );
+export interface SongRetentionInput {
+  createdAt: string | Date;
+  unlocked: boolean;
+  /** True when the audio lives in our storage rather than the generator's CDN. */
+  stored: boolean;
 }
 
-/** Whole days left before the audio is removed; 0 once the window has passed. */
-export function daysLeft(createdAt: string | Date): number {
-  const ms = expiresAt(createdAt).getTime() - Date.now();
-  return ms <= 0 ? 0 : Math.ceil(ms / DAY_MS);
+export interface SongRetention {
+  /** Kept with no deadline. */
+  permanent: boolean;
+  /** Whole days left; 0 when the window has passed. Meaningless if permanent. */
+  daysLeft: number;
+  expired: boolean;
+  /** Short label for the library row. */
+  label: string;
 }
 
-export function isExpired(createdAt: string | Date): boolean {
-  return daysLeft(createdAt) === 0;
+function windowDays({ unlocked, stored }: SongRetentionInput): number | null {
+  if (stored && unlocked) return null; // no deadline
+  return stored ? PREVIEW_RETENTION_DAYS : LEGACY_RETENTION_DAYS;
 }
 
-/** Short label for the UI, e.g. "2 days left to download". */
-export function retentionLabel(createdAt: string | Date): string {
-  const d = daysLeft(createdAt);
-  if (d === 0) return "Download window closed";
-  if (d === 1) return "Last day to download";
-  return `${d} days left to download`;
+export function songRetention(input: SongRetentionInput): SongRetention {
+  const days = windowDays(input);
+
+  if (days === null) {
+    return {
+      permanent: true,
+      daysLeft: Infinity,
+      expired: false,
+      label: "Saved to your library",
+    };
+  }
+
+  const endsAt = new Date(input.createdAt).getTime() + days * DAY_MS;
+  const ms = endsAt - Date.now();
+  const daysLeft = ms <= 0 ? 0 : Math.ceil(ms / DAY_MS);
+
+  if (daysLeft === 0) {
+    return {
+      permanent: false,
+      daysLeft: 0,
+      expired: true,
+      label: input.stored ? "Preview expired" : "Audio no longer available",
+    };
+  }
+
+  // An already-unlocked legacy song can't be "kept" by unlocking it again —
+  // the only thing left to do is download the file before it goes.
+  const action = input.unlocked ? "to download it" : "— unlock to keep it";
+  return {
+    permanent: false,
+    daysLeft,
+    expired: false,
+    label:
+      daysLeft === 1
+        ? `Last day ${action}`
+        : `${daysLeft} days left ${action}`,
+  };
+}
+
+/** Convenience for callers that only need the yes/no. */
+export function isSongExpired(input: SongRetentionInput): boolean {
+  return songRetention(input).expired;
 }

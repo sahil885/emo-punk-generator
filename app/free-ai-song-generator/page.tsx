@@ -3,7 +3,7 @@ import Link from "next/link";
 import GeneratorLanding, { type LandingFaq } from "@/components/GeneratorLanding";
 import { relatedGenerators } from "@/lib/landings";
 import { FREE_SONGS_PHRASE, PACKS, perSong } from "@/lib/pricing";
-import { AUDIO_RETENTION_DAYS } from "@/lib/retention";
+import { PREVIEW_RETENTION_DAYS } from "@/lib/retention";
 
 // The free-angle page from CONTENT-PLAN.md Priority 1: `ai song generator free`,
 // `ai music generator free` and `free ai music generator` (1k–10k US/month each,
@@ -58,7 +58,7 @@ const faq: LandingFaq[] = [
   {
     question: "What's the catch?",
     answer:
-      `Two honest ones. Unlocking the full track and downloading the MP3 costs a credit once your free song is used, and the audio files are removed after ${AUDIO_RETENTION_DAYS} days, so download anything you want to keep. Everything else — generating, previewing, the lyric sheet — stays free.`,
+      `One honest one: unlocking the full track and downloading the MP3 costs a credit once your free song is used. Unlocked songs stay in your library; previews you never unlock are cleared after ${PREVIEW_RETENTION_DAYS} days. Everything else — generating, previewing, the lyric sheet — stays free.`,
   },
   {
     question: "Can I use the free songs on TikTok or Instagram?",
@@ -133,9 +133,11 @@ export default function FreeAiSongGeneratorPage() {
           free tier open at all.
         </li>
         <li>
-          <strong>Audio expires after {AUDIO_RETENTION_DAYS} days.</strong>{" "}
-          Download anything you unlock and want to keep — once downloaded the
-          file is yours permanently.
+          <strong>
+            Previews are cleared after {PREVIEW_RETENTION_DAYS} days.
+          </strong>{" "}
+          Songs you unlock stay in your library, and the MP3 you download is
+          yours permanently either way.
         </li>
         <li>
           <strong>One genre.</strong> Emo and pop punk. Not a limitation

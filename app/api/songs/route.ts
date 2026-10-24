@@ -2,6 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { sql } from "@/lib/db";
 import { getFinishedSunoTrack } from "@/lib/suno";
+import { storeSongAudio } from "@/lib/audioStorage";
+
+// Backfilling can copy up to 5 MP3s into storage.
+export const maxDuration = 60;
 
 export async function GET() {
   const session = await auth();
@@ -22,9 +26,13 @@ export async function GET() {
   for (const row of pending as { id: string; task_id: string }[]) {
     const track = await getFinishedSunoTrack(row.task_id);
     if (track?.audioUrl) {
+      // Same as /api/audio/status: keep our own copy, since the generator's
+      // URL expires. Falls back to the source URL if storage is unavailable.
+      const stored = await storeSongAudio(row.id, track.audioUrl);
+      const url = stored?.url ?? track.audioUrl;
       await sql`
         UPDATE songs
-        SET audio_url = ${track.audioUrl}, image_url = ${track.imageUrl}, duration = ${track.duration}
+        SET audio_url = ${url}, image_url = ${track.imageUrl}, duration = ${track.duration}
         WHERE id = ${row.id} AND audio_url IS NULL
       `;
     }
@@ -33,6 +41,7 @@ export async function GET() {
   const songs = await sql`
     SELECT s.id, s.title, s.lyrics, s.singer,
            (s.audio_url IS NOT NULL) AS "hasAudio",
+           (s.audio_url LIKE '%.public.blob.vercel-storage.com/%') AS stored,
            s.unlocked,
            s.image_url, s.duration, s.created_at
     FROM songs s

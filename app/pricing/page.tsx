@@ -39,12 +39,12 @@ const faq = [
   {
     question: "Do credits expire?",
     answer:
-      "No. Credits never expire — buy a pack and use it whenever you like. The song files themselves are a separate thing: you have 7 days to download a track before it's removed from our servers, but once you've downloaded it, it's yours forever.",
+      "No. Credits never expire — buy a pack and use it whenever you like. Songs you unlock don't expire either: they stay in your library and you can download the MP3 whenever. Previews you never unlock are cleared after 30 days.",
   },
   {
     question: "How long do I have to download my song?",
     answer:
-      "7 days from when you make it. Hosting audio is the most expensive part of running Text to Emo, so tracks are removed after that to keep prices low. Your library shows how many days each song has left — download the ones you love and they're yours to keep permanently.",
+      "There's no deadline on a song you've unlocked — it stays in your library and you can download it any time. Previews you don't unlock are cleared after 30 days, since hosting audio nobody kept is the cost that grows fastest. Your library shows which songs are saved and which are still on the clock.",
   },
   {
     question: "Is this a subscription?",
@@ -54,7 +54,7 @@ const faq = [
   {
     question: "What do I get when I unlock a song?",
     answer:
-      "One credit unlocks the complete song — full-length audio with vocals and music — plus the MP3 download. Save the file within 7 days and it's yours to keep and post anywhere, with no watermark.",
+      "One credit unlocks the complete song — full-length audio with vocals and music — plus the MP3 download. The song stays in your library, and the file is yours to keep and post anywhere, with no watermark.",
   },
 ];
 
@@ -362,7 +362,7 @@ export default function PricingPage() {
 
         <p className="text-center text-xs text-white/30 mt-5">
           🔒 Secure checkout via Stripe · No subscription · Credits never expire
-          · Download within 7 days — then yours forever
+          · Unlocked songs stay in your library
         </p>
 
         {/* ── How credits work ──────────────────────────────────────── */}
@@ -385,7 +385,7 @@ export default function PricingPage() {
               {
                 icon: "🔓",
                 title: "Unlock with 1 credit",
-                body: "Spend a single credit to unlock the complete track, then save the MP3 within 7 days. Once downloaded, it's yours to keep and post anywhere.",
+                body: "Spend a single credit to unlock the complete track and download the MP3. It stays in your library, and the file is yours to keep and post anywhere.",
               },
             ].map((s) => (
               <div

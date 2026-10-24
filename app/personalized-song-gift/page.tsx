@@ -60,7 +60,7 @@ const faq = [
   {
     question: "Can I download it and give it as a file?",
     answer:
-      "Yes. Once you unlock a song you have 7 days to download the MP3, and after that it is on your device to keep permanently. Send it directly, put it on a card as a link, or play it out loud and watch their face.",
+      "Yes. An unlocked song stays in your library, so you can download the MP3 whenever you need it. Send it directly, put it on a card as a link, or play it out loud and watch their face.",
   },
   {
     question: "What should I write about them?",
@@ -340,7 +340,7 @@ export default function PersonalizedSongGiftPage() {
             <li>Lyrics written around your detail, not a fill-in-the-blank template</li>
             <li>A free 60-second preview of every version before you spend anything</li>
             <li>
-              An MP3 download with no watermark — you have 7 days to save the
+              An MP3 download with no watermark — the song stays in your library, so save the
               file, and once it&apos;s on your device it&apos;s yours to keep
             </li>
             <li>No subscription, and credits that never expire</li>

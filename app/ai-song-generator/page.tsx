@@ -69,7 +69,7 @@ const faq = [
   {
     question: "Do I own the songs I make?",
     answer:
-      "The songs you create are yours to download, post, and share. Once you unlock a track you have 7 days to download the MP3, and after that it is on your device permanently. As with any AI tool, check the current terms for specifics.",
+      "The songs you create are yours to download, post, and share. An unlocked track stays in your library, so you can download the MP3 whenever you like. As with any AI tool, check the current terms for specifics.",
   },
 ];
 
