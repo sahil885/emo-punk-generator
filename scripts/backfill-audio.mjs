@@ -44,7 +44,18 @@ const rows = await sql`
   ORDER BY unlocked DESC, created_at DESC
 `;
 
-const candidates = UNLOCKED_ONLY ? rows.filter((r) => r.unlocked) : rows;
+// Don't copy a preview that's already past the retention window — the purge
+// job would delete it on its next run, so the upload is pure waste.
+const PREVIEW_RETENTION_DAYS = 30;
+const cutoff = Date.now() - PREVIEW_RETENTION_DAYS * 86400000;
+const pastWindow = (r) => !r.unlocked && new Date(r.created_at).getTime() < cutoff;
+
+const candidates = (UNLOCKED_ONLY ? rows.filter((r) => r.unlocked) : rows).filter(
+  (r) => {
+    if (pastWindow(r)) return false;
+    return true;
+  }
+);
 console.log(
   `${rows.length} songs still on the generator's CDN` +
     (UNLOCKED_ONLY ? `, ${candidates.length} of them unlocked` : "")
