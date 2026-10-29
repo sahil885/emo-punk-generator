@@ -1220,66 +1220,68 @@ export default function Home({
       >
 
         {/* ── Auth bar ─────────────────────────────────────────────── */}
-        <div className={`${isEmbed ? "hidden" : "flex"} justify-end mb-6 min-h-[32px]`}>
-          {authStatus === "loading" ? null : isSignedIn ? (
-            // Wraps on narrow phones — the pills overflow a 375px viewport,
-            // and the page clips (overflow-hidden) rather than scrolling.
-            <div className="flex items-center justify-end flex-wrap gap-2 sm:gap-3">
-              <Link
-                href="/pricing"
-                className="text-xs font-bold text-white/45 hover:text-white transition-colors px-1"
-              >
-                Pricing
-              </Link>
-              {/* Credit balance chip */}
-              <div className="flex items-center gap-1.5 text-xs border border-[#9b30ff]/40 rounded-full px-3 py-1.5 bg-[#9b30ff]/10">
-                <span className="text-[#9b30ff]">⚡</span>
-                <span className="text-white font-semibold">
-                  {credits === null ? "…" : credits} credit{credits !== 1 ? "s" : ""}
-                </span>
+        {!isEmbed && (
+          <div className="flex justify-end mb-6 min-h-[32px]">
+            {authStatus === "loading" ? null : isSignedIn ? (
+              // Wraps on narrow phones — the pills overflow a 375px viewport,
+              // and the page clips (overflow-hidden) rather than scrolling.
+              <div className="flex items-center justify-end flex-wrap gap-2 sm:gap-3">
+                <Link
+                  href="/pricing"
+                  className="text-xs font-bold text-white/45 hover:text-white transition-colors px-1"
+                >
+                  Pricing
+                </Link>
+                {/* Credit balance chip */}
+                <div className="flex items-center gap-1.5 text-xs border border-[#9b30ff]/40 rounded-full px-3 py-1.5 bg-[#9b30ff]/10">
+                  <span className="text-[#9b30ff]">⚡</span>
+                  <span className="text-white font-semibold">
+                    {credits === null ? "…" : credits} credit{credits !== 1 ? "s" : ""}
+                  </span>
+                </div>
+                {/* My Songs library */}
+                <button
+                  onClick={() => setShowSongs(true)}
+                  className="text-xs font-bold text-white border border-[#00cfff]/40 bg-[#00cfff]/10 rounded-full px-4 py-1.5 hover:bg-[#00cfff]/20 transition-colors"
+                >
+                  🎵 My Songs
+                </button>
+                {/* Buy more credits */}
+                <button
+                  onClick={() => { setShowBuyCredits(true); setBuyError(""); }}
+                  className="text-xs font-bold text-white bg-gradient-to-r from-[#ff2d78] to-[#9b30ff] rounded-full px-4 py-1.5 hover:opacity-90 transition-opacity"
+                >
+                  + Buy credits
+                </button>
+                {/* Sign out */}
+                <button
+                  onClick={() => signOut()}
+                  className="text-xs text-white/30 hover:text-white/60 transition-colors"
+                >
+                  Sign out
+                </button>
               </div>
-              {/* My Songs library */}
-              <button
-                onClick={() => setShowSongs(true)}
-                className="text-xs font-bold text-white border border-[#00cfff]/40 bg-[#00cfff]/10 rounded-full px-4 py-1.5 hover:bg-[#00cfff]/20 transition-colors"
-              >
-                🎵 My Songs
-              </button>
-              {/* Buy more credits */}
-              <button
-                onClick={() => { setShowBuyCredits(true); setBuyError(""); }}
-                className="text-xs font-bold text-white bg-gradient-to-r from-[#ff2d78] to-[#9b30ff] rounded-full px-4 py-1.5 hover:opacity-90 transition-opacity"
-              >
-                + Buy credits
-              </button>
-              {/* Sign out */}
-              <button
-                onClick={() => signOut()}
-                className="text-xs text-white/30 hover:text-white/60 transition-colors"
-              >
-                Sign out
-              </button>
-            </div>
-          ) : (
-            <div className="flex items-center gap-3">
-              <Link
-                href="/pricing"
-                className="text-xs font-bold text-white/45 hover:text-white transition-colors px-1"
-              >
-                Pricing
-              </Link>
-              <button
-                onClick={() => { setShowSignIn(true); setSignInError(""); }}
-                className="flex items-center gap-2 text-sm font-bold text-white bg-gradient-to-r from-[#ff2d78] to-[#9b30ff] rounded-full px-5 py-2 hover:opacity-90 hover:scale-105 transition-all shadow-lg shadow-[#9b30ff]/30"
-              >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
-                </svg>
-                Sign In
-              </button>
-            </div>
-          )}
-        </div>
+            ) : (
+              <div className="flex items-center gap-3">
+                <Link
+                  href="/pricing"
+                  className="text-xs font-bold text-white/45 hover:text-white transition-colors px-1"
+                >
+                  Pricing
+                </Link>
+                <button
+                  onClick={() => { setShowSignIn(true); setSignInError(""); }}
+                  className="flex items-center gap-2 text-sm font-bold text-white bg-gradient-to-r from-[#ff2d78] to-[#9b30ff] rounded-full px-5 py-2 hover:opacity-90 hover:scale-105 transition-all shadow-lg shadow-[#9b30ff]/30"
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+                  </svg>
+                  Sign In
+                </button>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* ── First-song offer (persists across visits for 24h) ──────── */}
         {offerActive && offer && (
@@ -1469,21 +1471,25 @@ export default function Home({
         {breadcrumb}
 
         {/* ── Header ──────────────────────────────────────────────── */}
-        <div className={`text-center mb-8 sm:mb-12 ${isEmbed ? "hidden" : ""}`}>
-          <div className="inline-flex items-center gap-2 text-xs font-bold tracking-widest text-[#ff2d78] uppercase mb-4 border border-[#ff2d78]/30 rounded-full px-4 py-1.5">
-            <span>⚡</span> {eyebrow ?? "AI Song Generator"}
+        {/* Not rendered in embeds: hiding it with CSS left a second <h1>
+            ("TEXT TO EMO") in every article that carries the generator. */}
+        {!isEmbed && (
+          <div className="text-center mb-8 sm:mb-12">
+            <div className="inline-flex items-center gap-2 text-xs font-bold tracking-widest text-[#ff2d78] uppercase mb-4 border border-[#ff2d78]/30 rounded-full px-4 py-1.5">
+              <span>⚡</span> {eyebrow ?? "AI Song Generator"}
+            </div>
+            {heading ?? (
+              <h1 className="text-4xl sm:text-6xl font-black text-white mb-3 glitch-text leading-none tracking-tight">
+                TEXT
+                <span className="bg-gradient-to-r from-[#ff2d78] via-[#9b30ff] to-[#00cfff] bg-clip-text text-transparent"> TO </span>
+                EMO
+              </h1>
+            )}
+            <p className="text-white/50 text-lg">
+              {subheading ?? "Drop your words. We'll turn them into an emo pop punk song."}
+            </p>
           </div>
-          {heading ?? (
-            <h1 className="text-4xl sm:text-6xl font-black text-white mb-3 glitch-text leading-none tracking-tight">
-              TEXT
-              <span className="bg-gradient-to-r from-[#ff2d78] via-[#9b30ff] to-[#00cfff] bg-clip-text text-transparent"> TO </span>
-              EMO
-            </h1>
-          )}
-          <p className="text-white/50 text-lg">
-            {subheading ?? "Drop your words. We'll turn them into an emo pop punk song."}
-          </p>
-        </div>
+        )}
 
         {/* ── Main card ─────────────────────────────────────────────── */}
         <div className="rounded-2xl border border-white/10 bg-white/3 backdrop-blur-sm p-6 sm:p-8 shadow-2xl">
@@ -1699,18 +1705,22 @@ export default function Home({
 
         {!isEmbed && info}
 
-        <p className={`text-center text-xs text-white/20 mt-10 ${isEmbed ? "hidden" : ""}`}>
-          Powered by Claude AI + Suno · Full song in minutes
-        </p>
-        <nav className={`${isEmbed ? "hidden" : "flex"} items-center justify-center flex-wrap gap-x-4 gap-y-2 text-xs text-white/30 mt-3`}>
-          <Link href="/pricing" className="hover:text-white/60 transition-colors underline underline-offset-2">
-            Pricing
-          </Link>
-          <span className="text-white/15">·</span>
-          <Link href="/blog" className="hover:text-white/60 transition-colors underline underline-offset-2">
-            Read the blog: how to make an emo song with AI
-          </Link>
-        </nav>
+        {!isEmbed && (
+          <>
+            <p className="text-center text-xs text-white/20 mt-10">
+              Powered by Claude AI + Suno · Full song in minutes
+            </p>
+            <nav className="flex items-center justify-center flex-wrap gap-x-4 gap-y-2 text-xs text-white/30 mt-3">
+              <Link href="/pricing" className="hover:text-white/60 transition-colors underline underline-offset-2">
+                Pricing
+              </Link>
+              <span className="text-white/15">·</span>
+              <Link href="/blog" className="hover:text-white/60 transition-colors underline underline-offset-2">
+                Read the blog: how to make an emo song with AI
+              </Link>
+            </nav>
+          </>
+        )}
       </div>
     </Shell>
   );

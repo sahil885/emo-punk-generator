@@ -6,7 +6,15 @@ export interface Post {
   slug: string;
   title: string; // SEO <title>
   description: string; // meta description
-  date: string; // ISO date
+  date: string; // ISO date — first published
+  /**
+   * When the article's content last changed substantively (new sections,
+   * rewritten answers) — not for typo fixes, retitles or copy tweaks. Feeds
+   * dateModified in the BlogPosting schema, the visible "Updated" line and the
+   * sitemap <lastmod>. Faking freshness by bumping this without real changes
+   * is something search engines penalise; leave it unset otherwise.
+   */
+  updated?: string;
   excerpt: string; // shown on the blog index
   /**
    * Set when a post has been consolidated into a stronger page. The entry stays
@@ -67,8 +75,9 @@ export const posts: Post[] = [
     title:
       "Emo Songs Made From Texts: 5 Examples That Work",
     description:
-      "Five kinds of text message that turn into great emo songs — the one-word reply, the late birthday, the non-apology — what each one produces, and which vocalist to pick.",
+      "Five kinds of text message that make great emo songs — the one-word reply, the late birthday, the non-apology — and what each one turns into.",
     date: "2026-06-17",
+    updated: "2026-10-24",
     excerpt:
       "The viral 'turn your texts into an emo song' trend, explained — and how to make your own from a screenshot, a voice note, or a late-night thought.",
   },
@@ -80,6 +89,7 @@ export const posts: Post[] = [
     description:
       "What actually makes a song emo, how it differs from pop punk, and the subgenres sorted out. Then turn your own words into one and hear it in about two minutes.",
     date: "2026-06-17",
+    updated: "2026-10-19",
     excerpt:
       "Minor keys, confessional lyrics, quiet-loud dynamics: a quick guide to what makes a song emo, and how it differs from pop punk.",
   },
@@ -114,6 +124,7 @@ export const posts: Post[] = [
     description:
       "The techniques behind emo lyrics that don't sound fake — plus a free generator that writes yours and sings them back with real vocals in about two minutes.",
     date: "2026-06-27",
+    updated: "2026-10-19",
     excerpt:
       "The exact techniques behind great emo lyrics — specificity, quiet-loud contrast, the confessional 'I' — and how to get there fast with AI.",
   },
@@ -144,6 +155,7 @@ export const posts: Post[] = [
     description:
       "The quiet first verse, the build, the breakdown that levels you — what's behind every great emo ballad, and how to turn your own into one you can hear sung.",
     date: "2026-06-28",
+    updated: "2026-10-19",
     excerpt:
       "From the whispered first verse to the chorus that levels you — the exact elements that make an emo ballad great, and how to write one yourself.",
   },

@@ -15,7 +15,7 @@ import { PACKS } from "@/lib/pricing";
 
 export const metadata: Metadata = {
   title: "AI Song Generator — Turn Your Words Into a Real Song",
-  description: `Paste your words and get a full song with sung vocals, guitars, and drums in about two minutes. An AI song generator that makes emo and pop punk properly. From ${PACKS["1pack"].price}.`,
+  description: `Paste your words and get a full song with sung vocals, guitars and drums in about two minutes — emo and pop punk, done properly. From ${PACKS["1pack"].price}.`,
   alternates: { canonical: "/ai-song-generator" },
   openGraph: {
     type: "website",

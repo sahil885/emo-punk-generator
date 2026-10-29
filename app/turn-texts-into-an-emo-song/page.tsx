@@ -14,7 +14,7 @@ import { PACKS } from "@/lib/pricing";
 const PATH = "/turn-texts-into-an-emo-song";
 const TITLE = "Turn Texts Into an Emo Song — Paste It, Hear It Sung";
 const DESCRIPTION =
-  "The TikTok trend, done properly: paste a real text message and hear it sung back as a full emo song with vocals, guitars and drums in about two minutes. First song free.";
+  "The TikTok trend, done properly: paste a real text and hear it sung back as a full emo song with guitars and drums, in about two minutes. First song free.";
 
 export const metadata: Metadata = {
   title: TITLE,

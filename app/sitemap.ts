@@ -20,7 +20,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   // The blog index changes when a post is published, so date it from the
   // newest live post rather than by hand.
   const newestPost = livePosts.reduce(
-    (latest, p) => (p.date > latest ? p.date : latest),
+    (latest, p) => ((p.updated ?? p.date) > latest ? (p.updated ?? p.date) : latest),
     livePosts[0]?.date ?? HOME_UPDATED
   );
 
@@ -55,7 +55,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
     ...livePosts.map((p) => ({
       url: `${BASE}/blog/${p.slug}`,
-      lastModified: new Date(p.date),
+      lastModified: new Date(p.updated ?? p.date),
       changeFrequency: "monthly" as const,
       priority: 0.6,
     })),

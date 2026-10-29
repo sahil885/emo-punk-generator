@@ -23,11 +23,18 @@ export default function BlogShell({
 }) {
   const others = livePosts.filter((p) => p.slug !== post.slug).slice(0, 3);
   const url = `${SITE}/blog/${post.slug}`;
-  const prettyDate = new Date(post.date).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
+  const fmt = (d: string) =>
+    new Date(d).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      timeZone: "UTC",
+    });
+  const prettyDate = fmt(post.date);
+  // Shown when the content changed substantively, so the visible date matches
+  // dateModified in the schema — search engines discount a schema date the
+  // page itself doesn't show.
+  const prettyUpdated = post.updated ? fmt(post.updated) : null;
 
   const publisher = {
     "@type": "Organization",
@@ -41,7 +48,7 @@ export default function BlogShell({
     headline: post.title,
     description: post.description,
     datePublished: post.date,
-    dateModified: post.date,
+    dateModified: post.updated ?? post.date,
     author: publisher,
     publisher,
     mainEntityOfPage: { "@type": "WebPage", "@id": url },
@@ -111,7 +118,16 @@ export default function BlogShell({
         <h1 className="text-3xl sm:text-4xl font-black text-white leading-tight mb-3">
           {post.title}
         </h1>
-        <p className="text-xs text-white/35 mb-6">{prettyDate}</p>
+        <p className="text-xs text-white/35 mb-6">
+          {prettyUpdated ? (
+            <>
+              Updated <time dateTime={post.updated}>{prettyUpdated}</time>
+              {" · "}first published <time dateTime={post.date}>{prettyDate}</time>
+            </>
+          ) : (
+            <time dateTime={post.date}>{prettyDate}</time>
+          )}
+        </p>
 
         {/* Above-the-fold CTA. Most search traffic here is transactional — people
             looking for the generator, not an article about it — so surface the tool
