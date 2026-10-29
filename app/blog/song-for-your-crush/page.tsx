@@ -1,5 +1,6 @@
 import Link from "next/link";
 import BlogShell, { type FaqItem } from "@/components/BlogShell";
+import GeneratorEmbed from "@/components/GeneratorEmbed";
 import { getPost, postMetadata } from "@/lib/blog";
 
 const post = getPost("song-for-your-crush")!;
@@ -47,6 +48,8 @@ export default function Page() {
         make a song for your crush with AI, from a single honest detail to a
         finished pop-punk track in a few minutes, no band required.
       </p>
+
+      <GeneratorEmbed />
       <p>
         Emo and pop punk have basically always been crush music. Half the genre
         is people yelling about someone who doesn&apos;t know they exist. So a

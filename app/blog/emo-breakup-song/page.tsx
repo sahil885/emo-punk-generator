@@ -1,5 +1,6 @@
 import Link from "next/link";
 import BlogShell, { type FaqItem } from "@/components/BlogShell";
+import GeneratorEmbed from "@/components/GeneratorEmbed";
 import { getPost, postMetadata } from "@/lib/blog";
 
 const post = getPost("emo-breakup-song")!;
@@ -45,6 +46,8 @@ export default function Page() {
         You get full lyrics, real sung vocals, and a chorus you can scream in the
         car — in about two minutes, with no instruments and no studio.
       </p>
+
+      <GeneratorEmbed />
       <p>
         Here&apos;s a fact about emo: the entire genre basically exists to deal
         with breakups. Heartbreak, the 2am spiral, the playlist you can&apos;t

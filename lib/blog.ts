@@ -8,8 +8,10 @@ export interface Post {
   description: string; // meta description
   date: string; // ISO date — first published
   /**
-   * When the article's content last changed substantively (new sections,
-   * rewritten answers) — not for typo fixes, retitles or copy tweaks. Feeds
+   * When the article's text last changed substantively (new sections,
+   * rewritten answers) — not for typo fixes, retitles, copy tweaks, or adding
+   * the embedded generator: a reader who sees "Updated" expects the article
+   * itself to say something new. Feeds
    * dateModified in the BlogPosting schema, the visible "Updated" line and the
    * sitemap <lastmod>. Faking freshness by bumping this without real changes
    * is something search engines penalise; leave it unset otherwise.
@@ -155,7 +157,6 @@ export const posts: Post[] = [
     description:
       "The quiet first verse, the build, the breakdown that levels you — what's behind every great emo ballad, and how to turn your own into one you can hear sung.",
     date: "2026-06-28",
-    updated: "2026-10-19",
     excerpt:
       "From the whispered first verse to the chorus that levels you — the exact elements that make an emo ballad great, and how to write one yourself.",
   },

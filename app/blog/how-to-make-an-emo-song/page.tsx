@@ -1,5 +1,6 @@
 import Link from "next/link";
 import BlogShell, { type FaqItem } from "@/components/BlogShell";
+import GeneratorEmbed from "@/components/GeneratorEmbed";
 import { getPost, postMetadata } from "@/lib/blog";
 
 const post = getPost("how-to-make-an-emo-song")!;
@@ -49,6 +50,8 @@ export default function Page() {
         time it takes to read this paragraph — no instruments, no studio, and no
         idea how to write music. You bring the feeling; the AI handles the rest.
       </p>
+
+      <GeneratorEmbed />
       <p>
         This guide walks through exactly how to do it, what makes the results
         actually <em>sound</em> emo, the prompts and vocalist choices that get
