@@ -20,7 +20,7 @@ const faq: FaqItem[] = [
   {
     question: "Is making a sad song with AI free?",
     answer:
-      "Generating is free after you sign in, and you hear a 60-second preview of every song. Unlocking and downloading the full track uses credits, and new accounts start with free songs — so your first sad songs cost nothing.",
+      "Generating is free after you sign in, and you hear a 60-second preview of every song. Unlocking and downloading the full track costs $3.99, or less per song in a credit pack — so you only pay for the one that actually hits.",
   },
   {
     question: "Should I pick male or female vocals for a sad song?",
@@ -92,7 +92,7 @@ export default function Page() {
         sad-ish but not <em>your</em> sad, change a detail and regenerate —
         swap &quot;I miss you&quot; for the street name, the hoodie, the exact
         hour. When a version genuinely gets you, unlock it and download the
-        full track. Your first song is free.
+        full track. Generating and previewing are free.
       </p>
 
       <h2>Sad song ideas: what to type when you&apos;re stuck</h2>

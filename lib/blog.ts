@@ -100,7 +100,7 @@ export const posts: Post[] = [
     ctaPrompt: "you returned my hoodie and nothing else",
     title: "How to Make a Song About Your Ex (in About Two Minutes)",
     description:
-      "Turn the last text, the worst voicemail, or a 2am spiral into a song about your ex — full lyrics, real vocals, done in minutes. Your first song is free.",
+      "Turn the last text, the worst voicemail, or a 2am spiral into a song about your ex — full lyrics, real vocals, done in minutes. Generating and previewing are free.",
     date: "2026-06-27",
     excerpt:
       "A song about your ex is emo's whole reason for existing. Here's how to turn the worst text, the last voicemail, or a 2am spiral into a full breakup anthem.",
@@ -165,7 +165,7 @@ export const posts: Post[] = [
     ctaPrompt: "you said my name and i forgot how to talk",
     title: "How to Make a Song for Your Crush with AI (in Minutes)",
     description:
-      "Got a crush you can't stop thinking about? Here's how to make a song for your crush with AI — full emo lyrics, vocals, and music in minutes. First song free.",
+      "Got a crush you can't stop thinking about? Here's how to make a song for your crush with AI — full emo lyrics, vocals, and music in minutes. Free to try.",
     date: "2026-07-21",
     excerpt:
       "The most emo move you can make with a crush? Write the song you'll never send. Here's how to turn that 2am feeling into a full pop-punk track in minutes.",
@@ -175,7 +175,7 @@ export const posts: Post[] = [
     ctaPrompt: "the house is the same, it's just quieter now",
     title: "How to Make a Sad Song with AI (That Actually Hurts)",
     description:
-      "Learn how to make a sad song with AI — type what hurts, pick a vocalist, and get full emo lyrics, vocals, and music in minutes. Your first song is free.",
+      "Learn how to make a sad song with AI — type what hurts, pick a vocalist, and get full emo lyrics, vocals, and music in minutes. Generating and previewing are free.",
     date: "2026-07-27",
     excerpt:
       "Generic sad-music generators give you moody background loops. Here's how to make a sad song with real words, real vocals, and a chorus that actually hurts.",
@@ -211,7 +211,7 @@ export const posts: Post[] = [
     mergedInto: "/personalized-song-gift",
     title: "How to Make a Song for Your Best Friend with AI (Not Cheesy)",
     description:
-      "How to make a song for your best friend with AI without it sounding like a greeting card. Real lyrics, real vocals, done in minutes. Your first song is free.",
+      "How to make a song for your best friend with AI without it sounding like a greeting card. Real lyrics, real vocals, done in minutes. Generating and previewing are free.",
     date: "2026-08-10",
     excerpt:
       "Most friendship songs sound like a birthday card set to music. Here's how to make a song for your best friend that's actually specific enough to make them cry.",
@@ -220,7 +220,7 @@ export const posts: Post[] = [
     slug: "ai-lyrics-generator",
     title: "AI Lyrics Generator: Get Emo Lyrics and Hear Them Sung",
     description:
-      "An AI lyrics generator that writes real emo and pop-punk lyrics from your own words — then sings them back with real vocals in minutes. Your first song is free.",
+      "An AI lyrics generator that writes real emo and pop-punk lyrics from your own words — then sings them back with real vocals in minutes. Generating and previewing are free.",
     date: "2026-08-22",
     excerpt:
       "Most AI lyrics generators hand you a block of text and wish you luck. Here's how to get emo lyrics written from your actual words — and hear them sung back.",

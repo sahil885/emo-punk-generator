@@ -16,7 +16,7 @@ const faq: FaqItem[] = [
   {
     question: "Is the 'turn your texts into an emo song' trend free to do?",
     answer:
-      "Yes — generating is free with no credit card, so you can make a few versions of your text thread and preview each one. Your first full song is free, so you can unlock the funniest or most dramatic version and post it.",
+      "Yes — generating is free with no credit card, so you can make a few versions of your text thread and preview each one. When one lands, unlock the funniest or most dramatic version for $3.99 and post it.",
   },
   {
     question: "What words work best for turning into a song?",
@@ -46,7 +46,7 @@ export default function Page() {
         </strong>{" "}
         The AI writes verses and a chorus around your exact words and performs
         them as a full pop-punk track with vocals, guitars, and drums. It takes
-        about two minutes, and your first song is free.
+        about two minutes, and it's free to try.
       </p>
       <p>
         <em>

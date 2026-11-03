@@ -3,6 +3,7 @@ import { auth } from "@/auth";
 import { getStripe } from "@/lib/stripe";
 import { PACKS, discountedAmount, isPackId } from "@/lib/pricing";
 import { getActiveOffer } from "@/lib/offer";
+import { recordPaywallEvent } from "@/lib/paywallEvents";
 
 export async function POST(req: NextRequest) {
   const session = await auth();
@@ -74,6 +75,8 @@ export async function POST(req: NextRequest) {
       ...(offer ? { discount: offer.id } : {}),
     },
   });
+
+  await recordPaywallEvent({ email: session.user.email, event: "checkout_started", pack });
 
   return NextResponse.json({ url: checkout.url });
 }

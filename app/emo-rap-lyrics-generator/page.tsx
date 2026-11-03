@@ -72,7 +72,7 @@ export default function EmoRapLyricsGeneratorPage() {
       related={relatedGenerators(PATH)}
     >
       <p>
-        Text to Emo writes emo rap-style lyrics from your own words and sings them over guitars and drums — a full track in about two minutes, and your first song is free.
+        Text to Emo writes emo rap-style lyrics from your own words and sings them over guitars and drums — a full track in about two minutes, and it's free to try.
       </p>
 
       <h2>What this is, before you spend two minutes on it</h2>

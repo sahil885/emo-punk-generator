@@ -125,8 +125,8 @@ export default function Page() {
         The point isn&apos;t revenge — it&apos;s that you walk away with a real
         track instead of just a bad mood. Type who wronged you and what they did,{" "}
         <Link href="/">open the generator</Link>, and let the guitars do the
-        roasting. Your first song is free, so the only risk is making a diss so
-        catchy you accidentally write a hit.
+        roasting. Generating and previewing are free, so the only risk is making a
+        diss so catchy you accidentally write a hit.
       </p>
     </BlogShell>
   );

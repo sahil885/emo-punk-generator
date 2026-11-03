@@ -2,7 +2,6 @@ import Link from "next/link";
 import { PACK_LIST } from "@/lib/pricing";
 import { GENERATOR_PAGES, OTHER_LANDINGS } from "@/lib/landings";
 import {
-  FREE_SONGS,
   HOME_FAQ,
   PRICE_LOWEST_PER_SONG,
   PRICE_SINGLE,
@@ -85,7 +84,7 @@ export default function HomeInfo() {
           {
             step: "3",
             title: "Hear it, then unlock",
-            body: `Free 60-second preview, and ${FREE_SONGS} to start.`,
+            body: `Free 60-second preview of every song. Unlock the full track from ${PRICE_SINGLE}.`,
           },
         ].map((s) => (
           <div

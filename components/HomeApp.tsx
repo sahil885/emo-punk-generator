@@ -11,10 +11,10 @@ import {
   isPackId,
   perSong,
   savingsPct,
-  FREE_SONGS_PHRASE,
   type PackId,
 } from "@/lib/pricing";
 import { PREVIEW_RETENTION_DAYS, songRetention } from "@/lib/retention";
+import type { ModalSource } from "@/lib/paywallSources";
 
 type Singer = "male" | "female";
 
@@ -365,7 +365,11 @@ function AudioPlayer({
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M12 1a5 5 0 00-5 5v3H6a2 2 0 00-2 2v9a2 2 0 002 2h12a2 2 0 002-2v-9a2 2 0 00-2-2h-1V6a5 5 0 00-5-5zm3 8H9V6a3 3 0 016 0v3z" />
                 </svg>
-                Unlock full song · 1 credit
+                {/* With no credits, show the price itself: "1 credit" means
+                    nothing to someone who has never bought one. */}
+                {credits === 0
+                  ? `Unlock full song · ${PACKS["1pack"].price}`
+                  : "Unlock full song · 1 credit"}
               </>
             )}
           </button>
@@ -374,7 +378,7 @@ function AudioPlayer({
           )}
           <p className="text-center text-xs text-white/30 mt-2">
             You&apos;re hearing a 60-second preview.
-            {typeof credits === "number"
+            {typeof credits === "number" && credits > 0
               ? ` ${credits} credit${credits !== 1 ? "s" : ""} left.`
               : ""}
           </p>
@@ -822,7 +826,11 @@ function SongsModal({
                           disabled={unlockingId === song.id}
                           className="text-xs text-[#ff64a6] hover:text-[#ff2d78] transition-colors disabled:opacity-50"
                         >
-                          {unlockingId === song.id ? "Unlocking…" : "🔓 Unlock · 1 credit"}
+                          {unlockingId === song.id
+                            ? "Unlocking…"
+                            : credits === 0
+                              ? `🔓 Unlock · ${PACKS["1pack"].price}`
+                              : "🔓 Unlock · 1 credit"}
                         </button>
                       ))}
                     <button
@@ -854,6 +862,20 @@ const EXAMPLES = [
   "fast times at summer heights",
   "the last text you never read",
 ];
+
+/**
+ * Tell the server the credit-pack screen just opened, and from where. Without
+ * this, "no sales" can't be split into "never saw a price" vs "saw it and
+ * left". Fire-and-forget: a failed report must never block the buy screen.
+ */
+function reportBuyModalOpen(source: ModalSource) {
+  fetch("/api/paywall-event", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ source }),
+    keepalive: true,
+  }).catch(() => {});
+}
 
 // ─── Home Page ────────────────────────────────────────────────────────────────
 // `info` is the server-rendered explainer (components/HomeInfo.tsx), passed in
@@ -975,6 +997,7 @@ export default function Home({
       if (authStatus === "authenticated") {
         setShowBuyCredits(true);
         setBuyError("");
+        reportBuyModalOpen("pricing_link");
       } else {
         setShowSignIn(true);
         setSignInError("");
@@ -1114,9 +1137,11 @@ export default function Home({
   const isBlocked = noCredits;
   const isSignedIn = authStatus === "authenticated";
   const offerActive = isSignedIn && offer !== null && offerMsLeft > 0;
-  const openBuyCredits = () => {
+  // Every way into the buy screen goes through here, so none goes uncounted.
+  const openBuyCredits = (source: ModalSource) => {
     setShowBuyCredits(true);
     setBuyError("");
+    reportBuyModalOpen(source);
   };
 
   const signInFormBlock = !signInDone ? (
@@ -1248,7 +1273,7 @@ export default function Home({
                 </button>
                 {/* Buy more credits */}
                 <button
-                  onClick={() => { setShowBuyCredits(true); setBuyError(""); }}
+                  onClick={() => openBuyCredits("header")}
                   className="text-xs font-bold text-white bg-gradient-to-r from-[#ff2d78] to-[#9b30ff] rounded-full px-4 py-1.5 hover:opacity-90 transition-opacity"
                 >
                   + Buy credits
@@ -1289,7 +1314,7 @@ export default function Home({
             <OfferBanner
               percent={offer.percent}
               msLeft={offerMsLeft}
-              onClaim={openBuyCredits}
+              onClaim={() => openBuyCredits("offer_banner")}
             />
           </div>
         )}
@@ -1333,8 +1358,7 @@ export default function Home({
             onCreditsChange={(c) => setCredits(c)}
             onNeedCredits={() => {
               setShowSongs(false);
-              setShowBuyCredits(true);
-              setBuyError("");
+              openBuyCredits("library");
             }}
             onClose={() => setShowSongs(false)}
           />
@@ -1566,7 +1590,9 @@ export default function Home({
           {isSignedIn && credits !== null && (
             <div className="flex justify-end mb-2">
               <span className="text-xs text-white/30 border border-white/10 rounded-full px-3 py-1">
-                {credits} credit{credits !== 1 ? "s" : ""} · unlock full songs
+                {credits === 0
+                  ? `Full songs ${PACKS["1pack"].price}`
+                  : `${credits} credit${credits !== 1 ? "s" : ""} · unlock full songs`}
               </span>
             </div>
           )}
@@ -1575,9 +1601,9 @@ export default function Home({
               Signed-out visitors are the ones who need to know it's free. */}
           {!isSignedIn && (
             <p className="text-center text-sm text-white/70 mb-3">
-              Free to generate · free 60-second preview ·{" "}
-              <span className="text-[#00cfff] font-semibold">{FREE_SONGS_PHRASE}</span>{" "}
-              when you sign up
+              Free to generate ·{" "}
+              <span className="text-[#00cfff] font-semibold">free 60-second preview</span>{" "}
+              of every song
             </p>
           )}
 
@@ -1612,7 +1638,7 @@ export default function Home({
               ) : (
                 // No padlock: a lock reads as "you can't" at the exact moment
                 // we want "you can". Same click, free-first framing.
-                "Make your first song — free →"
+                "Hear your first song free →"
               )}
             </span>
           </button>
@@ -1620,7 +1646,9 @@ export default function Home({
           {/* How it works hint */}
           <p className="text-center text-xs text-white/25 mt-3">
             {isSignedIn
-              ? "Free to generate · hear a 60s preview · unlock the full song with 1 credit"
+              ? credits === 0
+                ? `Free to generate · hear a 60s preview · unlock the full song for ${PACKS["1pack"].price}`
+                : "Free to generate · hear a 60s preview · unlock the full song with 1 credit"
               : "No card needed · full song in a few minutes"}
           </p>
 
@@ -1672,7 +1700,7 @@ export default function Home({
                 songId={songId}
                 credits={credits}
                 onUnlocked={(c) => setCredits(c)}
-                onNeedCredits={openBuyCredits}
+                onNeedCredits={() => openBuyCredits("player")}
               />
 
               {/* The top banner is scrolled out of view by the time a song is
@@ -1682,7 +1710,7 @@ export default function Home({
                   <OfferBanner
                     percent={offer.percent}
                     msLeft={offerMsLeft}
-                    onClaim={openBuyCredits}
+                    onClaim={() => openBuyCredits("offer_banner")}
                   />
                 </div>
               )}

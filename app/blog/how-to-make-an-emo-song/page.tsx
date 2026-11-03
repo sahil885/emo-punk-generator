@@ -11,7 +11,7 @@ const faq: FaqItem[] = [
   {
     question: "Is it free to make an emo song with AI?",
     answer:
-      "Yes. Generating songs and hearing a 60-second preview of each one is free, with no credit card required — so you can make a few tracks and find the one that hits. Your first full song is free too; after that, credit packs unlock more.",
+      "Yes. Generating songs and hearing a 60-second preview of each one is free, with no credit card required — so you can make a few tracks and find the one that hits. Unlocking a full track costs $3.99, or less per song in a credit pack.",
   },
   {
     question: "Do I need to know how to make music or play an instrument?",
@@ -199,9 +199,10 @@ export default function Page() {
 
       <h2>Is it free to make an emo song?</h2>
       <p>
-        Yes — you can make your first songs on{" "}
-        <Link href="/">Text to Emo</Link> free, no credit card. Generate a few,
-        find the one that hits, and download it. It&apos;s the fastest way to go
+        Mostly. Generating songs on{" "}
+        <Link href="/">Text to Emo</Link> is free, with no credit card, and you
+        hear a 60-second preview of each one. Generate a few, find the one that
+        hits, then unlock the full track and download it for $3.99. It&apos;s the fastest way to go
         from a 2am feeling to a finished track without ever picking up a guitar.
       </p>
 

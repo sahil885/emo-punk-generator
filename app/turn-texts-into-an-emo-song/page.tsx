@@ -14,7 +14,7 @@ import { PACKS } from "@/lib/pricing";
 const PATH = "/turn-texts-into-an-emo-song";
 const TITLE = "Turn Texts Into an Emo Song — Paste It, Hear It Sung";
 const DESCRIPTION =
-  "The TikTok trend, done properly: paste a real text and hear it sung back as a full emo song with guitars and drums, in about two minutes. First song free.";
+  "The TikTok trend, done properly: paste a real text and hear it sung back as a full emo song with guitars and drums, in about two minutes. Free to try.";
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -50,7 +50,7 @@ const faq: LandingFaq[] = [
   {
     question: "Is it free to turn texts into an emo song?",
     answer:
-      `Generating and hearing a 60-second preview are free after you sign in, and new accounts get a free song to start. Unlocking the full track and downloading it costs one credit — ${PACKS["1pack"].price} for a single song, less in a pack. There's no subscription.`,
+      `Generating and hearing a 60-second preview are free after you sign in. Unlocking the full track and downloading it costs one credit — ${PACKS["1pack"].price} for a single song, less in a pack. There's no subscription.`,
   },
   {
     question: "What kind of texts make the best songs?",
@@ -78,7 +78,7 @@ export default function TurnTextsIntoAnEmoSongPage() {
       faq={faq}
     >
       <p>
-        Text to Emo turns a text message into a full emo pop-punk song — the lyrics written around your words and sung back to you in about two minutes, with your first song free.
+        Text to Emo turns a text message into a full emo pop-punk song — the lyrics written around your words and sung back to you in about two minutes, free to try.
       </p>
 
       <h2>What the trend is</h2>

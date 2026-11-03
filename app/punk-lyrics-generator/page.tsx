@@ -55,7 +55,7 @@ const faq: LandingFaq[] = [
   {
     question: "Is the punk lyrics generator free?",
     answer:
-      `Generating and previewing are free after you sign in, and your first full song is free. A full track after that is ${PACKS["1pack"].price}, or as little as $1.60 a song in a pack. No subscription.`,
+      `Generating and previewing are free after you sign in. A full track is ${PACKS["1pack"].price}, or as little as $1.60 a song in a pack. No subscription.`,
   },
 ];
 
@@ -74,7 +74,7 @@ export default function PunkLyricsGeneratorPage() {
       related={relatedGenerators(PATH)}
     >
       <p>
-        Text to Emo writes punk lyrics from whatever you type and performs them as a full pop-punk song in about two minutes, and your first song is free.
+        Text to Emo writes punk lyrics from whatever you type and performs them as a full pop-punk song in about two minutes, and it's free to try.
       </p>
 
       <h2>Punk lyrics are short on purpose</h2>

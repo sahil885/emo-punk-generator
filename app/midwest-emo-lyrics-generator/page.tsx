@@ -52,7 +52,7 @@ const faq: LandingFaq[] = [
   {
     question: "Is it free?",
     answer:
-      "Generating lyrics and hearing a 60-second preview are free after you sign in, and your first full song is free. Unlocking the full track costs one credit after that.",
+      "Generating lyrics and hearing a 60-second preview are free after you sign in. Unlocking the full track costs one credit after that.",
   },
 ];
 
@@ -71,7 +71,7 @@ export default function MidwestEmoLyricsGeneratorPage() {
       related={relatedGenerators(PATH)}
     >
       <p>
-        Text to Emo writes midwest-emo-style lyrics from your own words and sings them back as a full song in about two minutes, and your first song is free.
+        Text to Emo writes midwest-emo-style lyrics from your own words and sings them back as a full song in about two minutes, and it's free to try.
       </p>
 
       <h2>What transfers, and what doesn&apos;t</h2>

@@ -16,7 +16,7 @@ import { PACKS } from "@/lib/pricing";
 export const metadata: Metadata = {
   title: "Personalized Song Gift — Written About Them, in Minutes",
   // Price interpolated from lib/pricing so the meta can't drift from checkout.
-  description: `Give a personalized song written about your person, not a template with their name dropped in. Real vocals, yours in minutes, from ${PACKS["1pack"].price}. First song free.`,
+  description: `Give a personalized song written about your person, not a template with their name dropped in. Real vocals, yours in minutes, from ${PACKS["1pack"].price}. Free to try.`,
   alternates: { canonical: "/personalized-song-gift" },
   openGraph: {
     type: "website",
@@ -40,7 +40,7 @@ const faq = [
   {
     question: "How do I make a personalized song as a gift?",
     answer:
-      "Write one specific thing about them — a memory, an inside joke, the thing they always say — then pick a male or female vocalist and generate. You get a free 60-second preview, so you can hear the song before you decide to keep it. Unlocking the full track and downloading it costs one credit, and your first song is free.",
+      "Write one specific thing about them — a memory, an inside joke, the thing they always say — then pick a male or female vocalist and generate. You get a free 60-second preview, so you can hear the song before you decide to keep it. Unlocking the full track and downloading it costs one credit, and it's free to try.",
   },
   {
     question: "How much does a personalized song gift cost?",
@@ -177,7 +177,7 @@ export default function PersonalizedSongGiftPage() {
               href="/"
               className="inline-flex items-center justify-center gap-2 rounded-xl px-7 py-3.5 text-base font-bold text-white bg-gradient-to-r from-[#ff2d78] to-[#9b30ff] hover:opacity-90 transition-opacity"
             >
-              ⚡ Make their song free
+              ⚡ Hear their song free
             </Link>
             <Link
               href="/pricing"
@@ -350,8 +350,8 @@ export default function PersonalizedSongGiftPage() {
           <p>
             Think of the one detail you&apos;d never put on a card. That&apos;s
             the song. <Link href="/">Open the generator</Link>, write it down,
-            and hear it back before you decide anything — your first songs are
-            free, so the only thing it costs to try is the two minutes.
+            and hear it back before you decide anything — generating and the
+            preview are free, so the only thing it costs to try is the two minutes.
           </p>
         </div>
 
@@ -373,7 +373,7 @@ export default function PersonalizedSongGiftPage() {
           </p>
           <p className="text-sm text-white/50 mb-4">
             Write it, pick a voice, and hear their song in about two minutes.
-            Your first song is free.
+            Generating and previewing are free.
           </p>
           <Link
             href="/"

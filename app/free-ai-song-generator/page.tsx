@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import GeneratorLanding, { type LandingFaq } from "@/components/GeneratorLanding";
 import { relatedGenerators } from "@/lib/landings";
-import { FREE_SONGS_PHRASE, PACKS, perSong } from "@/lib/pricing";
+import { PACKS, perSong } from "@/lib/pricing";
 import { PREVIEW_RETENTION_DAYS } from "@/lib/retention";
 
 // The free-angle page from CONTENT-PLAN.md Priority 1: `ai song generator free`,
@@ -17,7 +17,7 @@ import { PREVIEW_RETENTION_DAYS } from "@/lib/retention";
 const PATH = "/free-ai-song-generator";
 const TITLE = "Free AI Song Generator — No Card, No Watermark";
 const DESCRIPTION =
-  "Generate songs free with real sung vocals — unlimited runs, a free 60-second preview of every one, and your first full song free. No card to start, no watermark.";
+  "Generate songs free with real sung vocals — unlimited runs and a free 60-second preview of every one. Full tracks from $3.99. No card to start, no watermark.";
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -43,7 +43,7 @@ const faq: LandingFaq[] = [
   {
     question: "Is this AI song generator actually free?",
     answer:
-      `Generating is free and unlimited up to 10 songs a day, and every song comes with a free 60-second preview — lyrics, real vocals, guitars, the lot. Your first full song is free too. After that, unlocking a full track costs one credit: ${PACKS["1pack"].price} for a single song, down to ${perSong(PACKS["25pack"])} a song in a pack. No subscription, and no card needed to start.`,
+      `Generating is free and unlimited up to 10 songs a day, and every song comes with a free 60-second preview — lyrics, real vocals, guitars, the lot. Unlocking the full track to download costs one credit: ${PACKS["1pack"].price} for a single song, down to ${perSong(PACKS["25pack"])} a song in a pack. No subscription, and no card needed to start.`,
   },
   {
     question: "Do I have to give a card to try it?",
@@ -51,17 +51,17 @@ const faq: LandingFaq[] = [
       "No. You sign in with Google or an email link — no payment details — and you can generate and preview as much as you like. A card is only involved if you decide to buy credits.",
   },
   {
-    question: "Is there a watermark on the free songs?",
+    question: "Is there a watermark on the previews?",
     answer:
-      "No. There's no voice-over, no tag and no watermark on anything this makes. The free tier limits how much you can unlock, not what the audio sounds like.",
+      "No. There's no voice-over, no tag and no watermark on anything this makes. The free tier is the 60-second preview of every song; it limits length, not what the audio sounds like.",
   },
   {
     question: "What's the catch?",
     answer:
-      `One honest one: unlocking the full track and downloading the MP3 costs a credit once your free song is used. Unlocked songs stay in your library; previews you never unlock are cleared after ${PREVIEW_RETENTION_DAYS} days. Everything else — generating, previewing, the lyric sheet — stays free.`,
+      `One honest one: the free part is the 60-second preview, and unlocking the full track to download it costs a credit. Unlocked songs stay in your library; previews you never unlock are cleared after ${PREVIEW_RETENTION_DAYS} days. Everything else — generating, previewing, the lyric sheet — stays free.`,
   },
   {
-    question: "Can I use the free songs on TikTok or Instagram?",
+    question: "Can I post the songs on TikTok or Instagram?",
     answer:
       "Once you unlock a track it downloads as a clean MP3 with no watermark, so yes, post it anywhere. The 60-second preview is for listening in the browser rather than downloading.",
   },
@@ -78,11 +78,11 @@ export default function FreeAiSongGeneratorPage() {
       eyebrow="Free AI song generator"
       headline="A free AI song generator"
       highlight="with real vocals"
-      subheading="Generate as many as you like, hear a 60-second preview of every one, and unlock your first full song free. No card to start."
+      subheading="Generate as many as you like and hear a 60-second preview of every one before you spend anything. No card to start."
       path={PATH}
       breadcrumbName="Free AI Song Generator"
       productName="Text to Emo — Free AI Song Generator"
-      productDescription="Generates full emo and pop punk songs with sung vocals from your own words. Free to generate and preview, with the first full song free."
+      productDescription="Generates full emo and pop punk songs with sung vocals from your own words. Free to generate and preview; full tracks from $3.99."
       faq={faq}
       related={relatedGenerators(PATH)}
     >
@@ -97,12 +97,11 @@ export default function FreeAiSongGeneratorPage() {
         <li>
           <strong>Free:</strong> writing the lyrics, generating the song, a
           60-second preview of every version you make, the full lyric sheet with
-          a copy button, and {FREE_SONGS_PHRASE} unlocked in full when you sign
-          up. Up to 10 generations a day.
+          a copy button. Up to 10 generations a day.
         </li>
         <li>
           <strong>Paid:</strong> unlocking a full-length track and downloading
-          the MP3 after your free one — {PACKS["1pack"].price} for a single
+          the MP3 — {PACKS["1pack"].price} for a single
           song, or as little as {perSong(PACKS["25pack"])} a song in a pack.
           One-off; there&apos;s no subscription.
         </li>

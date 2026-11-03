@@ -11,11 +11,13 @@
 
 // Free credits granted to every brand-new account. Lives here, not in the auth
 // adapter, so client components can quote it without pulling in the database.
-export const SIGNUP_CREDITS = 1;
-
-/** "1 free song" / "2 free songs" — the phrase used across the site's copy. */
-export const FREE_SONGS_PHRASE =
-  SIGNUP_CREDITS === 1 ? "1 free song" : `${SIGNUP_CREDITS} free songs`;
+//
+// 0 since Nov 2026: the free tier is generating plus a 60-second preview, and
+// the first full song costs a credit. Of 17 people who unlocked a free song
+// between Aug and Oct, 11 never made another — the free song covered their
+// whole need, so it was giving away the one sale most users would ever make.
+// (It was 2 until Oct 2026, then 1.) Credits already held aren't affected.
+export const SIGNUP_CREDITS = 0;
 
 export type PackId = "1pack" | "3pack" | "10pack" | "25pack";
 

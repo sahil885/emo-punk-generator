@@ -11,7 +11,7 @@ import { PACKS } from "@/lib/pricing";
 const PATH = "/emo-lyrics-generator";
 const TITLE = "Emo Lyrics Generator — Written and Sung in 2 Minutes";
 const DESCRIPTION =
-  "An emo lyrics generator that writes full verses, a chorus and a bridge from your own words — then sings them back with real vocals. Free to try, first song free.";
+  "An emo lyrics generator that writes full verses, a chorus and a bridge from your own words — then sings them back with real vocals. Free to try.";
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -57,7 +57,7 @@ const faq: LandingFaq[] = [
   {
     question: "Is the emo lyrics generator free?",
     answer:
-      `Writing lyrics and hearing a 60-second preview are free once you sign in, and your first full song is free. After that a full track is ${PACKS["1pack"].price}, less in a pack, with no subscription.`,
+      `Writing lyrics and hearing a 60-second preview are free once you sign in. A full track is ${PACKS["1pack"].price}, less in a pack, with no subscription.`,
   },
 ];
 
@@ -77,7 +77,7 @@ export default function EmoLyricsGeneratorPage() {
       related={relatedGenerators(PATH)}
     >
       <p>
-        Text to Emo writes emo lyrics from your own words and sings them back as a full pop-punk song in about two minutes, and your first song is free.
+        Text to Emo writes emo lyrics from your own words and sings them back as a full pop-punk song in about two minutes, and it's free to try.
       </p>
 
       <h2>What the lyrics generator actually writes</h2>

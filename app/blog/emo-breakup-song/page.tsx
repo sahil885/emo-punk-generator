@@ -164,7 +164,7 @@ export default function Page() {
         that you walk away with an actual track instead of just a bad week. Type
         the thing you can&apos;t stop thinking about,{" "}
         <Link href="/">open the generator</Link>, and let the quiet-verse,
-        loud-chorus, minor-key formula do the rest. Your first song is free.
+        loud-chorus, minor-key formula do the rest. Generating and previewing are free.
       </p>
     </BlogShell>
   );
