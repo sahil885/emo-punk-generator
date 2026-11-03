@@ -34,7 +34,7 @@ const faq = [
   {
     question: "Do I need to buy credits to try it?",
     answer:
-      "No. Sign in and you can generate songs for free and hear a 60-second preview of every one. You also get 1 free song when you sign up, so your first full track costs nothing.",
+      "No. Sign in and you can generate songs for free and hear a 60-second preview of every one, so you know exactly what you'd be paying for before you pay. Credits only come in when you want to unlock a full track.",
   },
   {
     question: "Do credits expire?",
@@ -428,17 +428,17 @@ export default function PricingPage() {
         {/* ── CTA ───────────────────────────────────────────────────── */}
         <div className="mt-14 sm:mt-16 rounded-2xl border border-[#9b30ff]/40 bg-[#0f0520]/80 p-6 sm:p-8 text-center">
           <p className="text-xl sm:text-2xl font-black text-white mb-2">
-            Start with a free song
+            Start with a free preview
           </p>
           <p className="text-sm text-white/50 mb-5 max-w-md mx-auto">
             Sign in, type anything, and hear it as an emo pop punk track in
-            minutes. You get 1 free song when you sign up.
+            minutes. Every song comes with a free 60-second preview.
           </p>
           <Link
             href="/"
             className="inline-flex items-center justify-center min-h-[52px] rounded-xl px-8 font-bold text-white bg-gradient-to-r from-[#ff2d78] to-[#9b30ff] hover:opacity-90 transition-opacity"
           >
-            Make a song free →
+            Try it free →
           </Link>
         </div>
       </div>

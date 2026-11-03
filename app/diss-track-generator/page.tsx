@@ -11,7 +11,7 @@ import { PACKS } from "@/lib/pricing";
 const PATH = "/diss-track-generator";
 const TITLE = "Diss Track Generator — Sung, With a Chorus That Stings";
 const DESCRIPTION =
-  "A diss track generator that isn't rap. Type what they did and get a pop-punk roast with a chorus, performed with real vocals in about two minutes. First song free.";
+  "A diss track generator that isn't rap. Type what they did and get a pop-punk roast with a chorus, performed with real vocals in about two minutes. Free to try.";
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -52,7 +52,7 @@ const faq: LandingFaq[] = [
   {
     question: "Is the diss track generator free?",
     answer:
-      `Generating and hearing a 60-second preview are free after you sign in, and your first full song is free. After that a track is ${PACKS["1pack"].price}, less in a pack.`,
+      `Generating and hearing a 60-second preview are free after you sign in. A track is ${PACKS["1pack"].price}, less in a pack.`,
   },
 ];
 
@@ -71,7 +71,7 @@ export default function DissTrackGeneratorPage() {
       related={relatedGenerators(PATH)}
     >
       <p>
-        Text to Emo writes a sung pop-punk diss track from your own words in about two minutes, and your first song is free.
+        Text to Emo writes a sung pop-punk diss track from your own words in about two minutes, and it's free to try.
       </p>
 
       <h2>Why a sung diss lands harder than a rapped one</h2>

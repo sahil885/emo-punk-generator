@@ -1,6 +1,6 @@
 import type { Adapter } from "next-auth/adapters";
 import { sql } from "@/lib/db";
-// Free songs granted to every brand-new account as a signup bonus. Defined in
+// Free credits granted to every brand-new account (0 since Nov 2026). Defined in
 // lib/pricing.ts so the UI can quote it without importing the database.
 import { SIGNUP_CREDITS } from "@/lib/pricing";
 

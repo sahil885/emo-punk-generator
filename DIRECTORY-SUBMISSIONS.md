@@ -10,7 +10,7 @@ Checked 2026-10-29: Text to Emo is **not** among the 24 products SaaSHub lists
 as Suno alternatives. Most of that list is generic "AI song generator" tools, so
 a genre-specific product is a genuine point of difference — lead with it.
 
-Everything below is accurate as of 2026-10-29. If pricing or the free tier
+Everything below is accurate as of 2026-11-03. If pricing or the free tier
 changes, update this file before the next submission.
 
 ---
@@ -72,13 +72,13 @@ settings beyond the vocalist, because the emo and pop-punk writing is already
 built in. People use it for breakup songs, songs for a friend or a crush, sung
 diss tracks, and the "turn your texts into a song" trend.
 
-Generating songs and hearing a 60-second preview are free, and new accounts get
-their first full song free. Unlocked songs stay in your library and download as
+Generating songs and hearing a 60-second preview of each are free; unlocking a
+full track is $3.99. Unlocked songs stay in your library and download as
 MP3s with no watermark.
 
 **Pricing model:** Freemium — free to generate and preview; pay per song
 **Pricing detail:** Free to generate (up to 10 songs/day) with a 60-second
-preview of each. First full song free. Then $3.99 per song, or credit packs down
+preview of each. Full songs $3.99 each, or credit packs down
 to $1.60 per song. No subscription; credits never expire.
 
 **Categories:** AI music generator · AI song generator · Text to song · Lyrics generator

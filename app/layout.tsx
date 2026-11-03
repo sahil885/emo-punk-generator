@@ -27,7 +27,7 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://texttoemo.com"),
   title: "Text To Emo — Turn Any Words Into an Emo Song",
   description:
-    "Paste a text, a memory or a 2am thought and Text To Emo sings it back as a full pop punk track — written, performed and ready in about two minutes. First song free.",
+    "Paste a text, a memory or a 2am thought and Text To Emo sings it back as a full pop punk track — written, performed and ready in about two minutes. Free to try.",
   keywords: [
     "emo song generator",
     "AI song generator",
@@ -45,13 +45,13 @@ export const metadata: Metadata = {
     siteName: "Text to Emo",
     title: "Text To Emo — Turn Any Words Into an Emo Song",
     description:
-      "Drop any words and get a full emo pop punk song with AI lyrics, vocals, and music in minutes. First song free.",
+      "Drop any words and get a full emo pop punk song with AI lyrics, vocals, and music in minutes. Free to try.",
   },
   twitter: {
     card: "summary_large_image",
     title: "Text To Emo — Turn Any Words Into an Emo Song",
     description:
-      "Type anything and hear it as a full emo pop punk song. AI lyrics + real vocals, about two minutes. First song free.",
+      "Type anything and hear it as a full emo pop punk song. AI lyrics + real vocals, about two minutes. Free to try.",
   },
 };
 

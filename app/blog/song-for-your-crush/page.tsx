@@ -191,7 +191,7 @@ export default function Page() {
         thinking about,{" "}
         <Link href="/">open the generator</Link>, pick a voice, and let the
         quiet-verse, loud-chorus, minor-key formula do the rest. Send it, post it,
-        or keep it forever in your drafts. Your first song is free.
+        or keep it forever in your drafts. Generating and previewing are free.
       </p>
     </BlogShell>
   );

@@ -134,8 +134,8 @@ export default function Page() {
         The fastest way to find the sound is to hear it. Pick the band you&apos;re
         chasing, choose the matching vocalist, write one honest line, and{" "}
         <Link href="/blog/how-to-make-an-emo-song">generate a full emo song</Link>.
-        Regenerate until it gives you that exact 2005-bedroom-floor feeling — your
-        first song is free.
+        Regenerate until it gives you that exact 2005-bedroom-floor feeling —
+        generating and previewing are free.
       </p>
     </BlogShell>
   );

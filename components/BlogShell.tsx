@@ -148,7 +148,7 @@ export default function BlogShell({
                 href={`/?words=${encodeURIComponent(post.ctaPrompt)}`}
                 className="inline-flex shrink-0 items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-bold text-white bg-gradient-to-r from-[#ff2d78] to-[#9b30ff] hover:opacity-90 transition-opacity"
               >
-                ⚡ Make this song free
+                ⚡ Hear this song free
               </Link>
             </>
           ) : (
@@ -188,7 +188,7 @@ export default function BlogShell({
             Make your own emo song now
           </p>
           <p className="text-sm text-white/50 mb-4">
-            Drop any words and get a full track with vocals in minutes. Your first song is free.
+            Drop any words and get a full track with vocals in minutes. Generating and previewing are free.
           </p>
           <Link
             href="/"

@@ -47,7 +47,7 @@ const faq: LandingFaq[] = [
   },
   {
     question: "Is this emo song generator free?",
-    answer: `Generating a song and hearing a 60-second preview are free once you sign in, and your first full song is free. You spend a credit only to unlock the full track and download it, from ${PACKS["1pack"].price} a song with packs bringing it down further. No subscription.`,
+    answer: `Generating a song and hearing a 60-second preview are free once you sign in. You spend a credit only to unlock the full track and download it, from ${PACKS["1pack"].price} a song with packs bringing it down further. No subscription.`,
   },
   {
     question: "How is this different from Suno or a general AI music generator?",
@@ -83,7 +83,7 @@ export default function EmoSongGeneratorPage() {
     >
       <p>
         Text to Emo writes and sings a full emo or pop-punk song from your own
-        words in about two minutes, and your first song is free.
+        words in about two minutes, and it's free to try.
       </p>
 
       <h2>Hear what it makes</h2>
@@ -209,8 +209,7 @@ export default function EmoSongGeneratorPage() {
         One sentence is enough. You don&apos;t need a concept, a plan, or any
         idea what a chord is. Scroll back up, type the thing you&apos;ve been
         turning over all week, and hear it sung back. Generating and previewing
-        are free, and your first song is free &mdash; so trying it costs you two
-        minutes and nothing else.
+        are free &mdash; so trying it costs you two minutes and nothing else.
       </p>
     </GeneratorLanding>
   );

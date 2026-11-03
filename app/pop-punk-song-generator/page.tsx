@@ -17,7 +17,7 @@ import { PACKS } from "@/lib/pricing";
 const PATH = "/pop-punk-song-generator";
 const TITLE = "Pop Punk Song Generator — Hooks, Guitars, Real Vocals";
 const DESCRIPTION =
-  "Type a line and get a full pop punk song back: fast drums, big guitars and a shout-along chorus, sung by a male or female vocalist. Free to try, first song free.";
+  "Type a line and get a full pop punk song back: fast drums, big guitars and a shout-along chorus, sung by a male or female vocalist. Free to try.";
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -62,7 +62,7 @@ const faq: LandingFaq[] = [
   },
   {
     question: "Is the pop punk song generator free?",
-    answer: `Generating and hearing a 60-second preview are free once you sign in, and your first full song is free. After that, unlocking a full track costs one credit — ${PACKS["1pack"].price} for a single song, less in a pack. No subscription.`,
+    answer: `Generating and hearing a 60-second preview are free once you sign in. Unlocking a full track costs one credit — ${PACKS["1pack"].price} for a single song, less in a pack. No subscription.`,
   },
 ];
 
@@ -82,7 +82,7 @@ export default function PopPunkSongGeneratorPage() {
     >
       <p>
         Text to Emo writes and sings a full pop-punk song from your own words in
-        about two minutes, and your first song is free.
+        about two minutes, and it's free to try.
       </p>
 
       <h2>What makes it pop punk rather than emo</h2>

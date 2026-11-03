@@ -84,7 +84,7 @@ export default function EmoSongTitleGeneratorPage() {
       related={relatedGenerators(PATH)}
     >
       <p>
-        Text to Emo names your song and writes and sings the rest of it — a full emo pop-punk track from your own words in about two minutes, with the first one free.
+        Text to Emo names your song and writes and sings the rest of it — a full emo pop-punk track from your own words in about two minutes, free to try.
       </p>
 
       <h2>Titles this generator has actually produced</h2>

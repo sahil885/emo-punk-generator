@@ -3,6 +3,7 @@ import { auth } from "@/auth";
 import { sql } from "@/lib/db";
 import { isSongExpired } from "@/lib/retention";
 import { isStoredUrl } from "@/lib/audioStorage";
+import { recordPaywallEvent } from "@/lib/paywallEvents";
 
 // Spend 1 credit to unlock the full song + download for a song the user owns.
 // Idempotent: unlocking an already-unlocked song does not charge again.
@@ -61,6 +62,9 @@ export async function POST(req: NextRequest) {
   }
 
   if (song.credits <= 0) {
+    // The moment someone wants a song badly enough to try unlocking it, with
+    // nothing to unlock it with. The single most useful paywall signal.
+    await recordPaywallEvent({ email: userEmail, event: "unlock_no_credits", songId });
     return NextResponse.json(
       { error: "No credits left. Buy a credit pack to unlock songs! 🎸", noCredits: true },
       { status: 402 }
@@ -74,6 +78,7 @@ export async function POST(req: NextRequest) {
     RETURNING credits
   `;
   if (deducted.length === 0) {
+    await recordPaywallEvent({ email: userEmail, event: "unlock_no_credits", songId });
     return NextResponse.json(
       { error: "No credits left. Buy a credit pack to unlock songs! 🎸", noCredits: true },
       { status: 402 }

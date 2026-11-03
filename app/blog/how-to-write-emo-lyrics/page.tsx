@@ -185,7 +185,7 @@ export default function Page() {
         <Link href="/blog/how-to-make-an-emo-song">
           turn it into a full emo song
         </Link>{" "}
-        and hear whether it hits — your first song is free.
+        and hear whether it hits — generating and previewing are free.
       </p>
     </BlogShell>
   );

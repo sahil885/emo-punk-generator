@@ -68,7 +68,7 @@ export default function EmoPoetryGeneratorPage() {
       related={relatedGenerators(PATH)}
     >
       <p>
-        Text to Emo writes emo verses from your own words and, if you want them sung, performs them as a full pop-punk song in about two minutes. The first song is free.
+        Text to Emo writes emo verses from your own words and, if you want them sung, performs them as a full pop-punk song in about two minutes. It's free to try.
       </p>
 
       <h2>Poetry that doesn&apos;t stop at the page</h2>
