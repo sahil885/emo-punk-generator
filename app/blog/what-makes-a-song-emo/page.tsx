@@ -34,6 +34,11 @@ const faq: FaqItem[] = [
       "Yes. Emo began in the mid-1980s Washington DC hardcore punk scene as 'emotional hardcore' — Rites of Spring and Embrace are the usual starting points. It kept punk's instrumentation and energy and pointed the lyrics inward, then drifted further from punk with each wave, which is why 2000s emo often sounds closer to pop or indie rock than to hardcore.",
   },
   {
+    question: "What's the difference between emo and punk?",
+    answer:
+      "Emo grew out of punk, so they share the same instruments and energy — the difference is the target. Punk aims outward at politics, authority and boredom, fast and raw from start to finish. Emo points that intensity inward at heartbreak and anxiety, and uses quiet-loud dynamics so the loud parts land harder.",
+  },
+  {
     question: "What are the main emo subgenres?",
     answer:
       "Common ones include classic/first-wave emo, emo-pop (the polished 2000s mainstream sound), emo-punk, screamo (harsher, screamed vocals), emo rap (emo themes over hip-hop production), and the current emo revival.",
@@ -58,18 +63,21 @@ const faq: FaqItem[] = [
 export default function Page() {
   return (
     <BlogShell post={post} faq={faq}>
-      {/* Plain answer first: these queries ("emo vs pop punk", "is pop punk
-          emo") rank 8–12 and earn no clicks because the answer is being given
-          above the fold by an AI Overview. */}
+      {/* Plain answer first: these queries ("emo vs pop punk", "punk vs emo",
+          "is emo a subgenre of punk") rank 8–12 and earn almost no clicks
+          because the answer is being given above the fold by an AI Overview.
+          One sentence that settles all three is what gets quoted. */}
       <p>
         <strong>
-          The difference between emo and pop punk is where the feeling points.
+          Emo is a subgenre of punk, and pop punk is its brighter cousin.
         </strong>{" "}
-        Emo turns inward — slower or more dynamic songs, confessional lyrics
-        about your own heartbreak and anxiety, vocals that crack on purpose. Pop
-        punk turns outward — faster, brighter, built around a big shout-along
-        chorus about boredom, friends and getting out of your hometown. Plenty
-        of bands sit in both camps, which is why the argument never ends.
+        Emo grew out of the 1980s Washington DC hardcore scene and turned
+        punk&apos;s energy inward — dynamic songs, confessional lyrics about
+        your own heartbreak and anxiety, vocals that crack on purpose. Punk aims
+        outward at society and authority, fast and raw. Pop punk keeps the speed
+        but makes it bright and catchy, built around a big shout-along chorus
+        about boredom, friends and getting out of your hometown. Plenty of bands
+        sit in more than one camp, which is why the argument never ends.
       </p>
 
       <div className="table-scroll">
@@ -77,33 +85,44 @@ export default function Page() {
           <thead>
             <tr>
               <th scope="col"></th>
+              <th scope="col">Punk</th>
               <th scope="col">Emo</th>
               <th scope="col">Pop punk</th>
             </tr>
           </thead>
           <tbody>
             <tr>
+              <th scope="row">Started</th>
+              <td>Mid-1970s, New York and London</td>
+              <td>Mid-1980s, the Washington DC hardcore scene</td>
+              <td>Late 1970s; mainstream from 1994</td>
+            </tr>
+            <tr>
               <th scope="row">Tempo</th>
+              <td>Fast and relentless, songs often under three minutes</td>
               <td>Varies — quiet verses that build to a loud finish</td>
               <td>Fast and steady, usually 160&ndash;200 BPM</td>
             </tr>
             <tr>
               <th scope="row">Vocals</th>
+              <td>Shouted and raw</td>
               <td>Strained, cracking, sometimes screamed</td>
               <td>Clean, nasal, built for a crowd to sing back</td>
             </tr>
             <tr>
               <th scope="row">Lyrics</th>
+              <td>Outward: politics, authority, the boredom of the suburbs</td>
               <td>Inward: one specific heartbreak, held still</td>
               <td>Outward: boredom, friends, leaving town, someone who wronged you</td>
             </tr>
             <tr>
               <th scope="row">Typical bands</th>
+              <td>Ramones, Sex Pistols, The Clash, Minor Threat</td>
               <td>
-                Sunny Day Real Estate, American Football, My Chemical Romance,
-                Dashboard Confessional
+                Rites of Spring, Sunny Day Real Estate, American Football, My
+                Chemical Romance
               </td>
-              <td>Green Day, Blink-182, Sum 41, early Paramore</td>
+              <td>Green Day, Blink-182, Sum 41, New Found Glory</td>
             </tr>
           </tbody>
         </table>
@@ -116,7 +135,7 @@ export default function Page() {
         <strong>sincerity</strong>. Emo takes the energy of punk rock and points
         it inward, at heartbreak, anxiety, and the stuff you&apos;d only admit at
         2am. Let&apos;s break down where it comes from, the musical and lyrical
-        ingredients, the subgenres, and how it differs from pop punk.
+        ingredients, the subgenres, and how it differs from punk and pop punk.
       </p>
 
       <GeneratorEmbed />
@@ -173,6 +192,36 @@ export default function Page() {
           how to make an emo song with AI
         </Link>
         .
+      </p>
+
+      <h2>Emo vs. punk: what&apos;s the difference?</h2>
+      <p>
+        Emo is punk&apos;s child, so the honest answer to &quot;is emo
+        punk?&quot; is yes by ancestry and mostly no by sound. It started in
+        Washington DC in the mid-1980s, when bands like Rites of Spring and
+        Embrace kept hardcore&apos;s speed and volume but swapped politics for
+        confession. People called it &quot;emotional hardcore&quot;, and the
+        short version stuck.
+      </p>
+      <ul>
+        <li>
+          <strong>What emo kept:</strong> the guitars, bass and drums, the DIY
+          scene, and the intensity.
+        </li>
+        <li>
+          <strong>What it changed:</strong> where the lyrics point. Punk shouts
+          at the system, the police and the suburbs; emo turns the same volume
+          on your own feelings.
+        </li>
+        <li>
+          <strong>What it added:</strong> dynamics. Punk is relentless from the
+          first bar; emo goes quiet so the loud part hurts more.
+        </li>
+      </ul>
+      <p>
+        Each wave since has drifted further from that sound, which is why 2000s
+        emo like My Chemical Romance sits closer to pop and arena rock than to
+        the DC basements it came from.
       </p>
 
       <h2>Emo vs. pop punk: what&apos;s the difference?</h2>

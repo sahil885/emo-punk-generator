@@ -86,12 +86,17 @@ export const posts: Post[] = [
   {
     slug: "what-makes-a-song-emo",
     ctaPrompt: "everyone grew out of it except me",
+    // Third pass (2026-11-05). GSC, 3 months: 2,007 impressions, 2 clicks. The
+    // queries split three ways — "emo vs pop punk" (~230 impressions), "punk
+    // vs emo" / "is emo a subgenre of punk" (~260) and "what makes a song emo"
+    // (~110). The old title only named pop punk, so the largest group never
+    // saw its own words in the result.
     title:
-      "Emo vs. Pop Punk: The Difference — and Hear It Yourself",
+      "Emo vs. Punk vs. Pop Punk: The Difference — Hear It Yourself",
     description:
-      "What actually makes a song emo, how it differs from pop punk, and the subgenres sorted out. Then turn your own words into one and hear it in about two minutes.",
+      "Emo is a punk subgenre that turned the feeling inward; pop punk kept it fast and bright. All three side by side, then hear your own words as an emo song.",
     date: "2026-06-17",
-    updated: "2026-10-19",
+    updated: "2026-11-05",
     excerpt:
       "Minor keys, confessional lyrics, quiet-loud dynamics: a quick guide to what makes a song emo, and how it differs from pop punk.",
   },
@@ -126,7 +131,7 @@ export const posts: Post[] = [
     description:
       "The techniques behind emo lyrics that don't sound fake — plus a free generator that writes yours and sings them back with real vocals in about two minutes.",
     date: "2026-06-27",
-    updated: "2026-10-19",
+    updated: "2026-11-05",
     excerpt:
       "The exact techniques behind great emo lyrics — specificity, quiet-loud contrast, the confessional 'I' — and how to get there fast with AI.",
   },
