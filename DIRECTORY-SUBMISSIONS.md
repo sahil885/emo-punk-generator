@@ -13,6 +13,12 @@ a genre-specific product is a genuine point of difference — lead with it.
 Everything below is accurate as of 2026-11-03. If pricing or the free tier
 changes, update this file before the next submission.
 
+**Already listed — keep these current:** PeerPush (peerpush.com/p/text-to-emo) and
+SaaSHub. Checked 2026-11-05: the PeerPush listing still says **"Freemium from
+$7.49"** — the single song is $3.99, so edit it to "from $3.99". PeerPush is
+what search engines show for "AI emo song generator", so a wrong price there is
+the one most people see.
+
 ---
 
 ## Where to submit, in order
@@ -24,7 +30,12 @@ changes, update this file before the next submission.
 | 3 | **There's An AI For That** — theresanaiforthat.com | The largest AI-tool directory; heavily crawled | Check — has been paid |
 | 4 | **Futurepedia** — futurepedia.io | Large, well-indexed AI directory | Check — has been paid |
 | 5 | **Toolify** — toolify.ai | Large directory with category pages | Check current terms |
-| 6 | **TopAI.tools**, **AI Tools Directory** | Smaller, still indexed | Usually free |
+| 6 | **Toolradar** — toolradar.com/vendors → "Submit Your Tool" | Builds its own "Suno alternatives" and comparison pages (currently Udio, Stable Audio, Soundraw, AIVA) | Free (checked 2026-11-05) |
+| 7 | **NeuronFeed** — neuronfeed.com/submit | Its Suno alternatives page lists 20 tools, none genre-specific; human review in 48h | Free (checked 2026-11-05) |
+| 8 | **TopAI.tools**, **AI Tools Directory** | Smaller, still indexed | Usually free |
+
+Skip **AIChief** for now: free submissions are sold out and listings start at $99
+(checked 2026-11-05).
 
 Free ones first. A paid listing is only worth it if the free ones produce
 referral traffic you can see in GA4 — check after a month.
