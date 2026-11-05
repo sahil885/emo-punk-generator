@@ -140,6 +140,45 @@ export default function Page() {
         line first; let the rhyme come to you, not the other way around.
       </p>
 
+      <h2>How to write midwest emo lyrics</h2>
+      <p>
+        <strong>
+          Midwest emo lyrics read like someone thinking out loud about one
+          ordinary afternoon.
+        </strong>{" "}
+        The style comes from 1990s bands like Cap&apos;n Jazz, The Promise Ring
+        and American Football. It keeps the specificity and drops the
+        stadium chorus: less screaming, more talking.
+      </p>
+      <ul>
+        <li>
+          <strong>Pin it to a time and a room.</strong> A season, a date, a
+          kitchen, the passenger seat. The smaller the setting, the bigger the
+          feeling reads.
+        </li>
+        <li>
+          <strong>Write in full sentences and let them overrun.</strong> A line
+          that keeps going past where it should end sounds like a person, not a
+          lyric.
+        </li>
+        <li>
+          <strong>Skip the rhyme and the resolution.</strong> End on an image,
+          not a lesson. The song stops rather than concludes.
+        </li>
+        <li>
+          <strong>Give it a long, slightly ridiculous title.</strong> It&apos;s
+          part of the tradition, and it tells the listener not to expect a
+          stadium chorus.
+        </li>
+      </ul>
+      <p>
+        For prompts that get close to the register, the{" "}
+        <Link href="/midwest-emo-lyrics-generator">
+          midwest emo lyrics generator
+        </Link>{" "}
+        writes in this style from your own words and sings it back.
+      </p>
+
       <h2>Common mistakes that flatten emo lyrics</h2>
       <ul>
         <li>
