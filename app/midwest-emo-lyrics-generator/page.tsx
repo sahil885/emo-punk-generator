@@ -111,6 +111,11 @@ export default function MidwestEmoLyricsGeneratorPage() {
           <strong>Be a bit pathetic.</strong> The genre&apos;s whole charm is
           admitting the thing you&apos;d never say out loud.
         </li>
+        <li>
+          <strong>Let the title run on too.</strong> Midwest emo titles are
+          sentence-length and often an in-joke &mdash; more on that with the{" "}
+          <Link href="/emo-song-title-generator">emo song title generator</Link>.
+        </li>
       </ul>
 
       <h2>Prompts that get close</h2>

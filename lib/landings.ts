@@ -52,7 +52,7 @@ export const GENERATOR_PAGES: Landing[] = [
     priority: 0.9,
     summary:
       "names the song, and writes the track that goes under the title",
-    updated: "2026-10-19",
+    updated: "2026-11-09",
   },
   { path: "/emo-poetry-generator", label: "Emo poetry generator", priority: 0.9,
     summary:
@@ -64,7 +64,7 @@ export const GENERATOR_PAGES: Landing[] = [
     priority: 0.9,
     summary:
       "conversational, painfully specific midwest-emo-style lyrics",
-    updated: "2026-10-19",
+    updated: "2026-11-09",
   },
   {
     path: "/emo-rap-lyrics-generator",

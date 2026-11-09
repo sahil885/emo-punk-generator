@@ -96,7 +96,7 @@ export const posts: Post[] = [
     description:
       "Emo is a punk subgenre that turned the feeling inward; pop punk kept it fast and bright. All three side by side, then hear your own words as an emo song.",
     date: "2026-06-17",
-    updated: "2026-11-05",
+    updated: "2026-11-09",
     excerpt:
       "Minor keys, confessional lyrics, quiet-loud dynamics: a quick guide to what makes a song emo, and how it differs from pop punk.",
   },

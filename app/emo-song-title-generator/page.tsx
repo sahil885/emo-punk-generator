@@ -8,7 +8,7 @@ import { relatedGenerators } from "@/lib/landings";
 const PATH = "/emo-song-title-generator";
 const TITLE = "Emo Song Title Generator — Free, With the Song to Match";
 const DESCRIPTION =
-  "An emo song title generator that names the song and then writes and sings it. Type a feeling, get a title, lyrics and a full track. Free to generate and preview.";
+  "An emo song title and name generator that writes the song to match. Type a feeling, get a title, lyrics and a full sung track. Free to generate and preview.";
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -56,6 +56,11 @@ const faq: LandingFaq[] = [
     question: "What makes a good emo song title?",
     answer:
       "Three patterns cover most of them: a concrete object doing emotional work ('Glass Between My Teeth'), a flat statement that turns at the last word ('Forever Was a Four-Letter Word'), and a parenthetical that undercuts the main phrase ('Wasted Days (Won't Waste Me)'). What they avoid is naming the feeling outright — no title worth having contains the word 'sad'.",
+  },
+  {
+    question: "Can it make midwest emo song titles?",
+    answer:
+      "Yes, if you prompt it like one. Titles are written from your own words, so a long, conversational, oddly specific prompt ('we sat in your car outside the gas station until it closed') comes back with a title in that register far more often than a mood word does. There's no separate midwest mode — the prompt is the mode.",
   },
   {
     question: "Are the titles different every time?",
@@ -131,6 +136,33 @@ export default function EmoSongTitleGeneratorPage() {
           the first half. Deeply emo, endlessly reusable.
         </li>
       </ul>
+
+      <h2>Midwest emo song titles</h2>
+      <p>
+        <strong>
+          Midwest emo titles are the opposite of &ldquo;Broken Midnight&rdquo;:
+          long, conversational, and often a private joke.
+        </strong>{" "}
+        The scene that grew out of 1990s Illinois bands like Cap&apos;n Jazz and
+        American Football treated the title as one more line of lyric &mdash; a
+        sentence fragment, something a friend said, a reference only the band
+        understood. The habit carried into 2000s pop punk, which is how a
+        Chicago-area band ended up releasing a song called &ldquo;I Slept With
+        Someone in Fall Out Boy and All I Got Was This Stupid Song Written About
+        Me.&rdquo;
+      </p>
+      <p>
+        To get one here, write the prompt the way you&apos;d say it out loud:
+        &ldquo;we sat in your car outside the gas station until it closed&rdquo;
+        rather than &ldquo;nostalgia&rdquo;. The title is written from your
+        words, so a long, specific line is far more likely to come back with a
+        title that sounds like the genre. For the lyrics in the same register,
+        use the{" "}
+        <Link href="/midwest-emo-lyrics-generator">
+          midwest emo lyrics generator
+        </Link>
+        .
+      </p>
 
       <h2>Getting a title you&apos;d actually use</h2>
       <p>

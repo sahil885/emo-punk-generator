@@ -281,6 +281,106 @@ export default function Page() {
         </li>
       </ul>
 
+      <h2>Is that band emo? The ones people ask about most</h2>
+      <p>
+        Apply the same test as above: is the feeling pointed inward, and does
+        the song move between quiet and loud? Plenty of bands pass in one era
+        and not the next.
+      </p>
+      <div className="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">Band</th>
+              <th scope="col">Emo?</th>
+              <th scope="col">Why</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">American Football</th>
+              <td>Yes</td>
+              <td>Midwest emo — the genre&apos;s reference point.</td>
+            </tr>
+            <tr>
+              <th scope="row">Dashboard Confessional</th>
+              <td>Yes</td>
+              <td>The defining acoustic emo act.</td>
+            </tr>
+            <tr>
+              <th scope="row">Jimmy Eat World</th>
+              <td>Yes</td>
+              <td><em>Clarity</em> (1999) is an emo landmark; later records lean alt rock.</td>
+            </tr>
+            <tr>
+              <th scope="row">Taking Back Sunday</th>
+              <td>Yes</td>
+              <td>2000s emo, through and through.</td>
+            </tr>
+            <tr>
+              <th scope="row">My Chemical Romance</th>
+              <td>Yes, by consensus</td>
+              <td>Fans and critics file them as emo; the band itself has rejected the label.</td>
+            </tr>
+            <tr>
+              <th scope="row">Secondhand Serenade</th>
+              <td>Mostly yes</td>
+              <td>Acoustic emo-pop in the Dashboard Confessional mould.</td>
+            </tr>
+            <tr>
+              <th scope="row">Fall Out Boy</th>
+              <td>Both</td>
+              <td>Emo-pop: pop punk speed with emo&apos;s lyrics pointed inward.</td>
+            </tr>
+            <tr>
+              <th scope="row">Paramore</th>
+              <td>Early on</td>
+              <td>The first records are emo-pop and pop punk; later albums moved to pop rock and new wave.</td>
+            </tr>
+            <tr>
+              <th scope="row">Panic! at the Disco</th>
+              <td>Early on</td>
+              <td>Emo-pop at the start, then pop.</td>
+            </tr>
+            <tr>
+              <th scope="row">Hail the Sun</th>
+              <td>Adjacent</td>
+              <td>Post-hardcore (&ldquo;swancore&rdquo;): emo&apos;s high, strained vocals, not its song shapes.</td>
+            </tr>
+            <tr>
+              <th scope="row">All Time Low</th>
+              <td>No</td>
+              <td>Pop punk. &ldquo;Dear Maria, Count Me In&rdquo; is about as pop punk as a song gets.</td>
+            </tr>
+            <tr>
+              <th scope="row">Blink-182</th>
+              <td>No</td>
+              <td>Pop punk, though their darker 2003 self-titled album borrows from emo.</td>
+            </tr>
+            <tr>
+              <th scope="row">Green Day</th>
+              <td>No</td>
+              <td>Pop punk — the band that took it mainstream in 1994.</td>
+            </tr>
+            <tr>
+              <th scope="row">Sum 41</th>
+              <td>No</td>
+              <td>Pop punk with metal leanings.</td>
+            </tr>
+            <tr>
+              <th scope="row">Attack Attack!</th>
+              <td>No</td>
+              <td>Metalcore from the same 2000s scene, much heavier.</td>
+            </tr>
+            <tr>
+              <th scope="row">Sub Urban</th>
+              <td>No</td>
+              <td>Dark alt-pop. The mood overlaps; the sound doesn&apos;t.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
       <h2>Is emo making a comeback?</h2>
       <p>
         It never fully left, but it&apos;s undeniably having a moment. Nostalgia
