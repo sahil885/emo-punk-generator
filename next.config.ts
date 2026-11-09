@@ -34,6 +34,13 @@ const nextConfig: NextConfig = {
         permanent: true,
       },
       {
+        // Never existed, but Google surfaced it (Nov 2026) while people were
+        // searching "emo song name generator" — send them to the real page.
+        source: "/emo-song-name-generator",
+        destination: "/emo-song-title-generator",
+        permanent: true,
+      },
+      {
         source: "/blog/how-to-make-a-sad-song-with-ai",
         destination: "/ai-song-generator",
         permanent: true,

@@ -8,7 +8,7 @@ import { relatedGenerators } from "@/lib/landings";
 const PATH = "/emo-song-title-generator";
 const TITLE = "Emo Song Title Generator — Free, With the Song to Match";
 const DESCRIPTION =
-  "An emo song title generator that names the song and then writes and sings it. Type a feeling, get a title, lyrics and a full track. Free to generate and preview.";
+  "An emo song title and name generator that writes the song to match. Type a feeling, get a title, lyrics and a full sung track. Free to generate and preview.";
 
 export const metadata: Metadata = {
   title: TITLE,
