@@ -43,7 +43,8 @@ export default function Page() {
         chords. They&apos;re raw, specific, and a little too honest. The good
         news: that effect comes from a handful of repeatable techniques, not
         magic. Whether you&apos;re writing by hand or using AI to draft a full
-        song, this guide breaks down how emo and pop punk lyrics actually work —
+        song, this guide breaks down how emo and{" "}
+        <Link href="/punk-lyrics-generator">pop punk lyrics</Link> actually work —
         structure, voice, imagery, and the mistakes that make them fall flat.
       </p>
 
@@ -203,8 +204,9 @@ export default function Page() {
       <h2>How AI fits in</h2>
       <p>
         You can write every line yourself — or use AI to do the heavy lifting and
-        keep what works. With <Link href="/">Text to Emo</Link>, you give it a
-        single honest detail and it drafts a full song in the structure above,
+        keep what works. With Text to Emo&apos;s{" "}
+        <Link href="/emo-lyrics-generator">emo lyrics generator</Link>, you give
+        it a single honest detail and it drafts a full song in the structure above,
         then performs it with vocals and music. The trick is the same as writing
         by hand: feed it something specific. &quot;the last text you never
         read&quot; produces a real lyric; &quot;a sad love song&quot; produces

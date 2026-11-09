@@ -243,9 +243,11 @@ export default function Page() {
       </ul>
       <p>
         In practice most modern &quot;emo&quot; songs are really emo-pop or
-        pop-punk hybrids — which is exactly the sweet spot{" "}
-        <Link href="/">Text to Emo</Link> aims for: anthemic enough to shout,
-        sad enough to mean it.
+        pop-punk hybrids — which is exactly the sweet spot the{" "}
+        <Link href="/emo-song-generator">emo song generator</Link> aims for:
+        anthemic enough to shout, sad enough to mean it. For the brighter,
+        faster version of the same words, there&apos;s a{" "}
+        <Link href="/pop-punk-song-generator">pop punk song generator</Link>.
       </p>
 
       <h2>The main emo subgenres</h2>
@@ -272,12 +274,19 @@ export default function Page() {
         </li>
         <li>
           <strong>Emo rap</strong> — emo&apos;s confessional themes over hip-hop
-          production, which brought the genre to a whole new generation.
+          production, which brought the genre to a whole new generation. The{" "}
+          <Link href="/emo-rap-lyrics-generator">emo rap lyrics generator</Link>{" "}
+          writes in that register and sings it rather than raps it.
         </li>
         <li>
           <strong>Emo revival</strong> — the 2010s-onward wave that brought back
           the intricate, twinkly guitar sound (American Football&apos;s
-          influence looms large here).
+          influence looms large here). Its conversational lyric style is what
+          the{" "}
+          <Link href="/midwest-emo-lyrics-generator">
+            midwest emo lyrics generator
+          </Link>{" "}
+          writes.
         </li>
       </ul>
 

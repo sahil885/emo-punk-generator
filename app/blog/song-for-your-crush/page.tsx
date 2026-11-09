@@ -189,7 +189,8 @@ export default function Page() {
         you walk away with an actual track instead of just a feeling you&apos;ve
         been carrying around for three weeks. Type the thing you can&apos;t stop
         thinking about,{" "}
-        <Link href="/">open the generator</Link>, pick a voice, and let the
+        open the <Link href="/emo-song-generator">emo song generator</Link>,
+        pick a voice, and let the
         quiet-verse, loud-chorus, minor-key formula do the rest. Send it, post it,
         or keep it forever in your drafts. Generating and previewing are free.
       </p>
