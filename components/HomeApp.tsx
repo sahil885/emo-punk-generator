@@ -15,6 +15,8 @@ import {
 } from "@/lib/pricing";
 import { PREVIEW_RETENTION_DAYS, songRetention } from "@/lib/retention";
 import type { ModalSource } from "@/lib/paywallSources";
+import InstallAppCard from "@/components/InstallAppCard";
+import { isStandalone } from "@/lib/pwa";
 
 type Singer = "male" | "female";
 
@@ -850,6 +852,9 @@ function SongsModal({
             </ul>
           )}
         </div>
+        {songs && songs.length > 0 && (
+          <InstallAppCard context="library" className="mt-4 flex-shrink-0" />
+        )}
       </div>
     </div>
   );
@@ -935,15 +940,17 @@ export default function Home({
   const offerMsLeft = useTimeLeft(offer?.endsAt ?? null);
 
   // ── Fetch credit balance (and any live offer) when signed in ────────────────
-  const fetchCredits = useCallback(async () => {
-    if (authStatus !== "authenticated") return;
+  const fetchCredits = useCallback(async (): Promise<number | null> => {
+    if (authStatus !== "authenticated") return null;
     try {
       const res = await fetch("/api/credits");
       const data = await res.json();
       if (typeof data.credits === "number") setCredits(data.credits);
       setOffer(data.offer ?? null);
+      return typeof data.credits === "number" ? data.credits : null;
     } catch {
       /* silent */
+      return null;
     }
   }, [authStatus]);
 
@@ -973,6 +980,53 @@ export default function Home({
       })
       .catch(() => {});
   }, [fetchCredits]);
+
+  // ── Installed app: notice a purchase made outside the page ─────────────────
+  // In the home-screen app, Stripe checkout can open over the app (iOS) and the
+  // app page may never reload, so the ?credits_session return above can't be
+  // relied on. While a checkout started from the app is recent, watch the
+  // balance: the webhook credits the account either way, and a rise means the
+  // purchase landed. In a browser tab the page unloads on redirect, so this
+  // never runs there.
+  const creditsRef = useRef<number | null>(null);
+  useEffect(() => {
+    creditsRef.current = credits;
+  }, [credits]);
+  const [checkoutWatch, setCheckoutWatch] = useState<{ from: number; credits: number | null } | null>(null);
+
+  useEffect(() => {
+    if (!checkoutWatch) return;
+    let stopped = false;
+    const check = async () => {
+      if (stopped) return;
+      if (Date.now() - checkoutWatch.from > 20 * 60_000) {
+        setCheckoutWatch(null);
+        return;
+      }
+      const now = await fetchCredits();
+      const before = checkoutWatch.credits;
+      if (!stopped && before !== null && now !== null && now > before) {
+        setCheckoutWatch(null);
+        setShowBuyCredits(false);
+        setNoCredits(false);
+        setRateLimited(false);
+        setCreditsSuccess(true);
+        setTimeout(() => setCreditsSuccess(false), 6000);
+      }
+    };
+    const id = setInterval(check, 5000);
+    const onVisible = () => {
+      if (document.visibilityState === "visible") check();
+    };
+    document.addEventListener("visibilitychange", onVisible);
+    window.addEventListener("focus", onVisible);
+    return () => {
+      stopped = true;
+      clearInterval(id);
+      document.removeEventListener("visibilitychange", onVisible);
+      window.removeEventListener("focus", onVisible);
+    };
+  }, [checkoutWatch, fetchCredits]);
 
   // ── Deep links: /pricing (?pack=…) and blog CTAs (?words=…) ────────────────
   // ?pack opens the buy modal on that pack, so the pricing page converts in one
@@ -1030,13 +1084,22 @@ export default function Home({
     setBuyingCredits(true);
     setBuyError("");
     try {
+      const inApp = isStandalone();
       const res = await fetch("/api/checkout/credits", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ pack }),
+        // `surface` tags the Stripe session so app-driven sales are countable.
+        body: JSON.stringify({ pack, surface: inApp ? "app" : "web" }),
       });
       const data = await res.json();
       if (res.ok && data.url) {
+        if (inApp) {
+          // If the page is still here a few seconds later, checkout opened
+          // over the app instead of replacing it: free the button (they may
+          // close checkout without paying) and watch for the credits instead.
+          setCheckoutWatch({ from: Date.now(), credits: creditsRef.current });
+          setTimeout(() => setBuyingCredits(false), 4000);
+        }
         window.location.href = data.url;
         return;
       }
@@ -1721,6 +1784,7 @@ export default function Home({
             </div>
 
             <div className="px-6 pb-6">
+              <InstallAppCard context="song" className="mb-4" />
               <button
                 onClick={reset}
                 className="w-full text-sm text-white/30 hover:text-white/60 border border-white/8 hover:border-white/20 rounded-xl py-3 transition-all"

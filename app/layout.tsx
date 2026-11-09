@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Analytics from "@/components/Analytics";
+import PwaSetup from "@/components/PwaSetup";
 import { Providers } from "@/app/providers";
 
 const geistSans = Geist({
@@ -25,6 +26,14 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://texttoemo.com"),
+  applicationName: "Text to Emo",
+  // Installed-app behaviour on iPhone/iPad (the manifest covers Android).
+  // "black" keeps the status bar solid so it never overlaps the page.
+  appleWebApp: {
+    capable: true,
+    title: "Text to Emo",
+    statusBarStyle: "black",
+  },
   title: "Text To Emo — Turn Any Words Into an Emo Song",
   description:
     "Paste a text, a memory or a 2am thought and Text To Emo sings it back as a full pop punk track — written, performed and ready in about two minutes. Free to try.",
@@ -95,6 +104,7 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(webSiteLd) }}
         />
         <Analytics />
+        <PwaSetup />
         <Providers>{children}</Providers>
       </body>
     </html>

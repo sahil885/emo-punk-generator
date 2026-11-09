@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Sign in to buy credits" }, { status: 401 });
   }
 
-  const { pack } = (await req.json()) as { pack?: unknown };
+  const { pack, surface } = (await req.json()) as { pack?: unknown; surface?: unknown };
   if (!isPackId(pack)) {
     return NextResponse.json({ error: "Invalid pack" }, { status: 400 });
   }
@@ -73,7 +73,12 @@ export async function POST(req: NextRequest) {
       credits: String(packInfo.credits),
       userEmail: session.user.email,
       ...(offer ? { discount: offer.id } : {}),
+      ...(surface === "app" ? { surface: "app" } : {}),
     },
+    // Bought from the installed home-screen app: tag the payment itself too,
+    // so it shows on the payment in the Stripe dashboard (search
+    // metadata["surface"]:"app") — that's how to count what the app sells.
+    ...(surface === "app" ? { payment_intent_data: { metadata: { surface: "app" } } } : {}),
   });
 
   await recordPaywallEvent({ email: session.user.email, event: "checkout_started", pack });
