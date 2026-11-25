@@ -1143,19 +1143,20 @@ export default function Home({
       // A first song starts the 24-hour offer — pick it up straight away.
       fetchCredits();
 
-      const audioRes = await fetch("/api/audio/start", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          title: lyricsData.title,
-          lyrics: lyricsData.lyrics,
-          singer,
-          songId: lyricsData.songId ?? null,
-        }),
-      });
-      const audioData = await audioRes.json();
-      if (audioRes.ok && audioData.taskId) {
-        setTaskId(audioData.taskId);
+      // The server starts the music along with the lyrics. Only if that
+      // failed does the browser ask for it again.
+      if (lyricsData.taskId) {
+        setTaskId(lyricsData.taskId);
+      } else if (lyricsData.songId) {
+        const audioRes = await fetch("/api/audio/start", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ songId: lyricsData.songId }),
+        });
+        const audioData = await audioRes.json();
+        if (audioRes.ok && audioData.taskId) {
+          setTaskId(audioData.taskId);
+        }
       }
     } catch (e) {
       setError(e instanceof Error ? e.message : "Something went wrong");

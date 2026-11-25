@@ -2,6 +2,8 @@ import Anthropic from "@anthropic-ai/sdk";
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { sql } from "@/lib/db";
+import { startSunoForSong } from "@/lib/suno";
+import { sunoCallbackUrl } from "@/lib/songReady";
 
 // Daily generation caps. Generation is free (you get a preview); credits are
 // spent to unlock the full song. The cap protects against runaway Suno usage by
@@ -149,11 +151,24 @@ etc.`;
       WHERE id = ${user.id} AND first_song_at IS NULL
     `;
 
+    // Start the music here rather than leaving it to the browser: a visitor
+    // who closes the tab right after the lyrics appear still gets a song, and
+    // the Suno callback + "your song is ready" email take it from there. If
+    // Suno refuses, taskId is null and the browser retries /api/audio/start.
+    const taskId = await startSunoForSong({
+      songId,
+      title,
+      lyrics,
+      singer,
+      callbackUrl: sunoCallbackUrl(),
+    });
+
     return NextResponse.json({
       title,
       lyrics,
       singer,
       songId,
+      taskId,
       creditsRemaining: user.credits,
     });
   } catch (err) {
