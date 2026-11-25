@@ -17,9 +17,11 @@ import { SITE_URL } from "@/lib/about";
 // whether the person is still on the page or needs an email.
 
 // The open tab polls /api/audio/status every 5s and each poll stamps
-// songs.last_polled_at. Background tabs get throttled, so allow well over 5s
-// before deciding nobody is there.
-const AWAY_AFTER_SECONDS = 45;
+// songs.last_polled_at. When a song finishes we wait this long and email only
+// if no poll arrived after the finish. (A fixed "no poll for N seconds" rule
+// failed in testing: songs can finish in ~35s, before N had passed, so someone
+// who closed the tab straight away looked present.)
+const PRESENCE_GRACE_MS = 20_000;
 
 // One email per person per 12 hours: someone who makes five songs and leaves
 // gets one nudge, not five.
@@ -58,7 +60,11 @@ export async function finishSongTask(taskId: string): Promise<FinishResult> {
   const attached = await attachSongAudio(taskId, track);
   if (!attached) return "already_saved";
 
-  return (await emailIfAway(taskId)) ? "saved_and_emailed" : "saved";
+  // Database clock, so the comparison with last_polled_at can't skew.
+  const [{ finished_at }] = (await sql`SELECT now() AS finished_at`) as { finished_at: Date }[];
+  await new Promise((r) => setTimeout(r, PRESENCE_GRACE_MS));
+
+  return (await emailIfAway(taskId, finished_at)) ? "saved_and_emailed" : "saved";
 }
 
 // Server-side watcher, run with after() from the request that started the
@@ -67,7 +73,7 @@ export async function finishSongTask(taskId: string): Promise<FinishResult> {
 // the visitor who closed their tab got no email. Polls until the song is saved
 // by anyone — this, the callback, the open tab or the library — or until the
 // route's time budget runs out, at which point the daily sweep takes over.
-const WATCH_FIRST_CHECK_MS = 45_000; // songs take ~1–3 minutes
+const WATCH_FIRST_CHECK_MS = 45_000; // songs can finish in ~35s
 const WATCH_INTERVAL_MS = 15_000;
 const WATCH_BUDGET_MS = 270_000; // inside maxDuration = 300
 
@@ -90,9 +96,10 @@ export async function watchSongTask(taskId: string): Promise<void> {
 }
 
 // Claims the email atomically (ready_email_sent_at), so the callback and the
-// sweep can't both send it. Only fires when the person had left the page, the
-// song is recent and still locked, and they haven't had one recently.
-async function emailIfAway(taskId: string): Promise<boolean> {
+// sweep can't both send it. Only fires when no open tab polled after the song
+// finished, the song is recent and still locked, and they haven't had one
+// recently.
+async function emailIfAway(taskId: string, finishedAt: Date): Promise<boolean> {
   const claimed = await sql`
     UPDATE songs s
     SET ready_email_sent_at = now()
@@ -102,8 +109,7 @@ async function emailIfAway(taskId: string): Promise<boolean> {
       AND s.ready_email_sent_at IS NULL
       AND s.unlocked = false
       AND s.created_at > now() - make_interval(hours => ${EMAIL_MAX_AGE_HOURS})
-      AND (s.last_polled_at IS NULL
-           OR s.last_polled_at < now() - make_interval(secs => ${AWAY_AFTER_SECONDS}))
+      AND (s.last_polled_at IS NULL OR s.last_polled_at < ${finishedAt})
       AND NOT EXISTS (
         SELECT 1 FROM songs o
         WHERE o."userId" = s."userId"
