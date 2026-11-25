@@ -17,7 +17,10 @@ function validSig(sig: string | null): boolean {
 }
 
 export async function POST(req: NextRequest) {
+  // Logged so Vercel's runtime logs show whether Suno's callbacks reach us at
+  // all (the first live test suggested they didn't).
   if (!validSig(req.nextUrl.searchParams.get("sig"))) {
+    console.warn("suno callback: bad signature");
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -29,11 +32,13 @@ export async function POST(req: NextRequest) {
   }
   // Lyrics-only and first-track callbacks arrive before the song is done.
   if (data?.callbackType && data.callbackType !== "complete") {
+    console.log("suno callback", taskId, data.callbackType, "ignored");
     return NextResponse.json({ ok: true, ignored: data.callbackType });
   }
 
   try {
     const result = await finishSongTask(taskId);
+    console.log("suno callback", taskId, data?.callbackType, result);
     return NextResponse.json({ ok: true, result });
   } catch (err) {
     console.error("suno callback failed", taskId, err);

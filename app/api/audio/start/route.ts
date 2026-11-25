@@ -1,8 +1,11 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse, after } from "next/server";
 import { auth } from "@/auth";
 import { sql } from "@/lib/db";
 import { startSunoForSong } from "@/lib/suno";
-import { sunoCallbackUrl } from "@/lib/songReady";
+import { sunoCallbackUrl, watchSongTask } from "@/lib/songReady";
+
+// Long enough for after() to watch the song finish.
+export const maxDuration = 300;
 
 // Fallback only. /api/generate starts the music itself as soon as the lyrics
 // are saved (so closing the tab can't stop it); the browser calls this only
@@ -49,5 +52,6 @@ export async function POST(req: NextRequest) {
   if (!taskId) {
     return NextResponse.json({ error: "Suno generation failed" }, { status: 500 });
   }
+  after(() => watchSongTask(taskId));
   return NextResponse.json({ taskId });
 }
