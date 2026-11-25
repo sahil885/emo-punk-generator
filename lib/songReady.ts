@@ -61,6 +61,34 @@ export async function finishSongTask(taskId: string): Promise<FinishResult> {
   return (await emailIfAway(taskId)) ? "saved_and_emailed" : "saved";
 }
 
+// Server-side watcher, run with after() from the request that started the
+// song. Doesn't depend on Suno's callback reaching us: in the first live test
+// (2026-11-25) Suno recorded the right callback URL but nothing arrived, and
+// the visitor who closed their tab got no email. Polls until the song is saved
+// by anyone — this, the callback, the open tab or the library — or until the
+// route's time budget runs out, at which point the daily sweep takes over.
+const WATCH_FIRST_CHECK_MS = 45_000; // songs take ~1–3 minutes
+const WATCH_INTERVAL_MS = 15_000;
+const WATCH_BUDGET_MS = 270_000; // inside maxDuration = 300
+
+export async function watchSongTask(taskId: string): Promise<void> {
+  const started = Date.now();
+  await new Promise((r) => setTimeout(r, WATCH_FIRST_CHECK_MS));
+  while (Date.now() - started < WATCH_BUDGET_MS) {
+    try {
+      const result = await finishSongTask(taskId);
+      if (result !== "not_finished") {
+        console.log("song watcher", taskId, result, `${Math.round((Date.now() - started) / 1000)}s`);
+        return;
+      }
+    } catch (err) {
+      console.error("song watcher check failed", taskId, err);
+    }
+    await new Promise((r) => setTimeout(r, WATCH_INTERVAL_MS));
+  }
+  console.log("song watcher gave up", taskId, "— the daily sweep will save it");
+}
+
 // Claims the email atomically (ready_email_sent_at), so the callback and the
 // sweep can't both send it. Only fires when the person had left the page, the
 // song is recent and still locked, and they haven't had one recently.

@@ -1,15 +1,19 @@
 import Anthropic from "@anthropic-ai/sdk";
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse, after } from "next/server";
 import { auth } from "@/auth";
 import { sql } from "@/lib/db";
 import { startSunoForSong } from "@/lib/suno";
-import { sunoCallbackUrl } from "@/lib/songReady";
+import { sunoCallbackUrl, watchSongTask } from "@/lib/songReady";
 
 // Daily generation caps. Generation is free (you get a preview); credits are
 // spent to unlock the full song. The cap protects against runaway Suno usage by
 // free users — but customers who hold credits are paying users and shouldn't be
 // throttled at the free-tier limit, so they get a much higher (still bounded) cap.
 const FREE_DAILY_LIMIT = 10;
+
+// The response returns as soon as the lyrics are saved; after() then keeps the
+// function alive to watch the song finish (lib/songReady.ts watchSongTask).
+export const maxDuration = 300;
 const CREDITED_DAILY_LIMIT = 50;
 
 // Rotated per generation to force variety in how songs open, so the model
@@ -162,6 +166,8 @@ etc.`;
       singer,
       callbackUrl: sunoCallbackUrl(),
     });
+
+    if (taskId) after(() => watchSongTask(taskId));
 
     return NextResponse.json({
       title,
