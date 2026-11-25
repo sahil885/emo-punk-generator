@@ -602,11 +602,14 @@ interface SavedSong {
 
 function SongsModal({
   credits,
+  focusSongId,
   onCreditsChange,
   onNeedCredits,
   onClose,
 }: {
   credits: number | null;
+  /** Song to scroll to and highlight — set when arriving from a "your song is ready" email. */
+  focusSongId?: string | null;
   onCreditsChange: (credits: number) => void;
   onNeedCredits: () => void;
   onClose: () => void;
@@ -653,6 +656,13 @@ function SongsModal({
       .then((data) => setSongs(data.songs ?? []))
       .catch(() => setLoadError(true));
   }, []);
+
+  useEffect(() => {
+    if (!focusSongId || !songs) return;
+    document
+      .getElementById(`song-${focusSongId}`)
+      ?.scrollIntoView({ block: "center", behavior: "smooth" });
+  }, [focusSongId, songs]);
 
   const togglePlay = (song: SavedSong) => {
     const audio = audioRef.current;
@@ -721,7 +731,20 @@ function SongsModal({
           ) : (
             <ul className="space-y-3">
               {songs.map((song) => (
-                <li key={song.id} className="rounded-xl border border-white/10 bg-white/[0.03] p-3">
+                <li
+                  key={song.id}
+                  id={`song-${song.id}`}
+                  className={`rounded-xl border p-3 ${
+                    song.id === focusSongId
+                      ? "border-[#ff2d78]/70 bg-[#ff2d78]/[0.08]"
+                      : "border-white/10 bg-white/[0.03]"
+                  }`}
+                >
+                  {song.id === focusSongId && (
+                    <p className="text-[11px] font-bold tracking-wide text-[#ff64a6] uppercase mb-2">
+                      Your song is ready — press play
+                    </p>
+                  )}
                   <div className="flex items-center gap-3">
                     <div
                       className="w-11 h-11 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden"
@@ -929,6 +952,9 @@ export default function Home({
   const [buyError, setBuyError] = useState("");
   const [selectedPack, setSelectedPack] = useState<PackId>("10pack");
   const [showSongs, setShowSongs] = useState(false);
+  const [focusSongId, setFocusSongId] = useState<string | null>(null);
+  // Signed-out arrival from a "your song is ready" email: say so on sign-in.
+  const [signInForSong, setSignInForSong] = useState(false);
   const [songId, setSongId] = useState<string | null>(null);
   const wordsRef = useRef<HTMLTextAreaElement | null>(null);
   const [offer, setOffer] = useState<Offer | null>(null);
@@ -1002,6 +1028,26 @@ export default function Home({
         setShowSignIn(true);
         setSignInError("");
       }
+    }
+  }, [authStatus]);
+
+  // ── Deep link: ?song=… from the "your song is ready" email ────────────────────
+  // Signed in: open the library on that song. Signed out: ask them to sign in
+  // and leave the URL alone — sign-in returns to the current address, so they
+  // land back here with ?song still on it.
+  useEffect(() => {
+    if (authStatus === "loading") return;
+    const songParam = new URLSearchParams(window.location.search).get("song");
+    if (!songParam) return;
+
+    if (authStatus === "authenticated") {
+      window.history.replaceState({}, "", "/");
+      setFocusSongId(songParam);
+      setShowSongs(true);
+    } else {
+      setSignInForSong(true);
+      setShowSignIn(true);
+      setSignInError("");
     }
   }, [authStatus]);
 
@@ -1343,7 +1389,9 @@ export default function Home({
                 <p className="text-2xl mb-2">🎸</p>
                 <h3 className="text-xl font-black text-white">Sign In</h3>
                 <p className="text-xs text-white/40 mt-1">
-                  Buy credit packs &amp; keep making songs
+                  {signInForSong
+                    ? "Sign in to hear your song"
+                    : "Buy credit packs & keep making songs"}
                 </p>
               </div>
               {signInFormBlock}
@@ -1355,12 +1403,16 @@ export default function Home({
         {showSongs && isSignedIn && (
           <SongsModal
             credits={credits}
+            focusSongId={focusSongId}
             onCreditsChange={(c) => setCredits(c)}
             onNeedCredits={() => {
               setShowSongs(false);
               openBuyCredits("library");
             }}
-            onClose={() => setShowSongs(false)}
+            onClose={() => {
+              setShowSongs(false);
+              setFocusSongId(null);
+            }}
           />
         )}
 
