@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { sql } from "@/lib/db";
 import { getFinishedSunoTrack } from "@/lib/suno";
-import { storeSongAudio } from "@/lib/audioStorage";
+import { attachSongAudio } from "@/lib/songAudio";
 
 // Backfilling can copy up to 5 MP3s into storage.
 export const maxDuration = 60;
@@ -25,17 +25,7 @@ export async function GET() {
   `;
   for (const row of pending as { id: string; task_id: string }[]) {
     const track = await getFinishedSunoTrack(row.task_id);
-    if (track?.audioUrl) {
-      // Same as /api/audio/status: keep our own copy, since the generator's
-      // URL expires. Falls back to the source URL if storage is unavailable.
-      const stored = await storeSongAudio(row.id, track.audioUrl);
-      const url = stored?.url ?? track.audioUrl;
-      await sql`
-        UPDATE songs
-        SET audio_url = ${url}, image_url = ${track.imageUrl}, duration = ${track.duration}
-        WHERE id = ${row.id} AND audio_url IS NULL
-      `;
-    }
+    if (track?.audioUrl) await attachSongAudio(row.task_id, track);
   }
 
   const songs = await sql`

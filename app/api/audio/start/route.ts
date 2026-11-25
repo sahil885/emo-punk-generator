@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { sql } from "@/lib/db";
+import { sunoCallbackUrl } from "@/lib/songReady";
 
 const SUNO_BASE = "https://api.sunoapi.org";
 const SUNO_KEY = process.env.SUNO_API_KEY!;
@@ -29,7 +30,9 @@ export async function POST(req: NextRequest) {
       prompt: lyrics,
       style,
       vocalGender: singer === "female" ? "f" : "m",
-      callBackUrl: "https://example.com/noop",
+      // Suno tells us when the song is done, so it gets saved (and the owner
+      // emailed) even if they closed the tab. See lib/songReady.ts.
+      callBackUrl: sunoCallbackUrl(),
     }),
   });
 
